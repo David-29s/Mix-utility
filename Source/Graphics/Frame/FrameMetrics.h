@@ -28,6 +28,26 @@ namespace FrameMetrics
 
     inline constexpr float neonInset = 8.0f;
 
+    //==========================================================
+    // Neon Glow
+    //==========================================================
+
+    inline constexpr int neonGlowLayers = 1;
+
+    inline constexpr float neonGlowAlpha = 0.03f;
+
+    //==========================================================
+    // Side Gradient
+    //==========================================================
+
+    inline constexpr float cyanStart = 0.15f;
+
+    inline constexpr float cyanMiddle = 0.40f;
+
+    inline constexpr float cyanPeak = 0.75f;
+
+    inline constexpr float magentaPeak = 0.80f;
+
     // Longitud de cada lado
 
     inline constexpr float topInset = 50.0f;

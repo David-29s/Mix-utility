@@ -43,8 +43,9 @@ private:
     //==========================================================
 
     static void drawNeon(
-        juce::Graphics& g,
-        juce::Rectangle<float> bounds);
+     juce::Graphics& g,
+     juce::Rectangle<float> bounds,
+     float glow);
 
     //==========================================================
     // Layer 04 - Top Decoration
@@ -66,16 +67,19 @@ private:
         float glow);
 
     static void drawBottomNeon(
-        juce::Graphics& g,
-        juce::Rectangle<float> bounds);
+      juce::Graphics& g,
+      juce::Rectangle<float> bounds,
+      float glow);
 
     static void drawLeftNeon(
-        juce::Graphics& g,
-        juce::Rectangle<float> bounds);
+     juce::Graphics& g,
+     juce::Rectangle<float> bounds,
+     float glow);
 
     static void drawRightNeon(
-        juce::Graphics& g,
-        juce::Rectangle<float> bounds);
+     juce::Graphics& g,
+     juce::Rectangle<float> bounds,
+     float glow);
 
     //==========================================================
     // Layer 05 - Neon Glow
