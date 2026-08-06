@@ -1,5 +1,9 @@
 #include "GainProcessor.h"
 
+//==========================================================
+// Constructor / Destructor
+//==========================================================
+
 GainProcessor::GainProcessor()
 {
 
@@ -10,30 +14,80 @@ GainProcessor::~GainProcessor()
 
 }
 
-void GainProcessor::setGain(float newGain)
+//==========================================================
+// Parameters
+//==========================================================
+
+// Establece la ganancia lineal que se aplicará al audio.
+void GainProcessor::setGain(
+    float newGain)
 {
     gain = newGain;
 }
 
+// Devuelve la ganancia actual.
 float GainProcessor::getGain() const
 {
     return gain;
 }
 
-void GainProcessor::process(juce::AudioBuffer<float>& buffer)
+//==========================================================
+// States
+//==========================================================
+
+// Activa o desactiva el bypass del procesador.
+void GainProcessor::setBypass(
+    bool shouldBypass)
 {
-    const int numChannels = buffer.getNumChannels();
+    bypass = shouldBypass;
+}
 
-    const int numSamples = buffer.getNumSamples();
+// Devuelve el estado actual del bypass.
+bool GainProcessor::isBypassed() const
+{
+    return bypass;
+}
 
-    for (int channel = 0; channel < numChannels; ++channel)
+//==========================================================
+// Processing
+//==========================================================
+
+// Procesa el bloque completo de audio.
+void GainProcessor::process(
+    juce::AudioBuffer<float>& buffer)
+{
+
+    //==========================================================
+    // States
+    //==========================================================
+
+    // Si el bypass está activo, no procesa el audio.
+    if (bypass)
+        return;
+
+
+    //==========================================================
+    // Audio
+    //==========================================================
+
+    const int numChannels =
+        buffer.getNumChannels();
+
+    const int numSamples =
+        buffer.getNumSamples();
+
+    for (int channel = 0;
+         channel < numChannels;
+         ++channel)
     {
-        auto* channelData = buffer.getWritePointer(channel);
+        auto* channelData =
+            buffer.getWritePointer(channel);
 
-        for (int sample = 0; sample < numSamples; ++sample)
+        for (int sample = 0;
+             sample < numSamples;
+             ++sample)
         {
             channelData[sample] *= gain;
-
         }
     }
 }

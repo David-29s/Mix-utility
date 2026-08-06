@@ -3,6 +3,7 @@
 #include "juce_gui_basics/juce_gui_basics.h"
 #include "../../Theme/NeonColours.h"
 
+
 enum class IconType
 {
     bypass,
@@ -43,6 +44,9 @@ public:
     void setActive(
         bool shouldBeActive);
 
+    // Devuelve el estado actual del botón.
+    bool isActive() const;
+
     void mouseUp(
     const juce::MouseEvent& event) override;
 
@@ -51,6 +55,13 @@ public:
 
     void mouseExit(
         const juce::MouseEvent& event) override;
+
+    //==========================================================
+    // Events
+    //==========================================================
+
+    // Se ejecuta cuando el botón es presionado.
+    std::function<void()> onClick;
 
 
 

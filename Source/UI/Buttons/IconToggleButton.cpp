@@ -1,5 +1,6 @@
 #include "IconToggleButton.h"
 #include "../../Metrics/Icons/IconMetrics.h"
+#include <iostream>
 
 IconToggleButton::IconToggleButton()
 {
@@ -678,6 +679,11 @@ void IconToggleButton::setActive(
     repaint();
 }
 
+bool IconToggleButton::isActive() const
+{
+    return active;
+}
+
 juce::Colour IconToggleButton::getCurrentColour() const
 {
     if (active)
@@ -692,6 +698,9 @@ void IconToggleButton::mouseUp(
     juce::Component::mouseUp(event);
 
     setActive(!active);
+
+    if (onClick)
+        onClick();
 }
 
 void IconToggleButton::mouseEnter(

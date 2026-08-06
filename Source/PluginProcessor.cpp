@@ -2,18 +2,51 @@
 #include "PluginEditor.h"
 
 
+//==========================================================
+// Parameters
+//==========================================================
+
+// Crea y registra todos los parámetros del plugin.
+// Cada parámetro agregado aquí podrá ser utilizado por
+// el DSP, la interfaz gráfica y guardarse junto con el preset.
 juce::AudioProcessorValueTreeState::ParameterLayout
 AudioPluginAudioProcessor::createParameterLayout()
 {
+    //==========================================================
+    // Contenedor de parámetros
+    //==========================================================
+
+    // Almacena todos los parámetros que tendrá el plugin.
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
 
-    layout.add(std::make_unique<juce::AudioParameterFloat>(
-        "GAIN",                 // ID interno
-        "Gain",                 // Nombre visible
-        juce::NormalisableRange<float>(-24.0f, 24.0f, 0.01f),
-        0.0f                    // Valor inicial
-    ));
+    //==========================================================
+    // Gain
+    //==========================================================
 
+    // Agrega el parámetro de ganancia.
+    layout.add(
+        std::make_unique<juce::AudioParameterFloat>(
+
+            "GAIN",     // ID interno (único).
+
+            "Gain",     // Nombre visible.
+
+            // Rango permitido:
+            // Mínimo, máximo y resolución.
+            juce::NormalisableRange<float>(
+                -24.0f,
+                 24.0f,
+                  0.01f),
+
+            // Valor inicial.
+            0.0f
+        ));
+
+    //==========================================================
+    // Return
+    //==========================================================
+
+    // Devuelve todos los parámetros registrados.
     return layout;
 }
 //==============================================================================
@@ -41,6 +74,24 @@ juce::AudioProcessorValueTreeState&
 AudioPluginAudioProcessor::getAPVTS()
 {
     return apvts;
+}
+
+//==========================================================
+// States
+//==========================================================
+
+// Activa o desactiva el bypass del procesador.
+void AudioPluginAudioProcessor::setBypassEnabled(
+    bool shouldBypass)
+{
+    gainProcessor.setBypass(
+        shouldBypass);
+}
+
+// Devuelve el estado actual del bypass.
+bool AudioPluginAudioProcessor::isBypassEnabled() const
+{
+    return gainProcessor.isBypassed();
 }
 
 //==============================================================================
@@ -146,34 +197,87 @@ bool AudioPluginAudioProcessor::isBusesLayoutSupported (const BusesLayout& layou
   #endif
 }
 
-void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
-                                              juce::MidiBuffer& midiMessages)
-{
-    juce::ignoreUnused (midiMessages);
+//==========================================================
+// Processing
+//==========================================================
 
+// Procesa cada bloque de audio recibido desde el DAW.
+void AudioPluginAudioProcessor::processBlock(
+    juce::AudioBuffer<float>& buffer,
+    juce::MidiBuffer& midiMessages)
+{
+    //==========================================================
+    // MIDI
+    //==========================================================
+
+    // Este plugin no utiliza mensajes MIDI.
+    juce::ignoreUnused(
+        midiMessages);
+
+    //==========================================================
+    // CPU
+    //==========================================================
+
+    // Evita problemas de rendimiento causados por números
+    // muy pequeños (denormals) durante el procesamiento.
     juce::ScopedNoDenormals noDenormals;
 
-    auto totalNumInputChannels  = getTotalNumInputChannels();
-    auto totalNumOutputChannels = getTotalNumOutputChannels();
+    //==========================================================
+    // Audio Channels
+    //==========================================================
 
+    // Obtiene la cantidad de canales de entrada y salida.
+    auto totalNumInputChannels =
+        getTotalNumInputChannels();
+
+    auto totalNumOutputChannels =
+        getTotalNumOutputChannels();
+
+    //==========================================================
+    // Clear Unused Channels
+    //==========================================================
+
+    // Limpia cualquier canal de salida que no tenga una
+    // entrada correspondiente.
     for (auto i = totalNumInputChannels;
          i < totalNumOutputChannels;
          ++i)
     {
-        buffer.clear(i, 0, buffer.getNumSamples());
+        buffer.clear(
+            i,
+            0,
+            buffer.getNumSamples());
     }
 
-    auto* gainValue = apvts.getRawParameterValue("GAIN");
+    //==========================================================
+    // Parameters
+    //==========================================================
 
+    // Obtiene el valor actual del parámetro Gain.
+    auto* gainValue =
+        apvts.getRawParameterValue(
+            "GAIN");
+
+    // Convierte el valor atómico en un float.
     const float gainDB =
-     gainValue->load();
+        gainValue->load();
 
+    // Convierte decibeles a ganancia lineal.
     const float linearGain =
-        juce::Decibels::decibelsToGain(gainDB);
+        juce::Decibels::decibelsToGain(
+            gainDB);
 
-    gainProcessor.setGain(linearGain);
+    //==========================================================
+    // DSP
+    //==========================================================
 
-    gainProcessor.process(buffer);
+    // Envía la ganancia al procesador de audio.
+    gainProcessor.setGain(
+        linearGain);
+
+    // Procesa el bloque completo de audio.
+    gainProcessor.process(
+        buffer);
 }
 
 //==============================================================================

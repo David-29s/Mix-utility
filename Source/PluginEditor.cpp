@@ -3,8 +3,6 @@
 #include "Graphics/Frame/PluginFrame.h"
 #include "Metrics/Layout/LayoutMetrics.h"
 
-
-//==============================================================================
 AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
 (AudioPluginAudioProcessor& p)
     : AudioProcessorEditor(&p),
@@ -43,6 +41,16 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
     bypassButton.setActive(
         false);
 
+    //==========================================================
+    // Events
+    //==========================================================
+
+    bypassButton.onClick = [this]
+    {
+        processorRef.setBypassEnabled(
+            bypassButton.isActive());
+    };
+    
     //----------------------------------------------------------
 
     addAndMakeVisible(

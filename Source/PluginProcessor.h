@@ -4,14 +4,34 @@
 #include "DSP/GainProcessor.h"
 
 
-//==============================================================================
+
 class AudioPluginAudioProcessor final : public juce::AudioProcessor
 {
 public:
-    //==============================================================================
+
+    //==========================================================
+    // Parameters
+    //==========================================================
     juce::AudioProcessorValueTreeState& getAPVTS();
+
+    //==========================================================
+    // States
+    //==========================================================
+
+    // Activa o desactiva el bypass del plugin.
+    void setBypassEnabled(bool shouldBypass);
+
+    // Devuelve el estado actual del bypass.
+    bool isBypassEnabled() const;
+
+    //==========================================================
+    // Constructor / Destructor
+    //==========================================================
     AudioPluginAudioProcessor();
+
     ~AudioPluginAudioProcessor() override;
+
+
 
     //==============================================================================
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
