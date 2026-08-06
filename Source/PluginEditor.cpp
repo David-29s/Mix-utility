@@ -1,7 +1,7 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 #include "Graphics/Frame/PluginFrame.h"
-#include "Layout/LayoutMetrics.h"
+#include "Metrics/Layout/LayoutMetrics.h"
 
 
 //==============================================================================

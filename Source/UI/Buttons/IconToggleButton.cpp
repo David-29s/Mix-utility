@@ -1,5 +1,5 @@
 #include "IconToggleButton.h"
-#include "../../Graphics/Icons/IconMetrics.h"
+#include "../../Metrics/Icons/IconMetrics.h"
 
 IconToggleButton::IconToggleButton()
 {

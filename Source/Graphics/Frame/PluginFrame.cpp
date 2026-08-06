@@ -1,6 +1,6 @@
 #include "PluginFrame.h"
 #include "../../UI/Theme/NeonColours.h"
-#include "FrameMetrics.h"
+#include "../../Metrics/Frame/FrameMetrics.h"
 
 void PluginFrame::draw(
     juce::Graphics& g,
