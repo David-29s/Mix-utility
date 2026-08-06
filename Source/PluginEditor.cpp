@@ -1,6 +1,7 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 #include "Graphics/Frame/PluginFrame.h"
+#include "Layout/LayoutMetrics.h"
 
 
 //==============================================================================
@@ -111,7 +112,9 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
         false);
     startTimerHz(60);
 
-    setSize(300, 320);
+    setSize(
+    LayoutMetrics::pluginWidth,
+    LayoutMetrics::pluginHeight);
 }
 
 AudioPluginAudioProcessorEditor::~AudioPluginAudioProcessorEditor()
@@ -140,74 +143,43 @@ void AudioPluginAudioProcessorEditor::resized()
     // Knob
     //==========================================================
 
-    constexpr int knobWidth = 280;
-    constexpr int knobHeight = 360;
-
-    //----------------------------------------------------------
-    // Position
-    //----------------------------------------------------------
-
-    constexpr int knobOffsetX = 0;
-    constexpr int knobOffsetY = -15;
-
-    //----------------------------------------------------------
-    // Bounds
-    //----------------------------------------------------------
-
     auto knobBounds =
-        getLocalBounds()
-            .withSizeKeepingCentre(
-                knobWidth,
-                knobHeight);
+       getLocalBounds()
+           .withSizeKeepingCentre(
+               LayoutMetrics::knobWidth,
+               LayoutMetrics::knobHeight);
 
     knobBounds.translate(
-        knobOffsetX,
-        knobOffsetY);
+    LayoutMetrics::knobOffsetX,
+    LayoutMetrics::knobOffsetY);
 
     gainKnob.setBounds(
-        knobBounds);
+    knobBounds);
+
 
     //==========================================================
-    // Buttons iconos
+    // Buttons icons
     //==========================================================
 
-    constexpr int buttonSize = 80;
+    setButtonPosition(
+       bypassButton,
+       0);
 
-    constexpr int spacing = 50;
+    setButtonPosition(
+        monoButton,
+        1);
 
-    constexpr int startX = 14;
+    setButtonPosition(
+        phaseButton,
+        2);
 
-    constexpr int y = 230;
+    setButtonPosition(
+        muteButton,
+        3);
 
-    bypassButton.setBounds(
-    startX,
-    y,
-    buttonSize,
-    buttonSize);
-
-    monoButton.setBounds(
-        startX + spacing,
-        y,
-        buttonSize,
-        buttonSize);
-
-    phaseButton.setBounds(
-        startX + spacing * 2,
-        y,
-        buttonSize,
-        buttonSize);
-
-    muteButton.setBounds(
-        startX + spacing * 3,
-        y,
-        buttonSize,
-        buttonSize);
-
-    abButton.setBounds(
-        startX + spacing * 4,
-        y,
-        buttonSize,
-        buttonSize);
+    setButtonPosition(
+        abButton,
+        4);
 
 }
 
@@ -216,4 +188,19 @@ void AudioPluginAudioProcessorEditor::timerCallback()
     animator.update();
 
     repaint();
+}
+
+void AudioPluginAudioProcessorEditor::setButtonPosition(
+    IconToggleButton& button,
+    int index)
+{
+    button.setBounds(
+        LayoutMetrics::buttonStartX +
+        LayoutMetrics::buttonSpacing * index,
+
+        LayoutMetrics::buttonY,
+
+        LayoutMetrics::buttonSize,
+
+        LayoutMetrics::buttonSize);
 }
