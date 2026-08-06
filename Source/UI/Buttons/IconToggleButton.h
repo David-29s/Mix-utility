@@ -31,6 +31,16 @@ public:
         const juce::String& newLabel);
 
     //==========================================================
+    // A/B
+    //==========================================================
+
+    // Alterna entre el estado A y B.
+    void toggleAB();
+
+    // Devuelve true cuando está seleccionado A.
+    bool isStateA() const;
+
+    //==========================================================
     // Component
     //==========================================================
 
@@ -65,6 +75,7 @@ public:
 
 
 
+
 private:
 
     //==========================================================
@@ -77,10 +88,19 @@ private:
 
     juce::Colour colour =
       NeonColours::cyan;
-
+    
     bool active = false;
 
+    //==========================================================
+    // A/B
+    //==========================================================
+
+    // Indica si está seleccionado el estado A.
+    bool stateA = true;
+
     bool isHovered = false;
+
+
 
     juce::Colour getCurrentColour() const;
 

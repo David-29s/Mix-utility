@@ -503,44 +503,23 @@ void IconToggleButton::drawAB(
     //==========================================================
 
     const float fontSize =
-     IconMetrics::iconSize;
-
-    const float thickness =
-        IconMetrics::thickness;
-
-    const float letterOffsetX =
-        IconMetrics::iconSize * 0.75f;
-
-    const float letterOffsetY =
-        IconMetrics::iconSize * 0.60f;
+    IconMetrics::iconSize * 1.50f;
 
     const float letterWidth =
-        IconMetrics::iconSize * 0.80f;
+        IconMetrics::iconSize * 1.20f;
 
     const float letterHeight =
         IconMetrics::iconSize * 1.20f;
 
-    const float slashStartX =
-        IconMetrics::iconSize * 0.10f;
-
-    const float slashStartY =
-        IconMetrics::iconSize * 0.50f;
-
-    const float slashEndX =
-        IconMetrics::iconSize * 0.30f;
-
-    const float slashEndY =
-        IconMetrics::iconSize * 0.50f;
-
-    const float letterBOffsetX =
-    IconMetrics::iconSize * 0.25f;
+    const float letterOffsetY =
+        IconMetrics::iconSize * 0.60f;
 
     //==========================================================
     // Color
     //==========================================================
 
     g.setColour(
-     getCurrentColour());
+        getCurrentColour());
 
     //==========================================================
     // Fuente
@@ -552,14 +531,14 @@ void IconToggleButton::drawAB(
             juce::Font::bold));
 
     //==========================================================
-    // Letra A
+    // Letra
     //==========================================================
 
     g.drawText(
-        "A",
+        stateA ? "A" : "B",
 
         static_cast<int>(
-            centre.x - letterOffsetX),
+            centre.x - letterWidth * 0.5f),
 
         static_cast<int>(
             centre.y - letterOffsetY),
@@ -571,48 +550,6 @@ void IconToggleButton::drawAB(
             letterHeight),
 
         juce::Justification::centred);
-
-    //==========================================================
-    // Letra B
-    //==========================================================
-
-    g.drawText(
-        "B",
-
-        static_cast<int>(
-     centre.x + letterBOffsetX),
-
-        static_cast<int>(
-            centre.y - letterOffsetY),
-
-        static_cast<int>(
-            letterWidth),
-
-        static_cast<int>(
-            letterHeight),
-
-        juce::Justification::centred);
-
-    //==========================================================
-    // Barra diagonal
-    //==========================================================
-
-    juce::Path slash;
-
-    slash.startNewSubPath(
-        centre.x - slashStartX,
-        centre.y + slashStartY);
-
-    slash.lineTo(
-        centre.x + slashEndX,
-        centre.y - slashEndY);
-
-    g.strokePath(
-        slash,
-        juce::PathStrokeType(
-            thickness,
-            juce::PathStrokeType::curved,
-            juce::PathStrokeType::rounded));
 }
 
 void IconToggleButton::setIconType(
@@ -684,6 +621,24 @@ bool IconToggleButton::isActive() const
     return active;
 }
 
+//==========================================================
+// A/B
+//==========================================================
+
+// Alterna entre el estado A y B.
+void IconToggleButton::toggleAB()
+{
+    stateA = !stateA;
+
+    repaint();
+}
+
+// Devuelve true cuando está seleccionado A.
+bool IconToggleButton::isStateA() const
+{
+    return stateA;
+}
+
 juce::Colour IconToggleButton::getCurrentColour() const
 {
     if (active)
@@ -697,7 +652,22 @@ void IconToggleButton::mouseUp(
 {
     juce::Component::mouseUp(event);
 
-    setActive(!active);
+    //==========================================================
+    // State
+    //==========================================================
+
+    if (iconType == IconType::ab)
+    {
+        toggleAB();
+    }
+    else
+    {
+        setActive(!active);
+    }
+
+    //==========================================================
+    // Event
+    //==========================================================
 
     if (onClick)
         onClick();
