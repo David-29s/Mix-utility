@@ -94,6 +94,54 @@ bool AudioPluginAudioProcessor::isBypassEnabled() const
     return gainProcessor.isBypassed();
 }
 
+//----------------------------------------------------------
+
+// Activa o desactiva el modo Mono.
+void AudioPluginAudioProcessor::setMonoEnabled(
+    bool shouldBeMono)
+{
+    gainProcessor.setMono(
+        shouldBeMono);
+}
+
+// Devuelve el estado actual del modo Mono.
+bool AudioPluginAudioProcessor::isMonoEnabled() const
+{
+    return gainProcessor.isMono();
+}
+
+//----------------------------------------------------------
+
+// Activa o desactiva la inversión de fase.
+void AudioPluginAudioProcessor::setPhaseEnabled(
+    bool shouldBePhase)
+{
+    gainProcessor.setPhase(
+        shouldBePhase);
+}
+
+// Devuelve el estado actual de la fase.
+bool AudioPluginAudioProcessor::isPhaseEnabled() const
+{
+    return gainProcessor.isPhase();
+}
+
+//----------------------------------------------------------
+
+// Activa o desactiva el mute.
+void AudioPluginAudioProcessor::setMuteEnabled(
+    bool shouldBeMute)
+{
+    gainProcessor.setMute(
+        shouldBeMute);
+}
+
+// Devuelve el estado actual del mute.
+bool AudioPluginAudioProcessor::isMuteEnabled() const
+{
+    return gainProcessor.isMuted();
+}
+
 //==============================================================================
 const juce::String AudioPluginAudioProcessor::getName() const
 {

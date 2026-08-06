@@ -24,6 +24,30 @@ public:
     // Devuelve el estado actual del bypass.
     bool isBypassEnabled() const;
 
+    //----------------------------------------------------------
+
+    // Activa o desactiva el modo Mono.
+    void setMonoEnabled(bool shouldBeMono);
+
+    // Devuelve el estado actual del modo Mono.
+    bool isMonoEnabled() const;
+
+    //----------------------------------------------------------
+
+    // Activa o desactiva la inversión de fase.
+    void setPhaseEnabled(bool shouldBePhase);
+
+    // Devuelve el estado actual de la fase.
+    bool isPhaseEnabled() const;
+
+    //----------------------------------------------------------
+
+    // Activa o desactiva el mute.
+    void setMuteEnabled(bool shouldBeMute);
+
+    // Devuelve el estado actual del mute.
+    bool isMuteEnabled() const;
+
     //==========================================================
     // Constructor / Destructor
     //==========================================================

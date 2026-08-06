@@ -50,7 +50,9 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
         processorRef.setBypassEnabled(
             bypassButton.isActive());
     };
-    
+
+
+
     //----------------------------------------------------------
 
     addAndMakeVisible(
@@ -68,6 +70,15 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
     monoButton.setActive(
         false);
 
+    //==========================================================
+    // Events
+    //==========================================================
+
+    monoButton.onClick = [this]
+    {
+        processorRef.setMonoEnabled(
+            monoButton.isActive());
+    };
     //----------------------------------------------------------
 
     addAndMakeVisible(
@@ -84,6 +95,16 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
 
     phaseButton.setActive(
         false);
+
+    //==========================================================
+    // Events
+    //==========================================================
+
+    phaseButton.onClick = [this]
+    {
+        processorRef.setPhaseEnabled(
+            phaseButton.isActive());
+    };
 
     //----------------------------------------------------------
 
@@ -102,6 +123,16 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
     muteButton.setActive(
         false);
 
+    //==========================================================
+    // Events
+    //==========================================================
+
+    muteButton.onClick = [this]
+    {
+        processorRef.setMuteEnabled(
+            muteButton.isActive());
+    };
+    
     //----------------------------------------------------------
 
     addAndMakeVisible(
