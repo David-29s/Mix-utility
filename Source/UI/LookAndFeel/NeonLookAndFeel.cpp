@@ -1,5 +1,5 @@
 #include "NeonLookAndFeel.h"
-#include "../Theme/NeonColours.h"
+#include "../../Theme/NeonColours.h"
 #include "../../Graphics/Knob/GainScale.h"
 #include <iostream>
 
