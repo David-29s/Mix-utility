@@ -20,14 +20,14 @@ namespace
     //======================================================
     // Controla el brillo más bajo que alcanzará el neón.
     // Valores pequeños hacen que casi se apague.
-    constexpr float decorationMinimumBrightness = 0.25f;
+    constexpr float decorationMinimumBrightness = 0.10f;
 
     //======================================================
     // Intensidad de la respiración
     //======================================================
     // Controla cuánto aumenta el brillo desde el mínimo.
     // Valores grandes producen una respiración más evidente.
-    constexpr float decorationAmplitude = 0.65f;
+    constexpr float decorationAmplitude = 0.30f;
 
     //======================================================
     // Velocidad de la onda seno
@@ -69,7 +69,7 @@ namespace
     // Velocidad de la onda seno
     //======================================================
     // Controla la suavidad de la respiración del marco.
-    constexpr float frameWaveSpeed = 0.35f;
+    constexpr float frameWaveSpeed = 0.95f;
 }
 
 //==========================================================

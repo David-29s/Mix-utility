@@ -17,22 +17,30 @@ void PluginFrame::draw(
 
     drawPanel(g, area);
 
-    drawOuterBorder(g, area);
-
-    // drawInnerBorder(g, area);
 
     drawTopDecoration(
      g,
      area,
      decorationGlow);
 
-    drawNeon(
+
+    //Frame
+    auto framePath =
+    buildFramePath(area);
+
+    drawFrameGlow(
         g,
-        area,
+        framePath,
         frameGlow);
 
-    // drawNeonGlow(g, area);
+    drawFrameStroke(
+     g,
+     framePath,
+     area);
+
 }
+
+
 
 //============================================================
 // Layer 01 - Panel
@@ -42,7 +50,7 @@ void PluginFrame::drawPanel(
     juce::Graphics& g,
     juce::Rectangle<float> bounds)
 {
-    constexpr float cornerRadius = 20.0f;
+    constexpr float cornerRadius = 2.0f;
 
     g.setColour(NeonColours::frameBorder);
 
@@ -51,79 +59,14 @@ void PluginFrame::drawPanel(
         cornerRadius);
 }
 
-//============================================================
-// Layer 02 - Outer Border
-//============================================================
 
-void PluginFrame::drawOuterBorder(
-    juce::Graphics& g,
+
+juce::Path PluginFrame::buildFramePath(
     juce::Rectangle<float> bounds)
 {
-    constexpr float cornerRadius = 20.0f; //Redondeo
-
-    g.setColour(NeonColours::frameBorder);
-
-    g.drawRoundedRectangle(
-        bounds.reduced(3.0f),
-        cornerRadius,
-        1.5f);
-}
-
-//============================================================
-// Layer 03 - Inner Border
-//============================================================
-
-// void PluginFrame::drawInnerBorder(
-//     juce::Graphics& g,
-//     juce::Rectangle<float> bounds)
-// {
-//     constexpr float cornerRadius = 18.0f;
-//
-//     auto innerBounds =
-//         bounds.reduced(8.0f);
-//
-//     g.setColour(
-//         NeonColours::frameHighlight);
-//
-//     g.drawRoundedRectangle(
-//         innerBounds,
-//         cornerRadius,
-//         1.0f);
-// }
-
-//============================================================
-// Layer 04 - Neon Outline
-//============================================================
-
-void PluginFrame::drawNeon(
-    juce::Graphics& g,
-    juce::Rectangle<float> bounds,
-    float glow)
-{
-    drawBottomNeon(
-        g,
-        bounds,
-        glow);
-
-    drawLeftNeon(
-        g,
-        bounds,
-        glow);
-
-    drawRightNeon(
-        g,
-        bounds,
-        glow);
-}
-
-
-void PluginFrame::drawBottomNeon(
-    juce::Graphics& g,
-    juce::Rectangle<float> bounds,
-    float glow)
-{
     auto line =
-        bounds.reduced(FrameMetrics::neonInset);
+        bounds.reduced(
+            FrameMetrics::neonInset);
 
     const float r =
         FrameMetrics::cornerRadius;
@@ -131,16 +74,29 @@ void PluginFrame::drawBottomNeon(
     juce::Path path;
 
     //==========================================================
-    // Esquina inferior izquierda
+    // Inicio del marco
     //==========================================================
 
     path.startNewSubPath(
         line.getX(),
+        line.getY() + FrameMetrics::topInset);
+
+    //==========================================================
+    // Lado izquierdo
+    //==========================================================
+
+    path.lineTo(
+        line.getX(),
         line.getBottom() - r);
+
+    //==========================================================
+    // Curva inferior izquierda
+    //==========================================================
 
     path.quadraticTo(
         line.getX(),
         line.getBottom(),
+
         line.getX() + r,
         line.getBottom());
 
@@ -152,243 +108,43 @@ void PluginFrame::drawBottomNeon(
         line.getRight() - r,
         line.getBottom());
 
-
     //==========================================================
-    // Esquina inferior derecha
+    // Curva inferior derecha
     //==========================================================
 
     path.quadraticTo(
         line.getRight(),
         line.getBottom(),
+
         line.getRight(),
         line.getBottom() - r);
 
     //==========================================================
-    // Glow del marco
+    // Lado derecho
     //==========================================================
 
-    for (int i = FrameMetrics::neonGlowLayers; i >= 1; --i)
+    path.lineTo(
+        line.getRight(),
+        line.getY() + FrameMetrics::topInset);
+
+    return path;
+}
+
+void PluginFrame::drawFrameGlow(
+    juce::Graphics& g,
+    const juce::Path& path,
+    float glow)
+{
+    for (int i = FrameMetrics::neonGlowLayers;
+         i >= 1;
+         --i)
     {
         g.setColour(
             NeonColours::magenta.withAlpha(
-                0.03f * i * glow));
-
-        g.strokePath(
-            path,
-            juce::PathStrokeType(
-                FrameMetrics::neonThickness + i,
-                juce::PathStrokeType::curved,
-                juce::PathStrokeType::rounded));
-    }
-
-    //==========================================================
-    // Línea principal del marco
-    //==========================================================
-
-    g.setColour(
-        NeonColours::magenta);
-
-    g.strokePath(
-        path,
-        juce::PathStrokeType(
-            FrameMetrics::neonThickness,
-            juce::PathStrokeType::curved,
-            juce::PathStrokeType::rounded));
-}
-
-void PluginFrame::drawLeftNeon(
-    juce::Graphics& g,
-    juce::Rectangle<float> bounds,
-    float glow)
-{
-    auto line =
-        bounds.reduced(
-            FrameMetrics::neonInset);
-
-    //==========================================================
-    // Geometría de la línea
-    //==========================================================
-
-    juce::Path path;
-
-    path.startNewSubPath(
-        line.getX(),
-        line.getY() + FrameMetrics::topInset);
-
-    path.lineTo(
-        line.getX(),
-        line.getBottom() - FrameMetrics::bottomInset);
-
-    //==========================================================
-    // Glow del marco
-    //==========================================================
-
-    for (int i = FrameMetrics::neonGlowLayers; i >= 1; --i)
-    {
-        juce::ColourGradient glowGradient(
-            NeonColours::magenta.withAlpha(0.0f),
-            line.getX(),
-            line.getY(),
-
-            NeonColours::magenta.withAlpha(
-                0.03f * i * glow),
-            line.getX(),
-            line.getBottom(),
-
-            false);
-
-        glowGradient.addColour(
-     0.0,
-     NeonColours::cyan.withAlpha(
-         FrameMetrics::cyanStart * glow));
-
-        glowGradient.addColour(
-            0.20,
-            NeonColours::cyan.withAlpha(
-                FrameMetrics::cyanMiddle * glow));
-
-        glowGradient.addColour(
-            0.40,
-            NeonColours::cyan.withAlpha(
-                FrameMetrics::cyanPeak * glow));
-
-        glowGradient.addColour(
-            0.60,
-            NeonColours::magenta.withAlpha(
-                FrameMetrics::magentaPeak * glow));
-
-        g.setGradientFill(
-            glowGradient);
-
-        g.strokePath(
-            path,
-            juce::PathStrokeType(
-                FrameMetrics::neonThickness + i,
-                juce::PathStrokeType::curved,
-                juce::PathStrokeType::rounded));
-    }
-
-    //==========================================================
-    // Gradiente principal
-    //==========================================================
-
-    juce::ColourGradient gradient(
-        NeonColours::magenta.withAlpha(0.0f),
-        line.getX(),
-        line.getY(),
-
-        NeonColours::magenta,
-        line.getX(),
-        line.getBottom(),
-
-        false);
-
-    gradient.addColour(
-     0.0,
-     NeonColours::cyan.withAlpha(
-         FrameMetrics::cyanStart));
-
-    gradient.addColour(
-        0.20,
-        NeonColours::cyan.withAlpha(
-            FrameMetrics::cyanMiddle));
-
-    gradient.addColour(
-        0.40,
-        NeonColours::cyan.withAlpha(
-            FrameMetrics::cyanPeak));
-
-    gradient.addColour(
-        0.60,
-        NeonColours::magenta.withAlpha(
-            FrameMetrics::magentaPeak));
-
-    gradient.addColour(
-        1.0,
-        NeonColours::magenta);
-
-    g.setGradientFill(
-        gradient);
-
-    //==========================================================
-    // Línea principal del marco
-    //==========================================================
-
-    g.strokePath(
-        path,
-        juce::PathStrokeType(
-            FrameMetrics::neonThickness));
-}
-
-void PluginFrame::drawRightNeon(
-    juce::Graphics& g,
-    juce::Rectangle<float> bounds,
-    float glow)
-{
-    auto line =
-        bounds.reduced(
-            FrameMetrics::neonInset);
-
-    //==========================================================
-    // Geometría de la línea
-    //==========================================================
-
-    juce::Path path;
-
-    path.startNewSubPath(
-        line.getRight(),
-        line.getY() + FrameMetrics::topInset);
-
-    path.lineTo(
-        line.getRight(),
-        line.getBottom() - FrameMetrics::bottomInset);
-
-    //==========================================================
-    // Glow del marco
-    //==========================================================
-
-    for (int i = FrameMetrics::neonGlowLayers; i >= 1; --i)
-    {
-        juce::ColourGradient glowGradient(
-            NeonColours::magenta.withAlpha(0.0f),
-            line.getRight(),
-            line.getY(),
-
-            NeonColours::magenta.withAlpha(
-                FrameMetrics::neonGlowAlpha * i * glow),
-            line.getRight(),
-            line.getBottom(),
-
-            false);
-
-        glowGradient.addColour(
-            0.0,
-            NeonColours::cyan.withAlpha(
-                FrameMetrics::cyanStart * glow));
-
-        glowGradient.addColour(
-            0.20,
-            NeonColours::cyan.withAlpha(
-                FrameMetrics::cyanMiddle * glow));
-
-        glowGradient.addColour(
-            0.40,
-            NeonColours::cyan.withAlpha(
-                FrameMetrics::cyanPeak * glow));
-
-        glowGradient.addColour(
-            0.60,
-            NeonColours::magenta.withAlpha(
-                FrameMetrics::magentaPeak * glow));
-
-        glowGradient.addColour(
-            1.0,
-            NeonColours::magenta.withAlpha(
+                FrameMetrics::neonGlowAlpha *
+                i *
                 glow));
 
-        g.setGradientFill(
-            glowGradient);
-
         g.strokePath(
             path,
             juce::PathStrokeType(
@@ -396,19 +152,29 @@ void PluginFrame::drawRightNeon(
                 juce::PathStrokeType::curved,
                 juce::PathStrokeType::rounded));
     }
+}
+
+void PluginFrame::drawFrameStroke(
+    juce::Graphics& g,
+    const juce::Path& path,
+    juce::Rectangle<float> bounds)
+{
+    auto line =
+        bounds.reduced(
+            FrameMetrics::neonInset);
 
     //==========================================================
-    // Gradiente principal
+    // Gradiente principal del marco
     //==========================================================
 
     juce::ColourGradient gradient(
-        NeonColours::magenta.withAlpha(0.0f),
-        line.getRight(),
-        line.getY(),
+        NeonColours::cyan,
+        line.getX(),
+        line.getCentreY(),
 
         NeonColours::magenta,
         line.getRight(),
-        line.getBottom(),
+        line.getCentreY(),
 
         false);
 
@@ -446,37 +212,13 @@ void PluginFrame::drawRightNeon(
     g.strokePath(
         path,
         juce::PathStrokeType(
-            FrameMetrics::neonThickness));
+            FrameMetrics::neonThickness,
+            juce::PathStrokeType::curved,
+            juce::PathStrokeType::rounded));
 }
 
-//============================================================
-// Layer 05 - Neon Glow
-//============================================================
 
-// void PluginFrame::drawNeonGlow(
-//     juce::Graphics& g,
-//     juce::Rectangle<float> bounds)
-// {
-//     constexpr float cornerRadius = 18.0f;
-//
-//     auto glowBounds =
-//         bounds.reduced(8.0f);
-//
-//     for (int i = 0; i < 5; ++i)
-//     {
-//         g.setColour(
-//             NeonColours::magenta.withAlpha(
-//                 0.10f - i * 0.018f));
-//
-//         g.drawRoundedRectangle(
-//             glowBounds.expanded((float)i),
-//             cornerRadius + i,
-//             2.0f);
-//     }
-// }
-
-
-// decoracion texto de Gain
+// decoracion lineas texto Gain
 void PluginFrame::drawTopDecoration(
     juce::Graphics& g,
     juce::Rectangle<float> bounds,

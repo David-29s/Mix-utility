@@ -3,6 +3,7 @@
 #include "PluginProcessor.h"
 #include "UI/Components/NeonKnob/NeonKnob.h"
 #include "Animation/NeonAnimator.h"
+#include "UI/Buttons/IconToggleButton.h"
 
 //==============================================================================
 class AudioPluginAudioProcessorEditor final : public juce::AudioProcessorEditor,private juce::Timer
@@ -30,6 +31,20 @@ private:
 
     std::unique_ptr<
         juce::AudioProcessorValueTreeState::SliderAttachment> gainAttachment;
+
+    //==========================================================
+    // Buttons
+    //==========================================================
+
+    IconToggleButton bypassButton;
+
+    IconToggleButton monoButton;
+
+    IconToggleButton phaseButton;
+
+    IconToggleButton muteButton;
+
+    IconToggleButton abButton;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioPluginAudioProcessorEditor)
 };

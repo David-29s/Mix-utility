@@ -35,7 +35,7 @@ void NeonKnob::paint(juce::Graphics& g)
         getLocalBounds()
             .removeFromTop(25);
 
-    titleBounds.translate(0, 2);
+    titleBounds.translate(0, 56); //Modificar esta linea para ajustar el texto (Gain)
 
     g.drawText(
         knobTitle,

@@ -79,7 +79,8 @@ target_sources(AudioPluginExample
         Source/Graphics/Knob/KnobScale.cpp
         Source/Graphics/Knob/GainScale.cpp
         Source/Graphics/Frame/PluginFrame.cpp
-        Source/Animation/NeonAnimator.cpp)
+        Source/Animation/NeonAnimator.cpp
+        Source/UI/Buttons/IconToggleButton.cpp)
 
 # `target_compile_definitions` adds some preprocessor definitions to our target. In a Projucer
 # project, these might be passed in the 'Preprocessor Definitions' field. JUCE modules also make use
@@ -102,7 +103,7 @@ target_compile_definitions(AudioPluginExample
 # static library. These source files can be of any kind (wav data, images, fonts, icons etc.).
 # Conversion to binary-data will happen when your target is built.
 
-# juce_add_binary_data(AudioPluginData SOURCES ...)
+ # juce_add_binary_data(AudioPluginData SOURCES SOURCES )
 
 # `target_link_libraries` links libraries and JUCE modules to other libraries or executables. Here,
 # we're linking our executable target to the `juce::juce_audio_utils` module. Inter-module

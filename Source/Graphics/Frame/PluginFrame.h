@@ -15,40 +15,16 @@ public:
 private:
 
     //==========================================================
-    // Layer 01 - Panel
+    // Panel
     //==========================================================
 
     static void drawPanel(
         juce::Graphics& g,
         juce::Rectangle<float> bounds);
 
-    //==========================================================
-    // Layer 02 - Outer Border
-    //==========================================================
-
-    static void drawOuterBorder(
-        juce::Graphics& g,
-        juce::Rectangle<float> bounds);
 
     //==========================================================
-    // Layer 03 - Inner Border
-    //==========================================================
-
-    static void drawInnerBorder(
-        juce::Graphics& g,
-        juce::Rectangle<float> bounds);
-
-    //==========================================================
-    // Layer 04 - Neon
-    //==========================================================
-
-    static void drawNeon(
-     juce::Graphics& g,
-     juce::Rectangle<float> bounds,
-     float glow);
-
-    //==========================================================
-    // Layer 04 - Top Decoration
+    //Top Decoration
     //==========================================================
 
     static void drawTopDecoration(
@@ -66,26 +42,26 @@ private:
         juce::Rectangle<float> bounds,
         float glow);
 
-    static void drawBottomNeon(
-      juce::Graphics& g,
-      juce::Rectangle<float> bounds,
-      float glow);
-
-    static void drawLeftNeon(
-     juce::Graphics& g,
-     juce::Rectangle<float> bounds,
-     float glow);
-
-    static void drawRightNeon(
-     juce::Graphics& g,
-     juce::Rectangle<float> bounds,
-     float glow);
 
     //==========================================================
-    // Layer 05 - Neon Glow
+    // Neon Glow
     //==========================================================
 
     static void drawNeonGlow(
         juce::Graphics& g,
         juce::Rectangle<float> bounds);
+
+    //Nuevo
+    static juce::Path buildFramePath(
+     juce::Rectangle<float> bounds);
+
+    static void drawFrameGlow(
+    juce::Graphics& g,
+    const juce::Path& path,
+    float glow);
+
+    static void drawFrameStroke(
+     juce::Graphics& g,
+     const juce::Path& path,
+     juce::Rectangle<float> bounds);
 };

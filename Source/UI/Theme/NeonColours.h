@@ -27,6 +27,11 @@ namespace NeonColours
 
     inline const juce::Colour cyan       { 0xff00E5FF };
     inline const juce::Colour magenta    { 0xffFF38F5 };
+    inline const juce::Colour orange     { 0xffffa500 };
+    inline const juce::Colour purple     { 0xff800080 };
+    inline const juce::Colour green      { 0xff0080ff };
+    inline const juce::Colour grey       { 0xff808080 };
+    inline const juce::Colour violet     { 0xff9419bd};
 
     //==========================================================
     // Glow

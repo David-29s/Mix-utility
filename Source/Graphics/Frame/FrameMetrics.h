@@ -6,7 +6,7 @@ namespace FrameMetrics
     // Panel
     //==========================================================
 
-    inline constexpr float cornerRadius = 20.0f;
+    inline constexpr float cornerRadius = 14.0f; //Borde esquina del marco
 
     //==========================================================
     // Borders
@@ -32,9 +32,9 @@ namespace FrameMetrics
     // Neon Glow
     //==========================================================
 
-    inline constexpr int neonGlowLayers = 1;
+    inline constexpr int neonGlowLayers = 2;
 
-    inline constexpr float neonGlowAlpha = 0.03f;
+    inline constexpr float neonGlowAlpha = 0.10f;
 
     //==========================================================
     // Side Gradient
@@ -50,7 +50,7 @@ namespace FrameMetrics
 
     // Longitud de cada lado
 
-    inline constexpr float topInset = 50.0f;
+    inline constexpr float topInset = 55.0f;
 
     inline constexpr float bottomInset = 20.0f;
 
@@ -72,5 +72,5 @@ namespace FrameMetrics
 
     inline constexpr float decorationDotRadius = 2.5f;
 
-    inline constexpr float decorationGlowRadius = 6.0f;
+    inline constexpr float decorationGlowRadius = 3.0f; //Glow de el punto de el texto gain
 }
