@@ -38,8 +38,7 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
     bypassButton.setColour(
         NeonColours::cyan);
 
-    bypassButton.setActive(
-        false);
+
 
     //==========================================================
     // Events
@@ -67,8 +66,7 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
     monoButton.setColour(
         NeonColours::magenta);
 
-    monoButton.setActive(
-        false);
+
 
     //==========================================================
     // Events
@@ -93,8 +91,7 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
     phaseButton.setColour(
         NeonColours::orange);
 
-    phaseButton.setActive(
-        false);
+
 
     //==========================================================
     // Events
@@ -120,8 +117,7 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
     muteButton.setColour(
         NeonColours::green);
 
-    muteButton.setActive(
-        false);
+
 
     //==========================================================
     // Events
@@ -147,8 +143,6 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
     abButton.setColour(
         NeonColours::violet);
 
-    abButton.setActive(
-        false);
 
     //==========================================================
     // Events
@@ -181,9 +175,6 @@ void AudioPluginAudioProcessorEditor::paint (juce::Graphics& g)
     // (Our component is opaque, so we must completely fill the background with a solid colour)
     g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
 
-    g.setColour (juce::Colours::white);
-    g.setFont (15.0f);
-    g.drawFittedText ("", getLocalBounds(), juce::Justification::centred, 1);
 
     PluginFrame::draw(
       g,
