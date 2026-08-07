@@ -14,6 +14,22 @@ public:
     //==========================================================
     juce::AudioProcessorValueTreeState& getAPVTS();
 
+    // Actualiza el parámetro Bypass del APVTS.
+    void setBypassParameter(
+        bool enabled);
+
+    // Devuelve el valor actual del parámetro Bypass.
+    bool getBypassParameter();
+
+    void setMonoParameter(bool enabled);
+    bool getMonoParameter();
+
+    void setPhaseParameter(bool enabled);
+    bool getPhaseParameter();
+
+    void setMuteParameter(bool enabled);
+    bool getMuteParameter();
+
     //==========================================================
     // States
     //==========================================================
@@ -47,6 +63,16 @@ public:
 
     // Devuelve el estado actual del mute.
     bool isMuteEnabled() const;
+
+    //==========================================================
+    // A/B Compare
+    //==========================================================
+
+    // Cambia entre los bancos A y B.
+    void toggleCompareState();
+
+    // Devuelve true cuando el banco activo es A.
+    bool isUsingStateA() const;
 
     //==========================================================
     // Constructor / Destructor
@@ -93,10 +119,38 @@ public:
 
 private:
 
+    //==========================================================
+    // Processing
+    //==========================================================
+
+    // Actualiza todos los parámetros del DSP a partir del APVTS.
+    void updateParameters();
+
+    //==========================================================
+    // DSP
+    //==========================================================
+
     GainProcessor gainProcessor;
+
+    //==========================================================
+    // Parameters
+    //==========================================================
 
     juce::AudioProcessorValueTreeState apvts;
 
-    //==============================================================================
+
+    //==========================================================
+    // Bancos A/B
+    //==========================================================
+
+    // Banco A.
+    juce::ValueTree stateA;
+
+    // Banco B.
+    juce::ValueTree stateB;
+
+    // Indica cuál banco está activo.
+    bool usingStateA = true;
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioPluginAudioProcessor)
 };

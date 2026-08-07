@@ -720,3 +720,10 @@ void IconToggleButton::drawHoverGlow(
 }
 
 
+void IconToggleButton::setStateA(
+    bool shouldUseStateA)
+{
+    stateA = shouldUseStateA;
+
+    repaint();
+}

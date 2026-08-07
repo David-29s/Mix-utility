@@ -1,5 +1,6 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include <iostream>
 
 
 //==========================================================
@@ -43,6 +44,52 @@ AudioPluginAudioProcessor::createParameterLayout()
         ));
 
     //==========================================================
+    // Bypass
+    //==========================================================
+
+    // Agrega el parámetro de bypass.
+    layout.add(
+        std::make_unique<juce::AudioParameterBool>(
+
+            "BYPASS",   // ID interno (único).
+
+            "Bypass",   // Nombre visible.
+
+            // Valor inicial.
+            false
+        ));
+
+    //==========================================================
+    // Mono
+    //==========================================================
+
+    layout.add(
+        std::make_unique<juce::AudioParameterBool>(
+            "MONO",
+            "Mono",
+            false));
+
+    //==========================================================
+    // Phase
+    //==========================================================
+
+    layout.add(
+        std::make_unique<juce::AudioParameterBool>(
+            "PHASE",
+            "Phase",
+            false));
+
+    //==========================================================
+    // Mute
+    //==========================================================
+
+    layout.add(
+        std::make_unique<juce::AudioParameterBool>(
+            "MUTE",
+            "Mute",
+            false));
+
+    //==========================================================
     // Return
     //==========================================================
 
@@ -64,6 +111,14 @@ AudioPluginAudioProcessor::AudioPluginAudioProcessor()
             "Parameters",
             createParameterLayout())
 {
+
+    //==========================================================
+    // Inicializar bancos A/B
+    //==========================================================
+
+    stateA = apvts.copyState();
+    stateB = apvts.copyState();
+
 }
 
 AudioPluginAudioProcessor::~AudioPluginAudioProcessor()
@@ -140,6 +195,64 @@ void AudioPluginAudioProcessor::setMuteEnabled(
 bool AudioPluginAudioProcessor::isMuteEnabled() const
 {
     return gainProcessor.isMuted();
+}
+
+//==========================================================
+// A/B Compare
+//==========================================================
+
+// Cambia entre los bancos A y B.
+void AudioPluginAudioProcessor::toggleCompareState()
+{
+    //==========================================================
+    // Banco A -> Banco B
+    //==========================================================
+
+    if (usingStateA)
+    {
+        // Guardar estado actual en A.
+        stateA = apvts.copyState();
+
+        // Cargar estado de B.
+        if (stateB.isValid())
+            apvts.replaceState(
+                stateB.createCopy());
+    }
+
+    //==========================================================
+    // Banco B -> Banco A
+    //==========================================================
+
+    else
+    {
+        // Guardar estado actual en B.
+        stateB = apvts.copyState();
+
+        // Cargar estado de A.
+        if (stateA.isValid())
+            apvts.replaceState(
+                stateA.createCopy());
+    }
+
+    //==========================================================
+    // Cambiar banco activo
+    //==========================================================
+
+    usingStateA = !usingStateA;
+
+    //==========================================================
+    // Actualizar DSP
+    //==========================================================
+
+    updateParameters();
+}
+
+//----------------------------------------------------------
+
+// Devuelve true cuando el banco activo es A.
+bool AudioPluginAudioProcessor::isUsingStateA() const
+{
+    return usingStateA;
 }
 
 //==============================================================================
@@ -301,27 +414,12 @@ void AudioPluginAudioProcessor::processBlock(
     // Parameters
     //==========================================================
 
-    // Obtiene el valor actual del parámetro Gain.
-    auto* gainValue =
-        apvts.getRawParameterValue(
-            "GAIN");
-
-    // Convierte el valor atómico en un float.
-    const float gainDB =
-        gainValue->load();
-
-    // Convierte decibeles a ganancia lineal.
-    const float linearGain =
-        juce::Decibels::decibelsToGain(
-            gainDB);
+    // Actualiza todos los parámetros del DSP.
+    updateParameters();
 
     //==========================================================
     // DSP
     //==========================================================
-
-    // Envía la ganancia al procesador de audio.
-    gainProcessor.setGain(
-        linearGain);
 
     // Procesa el bloque completo de audio.
     gainProcessor.process(
@@ -340,19 +438,142 @@ juce::AudioProcessorEditor* AudioPluginAudioProcessor::createEditor()
 }
 
 //==============================================================================
-void AudioPluginAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
+void AudioPluginAudioProcessor::getStateInformation(
+    juce::MemoryBlock& destData)
 {
-    // You should use this method to store your parameters in the memory block.
-    // You could do that either as raw data, or use the XML or ValueTree classes
-    // as intermediaries to make it easy to save and load complex data.
-    juce::ignoreUnused (destData);
+    //==========================================================
+    // Guardar el estado actual en el banco activo
+    //==========================================================
+
+    if (usingStateA)
+        stateA = apvts.copyState();
+    else
+        stateB = apvts.copyState();
+
+    //==========================================================
+    // Estado principal
+    //==========================================================
+
+    auto state = apvts.copyState();
+
+    //==========================================================
+    // Banco A
+    //==========================================================
+
+    juce::ValueTree compareA("CompareA");
+
+    if (stateA.isValid())
+    {
+        compareA.appendChild(
+            stateA.createCopy(),
+            nullptr);
+    }
+
+    state.appendChild(
+        compareA,
+        nullptr);
+
+    //==========================================================
+    // Banco B
+    //==========================================================
+
+    juce::ValueTree compareB("CompareB");
+
+    if (stateB.isValid())
+    {
+        compareB.appendChild(
+            stateB.createCopy(),
+            nullptr);
+    }
+
+    state.appendChild(
+        compareB,
+        nullptr);
+
+    //==========================================================
+    // Crear XML
+    //==========================================================
+
+    std::unique_ptr<juce::XmlElement> xml(
+        state.createXml());
+
+    copyXmlToBinary(
+        *xml,
+        destData);
 }
 
-void AudioPluginAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
+void AudioPluginAudioProcessor::setStateInformation(
+    const void* data,
+    int sizeInBytes)
 {
-    // You should use this method to restore your parameters from this memory block,
-    // whose contents will have been created by the getStateInformation() call.
-    juce::ignoreUnused (data, sizeInBytes);
+    //==========================================================
+    // Obtener XML
+    //==========================================================
+
+    std::unique_ptr<juce::XmlElement> xmlState(
+        getXmlFromBinary(
+            data,
+            sizeInBytes));
+
+    if (xmlState == nullptr)
+        return;
+
+    //==========================================================
+    // Convertir XML a ValueTree
+    //==========================================================
+
+    auto state =
+        juce::ValueTree::fromXml(
+            *xmlState);
+
+    if (!state.isValid())
+        return;
+
+    //==========================================================
+    // Restaurar Banco A
+    //==========================================================
+
+    auto compareA =
+        state.getChildWithName("CompareA");
+
+    if (compareA.isValid()
+        && compareA.getNumChildren() > 0)
+    {
+        stateA =
+            compareA.getChild(0).createCopy();
+    }
+
+    //==========================================================
+    // Restaurar Banco B
+    //==========================================================
+
+    auto compareB =
+        state.getChildWithName("CompareB");
+
+    if (compareB.isValid()
+        && compareB.getNumChildren() > 0)
+    {
+        stateB =
+            compareB.getChild(0).createCopy();
+    }
+
+    //==========================================================
+    // Al abrir el proyecto siempre comenzar en A
+    //==========================================================
+
+    usingStateA = true;
+
+    if (stateA.isValid())
+    {
+        apvts.replaceState(
+            stateA.createCopy());
+    }
+
+    //==========================================================
+    // Actualizar DSP
+    //==========================================================
+
+    updateParameters();
 }
 
 //==============================================================================
@@ -360,4 +581,169 @@ void AudioPluginAudioProcessor::setStateInformation (const void* data, int sizeI
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new AudioPluginAudioProcessor();
+}
+
+//==========================================================
+// Processing
+//==========================================================
+
+// Actualiza todos los parámetros del DSP a partir del APVTS.
+void AudioPluginAudioProcessor::updateParameters()
+{
+    //==========================================================
+    // Gain
+    //==========================================================
+
+    // Obtiene el valor actual del parámetro Gain.
+    auto* gainValue =
+        apvts.getRawParameterValue(
+            "GAIN");
+
+    // Convierte el valor atómico en un float.
+    const float gainDB =
+        gainValue->load();
+
+    // Convierte decibeles a ganancia lineal.
+    const float linearGain =
+        juce::Decibels::decibelsToGain(
+            gainDB);
+
+    // Envía la ganancia al procesador DSP.
+    gainProcessor.setGain(
+        linearGain);
+
+
+    //==========================================================
+    // Bypass
+    //==========================================================
+
+    // Obtiene el valor actual del parámetro Bypass.
+    auto* bypassValue =
+        apvts.getRawParameterValue(
+            "BYPASS");
+
+    // Convierte el valor atómico en un bool.
+    const bool bypassEnabled =
+        bypassValue->load() > 0.5f;
+
+    // Envía el estado al procesador DSP.
+    gainProcessor.setBypass(
+        bypassEnabled);
+
+    //==========================================================
+    // Mono
+    //==========================================================
+
+    auto* monoValue =
+        apvts.getRawParameterValue("MONO");
+
+    const bool monoEnabled =
+        monoValue->load() > 0.5f;
+
+    gainProcessor.setMono(
+        monoEnabled);
+
+    //==========================================================
+    // Phase
+    //==========================================================
+
+    auto* phaseValue =
+        apvts.getRawParameterValue("PHASE");
+
+    const bool phaseEnabled =
+        phaseValue->load() > 0.5f;
+
+    gainProcessor.setPhase(
+        phaseEnabled);
+
+    //==========================================================
+    // Mute
+    //==========================================================
+
+    auto* muteValue =
+        apvts.getRawParameterValue("MUTE");
+
+    const bool muteEnabled =
+        muteValue->load() > 0.5f;
+
+    gainProcessor.setMute(
+        muteEnabled);
+}
+
+void AudioPluginAudioProcessor::setBypassParameter(
+    bool enabled)
+{
+
+    if (auto* parameter =
+        apvts.getParameter("BYPASS"))
+    {
+        parameter->setValueNotifyingHost(
+            enabled ? 1.0f : 0.0f);
+    }
+
+}
+
+bool AudioPluginAudioProcessor::getBypassParameter()
+{
+    if (auto* value =
+        apvts.getRawParameterValue("BYPASS"))
+    {
+        return value->load() > 0.5f;
+    }
+
+    return false;
+}
+
+void AudioPluginAudioProcessor::setMonoParameter(
+    bool enabled)
+{
+    if (auto* parameter =
+        apvts.getParameter("MONO"))
+    {
+        parameter->setValueNotifyingHost(
+            enabled ? 1.0f : 0.0f);
+    }
+}
+
+bool AudioPluginAudioProcessor::getMonoParameter()
+{
+    if (auto* value =
+        apvts.getRawParameterValue("MONO"))
+    {
+        return value->load() > 0.5f;
+    }
+
+    return false;
+}
+
+
+void AudioPluginAudioProcessor::setPhaseParameter(bool enabled)
+{
+    if (auto* parameter = apvts.getParameter("PHASE"))
+        parameter->setValueNotifyingHost(enabled ? 1.0f : 0.0f);
+}
+
+bool AudioPluginAudioProcessor::getPhaseParameter()
+{
+    if (auto* value = apvts.getRawParameterValue("PHASE"))
+        return value->load() > 0.5f;
+
+    return false;
+}
+
+void AudioPluginAudioProcessor::setMuteParameter(bool enabled)
+{
+    if (auto* parameter = apvts.getParameter("MUTE"))
+    {
+        parameter->setValueNotifyingHost(
+            enabled ? 1.0f : 0.0f);
+    }
+}
+
+bool AudioPluginAudioProcessor::getMuteParameter()
+{
+    if (auto* value = apvts.getRawParameterValue("MUTE"))
+        return value->load() > 0.5f;
+
+    return false;
 }

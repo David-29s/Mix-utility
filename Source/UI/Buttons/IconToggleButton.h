@@ -40,6 +40,8 @@ public:
     // Devuelve true cuando está seleccionado A.
     bool isStateA() const;
 
+    void setStateA(bool shouldUseStateA);
+
     //==========================================================
     // Component
     //==========================================================
@@ -88,7 +90,7 @@ private:
 
     juce::Colour colour =
       NeonColours::cyan;
-    
+
     bool active = false;
 
     //==========================================================

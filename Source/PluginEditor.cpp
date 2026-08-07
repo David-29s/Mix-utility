@@ -47,7 +47,7 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
 
     bypassButton.onClick = [this]
     {
-        processorRef.setBypassEnabled(
+        processorRef.setBypassParameter(
             bypassButton.isActive());
     };
 
@@ -76,7 +76,7 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
 
     monoButton.onClick = [this]
     {
-        processorRef.setMonoEnabled(
+        processorRef.setMonoParameter(
             monoButton.isActive());
     };
     //----------------------------------------------------------
@@ -102,8 +102,8 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
 
     phaseButton.onClick = [this]
     {
-        processorRef.setPhaseEnabled(
-            phaseButton.isActive());
+        processorRef.setPhaseParameter(
+     phaseButton.isActive());
     };
 
     //----------------------------------------------------------
@@ -129,10 +129,10 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
 
     muteButton.onClick = [this]
     {
-        processorRef.setMuteEnabled(
-            muteButton.isActive());
+        processorRef.setMuteParameter(
+      muteButton.isActive());
     };
-    
+
     //----------------------------------------------------------
 
     addAndMakeVisible(
@@ -149,11 +149,26 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
 
     abButton.setActive(
         false);
+
+    //==========================================================
+    // Events
+    //==========================================================
+
+    abButton.onClick = [this]
+    {
+        processorRef.toggleCompareState();
+
+        refreshButtons();
+    };
+
+
     startTimerHz(60);
 
     setSize(
     LayoutMetrics::pluginWidth,
     LayoutMetrics::pluginHeight);
+
+    refreshButtons();
 }
 
 AudioPluginAudioProcessorEditor::~AudioPluginAudioProcessorEditor()
@@ -226,6 +241,8 @@ void AudioPluginAudioProcessorEditor::timerCallback()
 {
     animator.update();
 
+    refreshButtons();
+
     repaint();
 }
 
@@ -242,4 +259,23 @@ void AudioPluginAudioProcessorEditor::setButtonPosition(
         LayoutMetrics::buttonSize,
 
         LayoutMetrics::buttonSize);
+}
+
+void AudioPluginAudioProcessorEditor::refreshButtons()
+{
+
+    abButton.setStateA(
+    processorRef.isUsingStateA());
+
+    bypassButton.setActive(
+        processorRef.getBypassParameter());
+
+    monoButton.setActive(
+        processorRef.getMonoParameter());
+
+    phaseButton.setActive(
+        processorRef.getPhaseParameter());
+
+    muteButton.setActive(
+        processorRef.getMuteParameter());
 }
