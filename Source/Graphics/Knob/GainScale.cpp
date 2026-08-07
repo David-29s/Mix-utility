@@ -35,7 +35,8 @@ KnobScale createGainScale()
     scale.addMark({ 0.450f, false, "", 0.0f });
     scale.addMark({ 0.475f, false, "", 0.0f });
 
-    scale.addMark({ 0.500f, true, "0db", 0.0f, 13.0f });
+    //scale.addMark({ 0.500f, true, "0db", 0.0f, 13.0f });
+    scale.addMark({ 0.500f, true, "", 0.0f, 13.0f });
 
     scale.addMark({ 0.525f, false, "", 0.0f });
     scale.addMark({ 0.550f, false, "", 0.0f });

@@ -5,6 +5,7 @@ NeonKnob::NeonKnob(const juce::String& title)
 {
     addAndMakeVisible(slider);
 
+
     slider.setSliderStyle(
       juce::Slider::RotaryHorizontalVerticalDrag);
 
@@ -17,6 +18,104 @@ NeonKnob::NeonKnob(const juce::String& title)
         0);
 
     slider.setLookAndFeel(&lookAndFeel);
+
+
+    //Etiqueta del centro del knob
+
+    addAndMakeVisible(valueLabel);
+
+    valueLabel.addMouseListener(this, true);
+
+    valueLabel.setMouseCursor(
+    juce::MouseCursor::PointingHandCursor);
+
+    valueLabel.setText("0.0 dB", juce::dontSendNotification);
+
+    valueLabel.setJustificationType(
+        juce::Justification::centred);
+
+    valueLabel.setFont(
+        juce::Font(17.0f, juce::Font::bold));
+
+    valueLabel.setColour(
+        juce::Label::textColourId,
+        juce::Colours::cyan);
+
+    slider.onValueChange = [this]()
+    {
+        valueLabel.setText(
+            juce::String(slider.getValue(), 1) + " dB",
+            juce::dontSendNotification);
+    };
+
+    addAndMakeVisible(valueEditor);
+
+    valueEditor.setMouseCursor(
+    juce::MouseCursor::IBeamCursor);
+
+    valueEditor.setVisible(false);
+
+    valueEditor.setPopupMenuEnabled(false);
+
+    valueEditor.setJustification(
+        juce::Justification::centred);
+
+    valueEditor.setFont(
+        juce::Font(16.5f, juce::Font::bold));
+
+    valueEditor.setColour(
+    juce::TextEditor::textColourId,
+    juce::Colours::cyan);
+
+    valueEditor.setColour(
+        juce::TextEditor::backgroundColourId,
+        juce::Colours::transparentBlack);
+
+    valueEditor.setColour(
+        juce::TextEditor::outlineColourId,
+        juce::Colours::transparentBlack);
+
+    valueEditor.setColour(
+        juce::TextEditor::focusedOutlineColourId,
+        juce::Colours::transparentBlack);
+
+    valueEditor.setInputRestrictions(
+        10,
+        "0123456789.-");
+
+    valueEditor.onReturnKey = [this]()
+    {
+        double newValue =
+            valueEditor.getText().getDoubleValue();
+
+        newValue = juce::jlimit(
+            -24.0,
+            24.0,
+            newValue);
+
+        slider.setValue(
+            newValue,
+            juce::sendNotificationSync);
+
+        valueEditor.setVisible(false);
+
+        valueLabel.setVisible(true);
+
+        slider.grabKeyboardFocus();
+
+        repaint();
+    };
+
+    valueEditor.onEscapeKey = [this]()
+    {
+        valueEditor.setVisible(false);
+
+        valueLabel.setVisible(true);
+
+        slider.grabKeyboardFocus();
+
+        repaint();
+    };
 }
 
 NeonKnob::~NeonKnob()
@@ -45,13 +144,49 @@ void NeonKnob::paint(juce::Graphics& g)
 
 void NeonKnob::resized()
 {
+    auto bounds = getLocalBounds();
+
     slider.setBounds(
-        getLocalBounds()
+        bounds
             .reduced(2)
             .withTrimmedTop(25));
+
+    // Colocar el valor en el centro del knob
+    auto sliderBounds = slider.getBounds();
+
+    valueLabel.setBounds(
+        sliderBounds.getCentreX() - 50,
+        sliderBounds.getCentreY() - 15,
+        100,
+        30);
+
+    valueEditor.setBounds(
+        sliderBounds.getCentreX() - 50,
+        sliderBounds.getCentreY() - 15,
+        100,
+        30);
 }
 
 juce::Slider& NeonKnob::getSlider()
 {
     return slider;
+}
+
+void NeonKnob::mouseDoubleClick(
+    const juce::MouseEvent& event)
+{
+    if (event.mods.isLeftButtonDown())
+    {
+        valueEditor.setText(
+            juce::String(slider.getValue(), 1),
+            false);
+
+        valueEditor.setVisible(true);
+
+        valueLabel.setVisible(false);
+
+        valueEditor.grabKeyboardFocus();
+
+        valueEditor.selectAll();
+    }
 }

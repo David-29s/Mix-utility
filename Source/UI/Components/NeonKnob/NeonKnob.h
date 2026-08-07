@@ -15,6 +15,9 @@ public:
 
     void resized() override;
 
+    void mouseDoubleClick(
+    const juce::MouseEvent& event) override;
+
     juce::Slider& getSlider();
 
 private:
@@ -24,6 +27,9 @@ private:
     juce::Slider slider;
 
     NeonLookAndFeel lookAndFeel;
+
+    juce::Label valueLabel;
+    juce::TextEditor valueEditor;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(NeonKnob)
 };
