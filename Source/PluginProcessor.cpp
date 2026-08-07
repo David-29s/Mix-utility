@@ -491,6 +491,15 @@ void AudioPluginAudioProcessor::getStateInformation(
         nullptr);
 
     //==========================================================
+    // Banco activo
+    //==========================================================
+
+    state.setProperty(
+    "usingStateA",
+    usingStateA,
+    nullptr);
+
+    //==========================================================
     // Crear XML
     //==========================================================
 
@@ -561,12 +570,22 @@ void AudioPluginAudioProcessor::setStateInformation(
     // Al abrir el proyecto siempre comenzar en A
     //==========================================================
 
-    usingStateA = true;
+    usingStateA =
+       state.getProperty(
+           "usingStateA",
+           true);
 
-    if (stateA.isValid())
+    if (usingStateA)
     {
-        apvts.replaceState(
-            stateA.createCopy());
+        if (stateA.isValid())
+            apvts.replaceState(
+                stateA.createCopy());
+    }
+    else
+    {
+        if (stateB.isValid())
+            apvts.replaceState(
+                stateB.createCopy());
     }
 
     //==========================================================
