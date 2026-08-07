@@ -391,9 +391,9 @@ void NeonLookAndFeel::drawIndicator(
         rotaryEndAngle);
 
     // Configuración del indicador
-    const float indicatorLength    = geo.innerRadius * 0.36f; // Controla qué tan largo es.
-    const float indicatorThickness = 1.5f; // Controla qué tan grueso es.
-    const float indicatorOffset    = geo.innerRadius * 0.48f; //Controla qué tan separado está del centro.
+    const float indicatorLength    = geo.innerRadius * 0.27f; // Controla qué tan largo es.
+    const float indicatorThickness = 2.2f; // Controla qué tan grueso es.
+    const float indicatorOffset    = geo.innerRadius * 0.64f; //Controla qué tan separado está del centro.
 
     juce::Path indicator;
 
@@ -412,7 +412,7 @@ void NeonLookAndFeel::drawIndicator(
                 geo.centre.y));
 
     // Color del indicador
-    g.setColour(NeonColours::cyan);
+    g.setColour(NeonColours::violet);
 
     g.fillPath(indicator);
 

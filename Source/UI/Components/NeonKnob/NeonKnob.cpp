@@ -35,7 +35,7 @@ NeonKnob::NeonKnob(const juce::String& title)
         juce::Justification::centred);
 
     valueLabel.setFont(
-        juce::Font(17.0f, juce::Font::bold));
+        juce::Font(19.0f, juce::Font::bold));
 
     valueLabel.setColour(
         juce::Label::textColourId,
@@ -61,7 +61,7 @@ NeonKnob::NeonKnob(const juce::String& title)
         juce::Justification::centred);
 
     valueEditor.setFont(
-        juce::Font(16.5f, juce::Font::bold));
+        juce::Font(22.0f, juce::Font::bold));
 
     valueEditor.setColour(
     juce::TextEditor::textColourId,
