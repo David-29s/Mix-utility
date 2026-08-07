@@ -455,7 +455,7 @@ void NeonLookAndFeel::drawMajorTicks(
     //--------------------------------------------------
 
     constexpr float minorLength = 7.0f;
-    constexpr float majorLength = 13.0f;
+    constexpr float majorLength = 11.5f;
 
     constexpr float majorInset = 1.5f;
 
@@ -469,7 +469,8 @@ void NeonLookAndFeel::drawMajorTicks(
     // Colores
     //--------------------------------------------------
 
-    auto minorColour = juce::Colour(0xff8F9CAA);
+    auto minorColour =
+    juce::Colour(0xff8F9CAA).withAlpha(0.55f);
     auto majorColour = juce::Colour(0xffD8E3F0);
 
     //--------------------------------------------------
@@ -554,8 +555,8 @@ void NeonLookAndFeel::drawLabels(
     constexpr float labelWidth  = 46.0f;
     constexpr float labelHeight = 18.0f;
 
-    g.setColour(juce::Colours::white);
-    g.setFont(17.0f);
+    g.setColour(juce::Colours::white.withAlpha(0.60f));
+    g.setFont(15.0f); //Tamaño de los numeros del knob
 
     //--------------------------------------------------
     // Dibujar Labels

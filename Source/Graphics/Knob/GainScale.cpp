@@ -19,8 +19,8 @@ KnobScale createGainScale()
     scale.addMark({ 0.200f, false, "", 0.0f });
     scale.addMark({ 0.225f, false, "", 0.0f });
 
-    scale.addMark({ 0.250f, true, "-12", -12.0f, 16.0f });
-    // scale.addMark({ 0.250f, true, "", -12.0f, 16.0f });
+    // scale.addMark({ 0.250f, true, "-12", -12.0f, 16.0f });
+    scale.addMark({ 0.250f, true, "", -12.0f, 16.0f });
 
     scale.addMark({ 0.275f, false, "", 0.0f });
     scale.addMark({ 0.300f, false, "", 0.0f });
@@ -50,8 +50,8 @@ KnobScale createGainScale()
     scale.addMark({ 0.700f, false, "", 0.0f });
     scale.addMark({ 0.725f, false, "", 0.0f });
 
-    scale.addMark({ 0.750f, true, "+12", 12.0f, 16.0f });
-    // scale.addMark({ 0.750f, true, "", 12.0f, 16.0f });
+    //scale.addMark({ 0.750f, true, "+12", 12.0f, 16.0f });
+    scale.addMark({ 0.750f, true, "", 12.0f, 16.0f });
 
     scale.addMark({ 0.775f, false, "", 0.0f });
     scale.addMark({ 0.800f, false, "", 0.0f });
