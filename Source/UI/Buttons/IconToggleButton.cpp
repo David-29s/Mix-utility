@@ -641,6 +641,22 @@ bool IconToggleButton::isStateA() const
 
 juce::Colour IconToggleButton::getCurrentColour() const
 {
+    //==========================================================
+    // A/B
+    //==========================================================
+
+    if (iconType == IconType::ab)
+    {
+        if (stateA)
+            return NeonColours::cyan;
+
+        return NeonColours::violet;
+    }
+
+    //==========================================================
+    // Botones normales
+    //==========================================================
+
     if (active)
         return colour;
 

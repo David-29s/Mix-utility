@@ -36,7 +36,7 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
         "BYPASS");
 
     bypassButton.setColour(
-        NeonColours::cyan);
+        NeonColours::neonGreen);
 
 
 
@@ -115,7 +115,7 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
         "MUTE");
 
     muteButton.setColour(
-        NeonColours::green);
+        NeonColours::azul);
 
 
 
