@@ -39,4 +39,12 @@ namespace LayoutMetrics
     inline constexpr int buttonStartX = 6;
 
     inline constexpr int buttonY = 205;
+
+    //==========================================================
+    // Control Mode Button
+    //==========================================================
+
+    inline constexpr int controlModeButtonX = -6;
+
+    inline constexpr int controlModeButtonY = 18;
 }

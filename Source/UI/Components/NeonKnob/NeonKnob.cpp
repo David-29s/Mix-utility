@@ -10,7 +10,6 @@ NeonKnob::NeonKnob(const juce::String& title)
       juce::Slider::RotaryHorizontalVerticalDrag);
 
 
-
     slider.setTextBoxStyle(
         juce::Slider::NoTextBox,
         false,
@@ -18,7 +17,6 @@ NeonKnob::NeonKnob(const juce::String& title)
         0);
 
     slider.setLookAndFeel(&lookAndFeel);
-
 
     //Etiqueta del centro del knob
 
@@ -190,3 +188,4 @@ void NeonKnob::mouseDoubleClick(
         valueEditor.selectAll();
     }
 }
+

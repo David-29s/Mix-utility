@@ -4,6 +4,7 @@
 #include "UI/Components/NeonKnob/NeonKnob.h"
 #include "Animation/NeonAnimator.h"
 #include "UI/Buttons/IconToggleButton.h"
+#include "UI/Buttons/ControlModeButton.h"
 
 //==============================================================================
 class AudioPluginAudioProcessorEditor final : public juce::AudioProcessorEditor,private juce::Timer
@@ -45,6 +46,8 @@ private:
     IconToggleButton muteButton;
 
     IconToggleButton abButton;
+
+    ControlModeButton controlModeButton;
 
     void setButtonPosition(
     IconToggleButton& button,

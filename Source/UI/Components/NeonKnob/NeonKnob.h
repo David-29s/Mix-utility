@@ -18,6 +18,7 @@ public:
     void mouseDoubleClick(
     const juce::MouseEvent& event) override;
 
+
     juce::Slider& getSlider();
 
 private:

@@ -143,6 +143,35 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
     abButton.setColour(
         NeonColours::violet);
 
+    //==========================================================
+    // Control Mode Button
+    //==========================================================
+
+    addAndMakeVisible(
+        controlModeButton);
+
+    controlModeButton.setMode(
+        ControlMode::gain);
+
+    controlModeButton.onModeChanged =
+    [this](ControlMode mode)
+    {
+        switch (mode)
+        {
+        case ControlMode::gain:
+            DBG("Mode: GAIN");
+            break;
+
+        case ControlMode::pan:
+            DBG("Mode: PAN");
+            break;
+
+        case ControlMode::width:
+            DBG("Mode: WIDTH");
+            break;
+        }
+    };
+
 
     //==========================================================
     // Events
@@ -225,6 +254,16 @@ void AudioPluginAudioProcessorEditor::resized()
     setButtonPosition(
         abButton,
         4);
+
+    //==========================================================
+    // Control Mode Button
+    //==========================================================
+
+    controlModeButton.setBounds(
+        LayoutMetrics::controlModeButtonX,
+        LayoutMetrics::controlModeButtonY,
+        LayoutMetrics::buttonSize,
+        LayoutMetrics::buttonSize);
 
 }
 

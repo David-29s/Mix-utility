@@ -10,7 +10,11 @@ enum class IconType
     mono,
     phase,
     mute,
-    ab
+    ab,
+
+    gain,
+    pan,
+    width
 };
 
 class IconToggleButton : public juce::Component
@@ -128,6 +132,15 @@ private:
         juce::Graphics& g);
 
     void drawAB(
+        juce::Graphics& g);
+
+    void drawGain(
+    juce::Graphics& g);
+
+    void drawPan(
+        juce::Graphics& g);
+
+    void drawWidth(
         juce::Graphics& g);
 
     void drawPowerArc(
