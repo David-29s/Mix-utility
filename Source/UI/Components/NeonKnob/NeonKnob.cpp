@@ -42,7 +42,9 @@ NeonKnob::NeonKnob(const juce::String& title)
     slider.onValueChange = [this]()
     {
         valueLabel.setText(
-            juce::String(slider.getValue(), 1) + " dB",
+            juce::String(slider.getValue(), 1)
+            + " "
+            + knobUnit,
             juce::dontSendNotification);
     };
 
@@ -168,6 +170,28 @@ void NeonKnob::resized()
 juce::Slider& NeonKnob::getSlider()
 {
     return slider;
+}
+
+void NeonKnob::setTitle(
+    const juce::String& newTitle)
+{
+    knobTitle = newTitle;
+
+    repaint();
+}
+
+void NeonKnob::setUnit(
+    const juce::String& newUnit)
+{
+    knobUnit = newUnit;
+
+    valueLabel.setText(
+        juce::String(slider.getValue(), 1)
+        + " "
+        + knobUnit,
+        juce::dontSendNotification);
+
+    repaint();
 }
 
 void NeonKnob::mouseDoubleClick(

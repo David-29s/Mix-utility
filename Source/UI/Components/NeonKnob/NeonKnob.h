@@ -21,9 +21,15 @@ public:
 
     juce::Slider& getSlider();
 
+    void setTitle(const juce::String& newTitle);
+
+    void setUnit(const juce::String& newUnit);
+
 private:
 
     juce::String knobTitle;
+
+    juce::String knobUnit = "dB";
 
     juce::Slider slider;
 

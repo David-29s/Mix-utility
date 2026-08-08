@@ -44,6 +44,45 @@ AudioPluginAudioProcessor::createParameterLayout()
         ));
 
     //==========================================================
+    // Pan
+    //==========================================================
+
+    // -100 = izquierda
+    //    0 = centro
+    // +100 = derecha
+
+    layout.add(
+        std::make_unique<juce::AudioParameterFloat>(
+            "PAN",
+            "Pan",
+
+            juce::NormalisableRange<float>(
+                -100.0f,
+                 100.0f,
+                 0.01f),
+
+            0.0f
+        ));
+
+
+    //==========================================================
+    // Width
+    //==========================================================
+
+    layout.add(
+        std::make_unique<juce::AudioParameterFloat>(
+            "WIDTH",
+            "Width",
+
+            juce::NormalisableRange<float>(
+                0.0f,
+                200.0f,
+                0.01f),
+
+            100.0f
+        ));
+
+    //==========================================================
     // Bypass
     //==========================================================
 
@@ -631,6 +670,54 @@ void AudioPluginAudioProcessor::updateParameters()
     gainProcessor.setGain(
         linearGain);
 
+    //==========================================================
+    // Pan
+    //==========================================================
+
+    // Obtiene el valor de PAN desde APVTS.
+    // Rango del parámetro:
+    // -100 = izquierda
+    //    0 = centro
+    // +100 = derecha
+
+    auto* panValue =
+        apvts.getRawParameterValue(
+            "PAN");
+
+    const float panPercent =
+        panValue->load();
+
+    // Convierte:
+    // -100 ... +100
+    //
+    // a:
+    // -1.0 ... +1.0
+
+    const float panNormalized =
+        panPercent / 100.0f;
+
+    // Envía el valor al DSP.
+    gainProcessor.setPan(
+        panNormalized);
+
+    //teporalmente
+    DBG("PAN = " + juce::String(panPercent));
+
+    //==========================================================
+    // Width
+    //==========================================================
+
+    auto* widthValue =
+    apvts.getRawParameterValue("WIDTH");
+
+    const float widthPercent =
+        widthValue->load();
+
+    const float widthNormalized =
+        widthPercent / 100.0f;
+
+    gainProcessor.setWidth(
+        widthNormalized);
 
     //==========================================================
     // Bypass

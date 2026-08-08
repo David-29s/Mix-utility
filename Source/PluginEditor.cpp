@@ -172,6 +172,8 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
         }
     };
 
+   
+
 
     //==========================================================
     // Events
@@ -309,3 +311,4 @@ void AudioPluginAudioProcessorEditor::refreshButtons()
     muteButton.setActive(
         processorRef.getMuteParameter());
 }
+

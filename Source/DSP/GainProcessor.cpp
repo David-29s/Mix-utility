@@ -32,6 +32,47 @@ float GainProcessor::getGain() const
 }
 
 //==========================================================
+// Pan
+//==========================================================
+
+// Establece el paneo.
+// El valor recibido está en el rango -1.0 a +1.0.
+void GainProcessor::setPan(
+    float newPan)
+{
+    pan = juce::jlimit(
+        -1.0f,
+        1.0f,
+        newPan);
+}
+
+
+// Devuelve el paneo actual.
+float GainProcessor::getPan() const
+{
+    return pan;
+}
+
+//==========================================================
+// Width
+//==========================================================
+
+void GainProcessor::setWidth(
+    float newWidth)
+{
+    width = juce::jlimit(
+        0.0f,
+        2.0f,
+        newWidth);
+}
+
+
+float GainProcessor::getWidth() const
+{
+    return width;
+}
+
+//==========================================================
 // States
 //==========================================================
 
@@ -118,6 +159,10 @@ void GainProcessor::process(
     processMono(buffer);
 
     processPhase(buffer);
+
+    processPan(buffer);
+
+    processWidth(buffer);
 
     processGain(buffer);
 }
@@ -263,5 +308,129 @@ void GainProcessor::processGain(
         {
             channelData[sample] *= gain;
         }
+    }
+}
+
+//==========================================================
+// Pan
+//==========================================================
+
+// Aplica el paneo al bloque estéreo.
+void GainProcessor::processPan(
+    juce::AudioBuffer<float>& buffer)
+{
+    // Necesitamos como mínimo L + R.
+    if (buffer.getNumChannels() < 2)
+        return;
+
+    const int numSamples =
+        buffer.getNumSamples();
+
+    auto* left =
+        buffer.getWritePointer(0);
+
+    auto* right =
+        buffer.getWritePointer(1);
+
+    //==========================================================
+    // Pan
+    //==========================================================
+
+    // Convierte:
+    //
+    // -1.0 = izquierda
+    //  0.0 = centro
+    // +1.0 = derecha
+    //
+    // a una posición 0.0 → 1.0.
+
+    const float panPosition =
+        (pan + 1.0f) * 0.5f;
+
+    //==========================================================
+    // Equal Power Panning
+    //==========================================================
+
+    const float angle =
+        panPosition *
+        juce::MathConstants<float>::halfPi;
+
+    const float leftGain =
+        std::cos(angle);
+
+    const float rightGain =
+        std::sin(angle);
+
+    //==========================================================
+    // Processing
+    //==========================================================
+
+    for (int sample = 0;
+         sample < numSamples;
+         ++sample)
+    {
+        left[sample] *= leftGain;
+        right[sample] *= rightGain;
+    }
+}
+
+//==========================================================
+// Width
+//==========================================================
+
+void GainProcessor::processWidth(
+    juce::AudioBuffer<float>& buffer)
+{
+    // WIDTH necesita como mínimo dos canales.
+    if (buffer.getNumChannels() < 2)
+        return;
+
+    const int numSamples =
+        buffer.getNumSamples();
+
+    auto* left =
+        buffer.getWritePointer(0);
+
+    auto* right =
+        buffer.getWritePointer(1);
+
+    //==========================================================
+    // Mid / Side
+    //==========================================================
+
+    for (int sample = 0;
+         sample < numSamples;
+         ++sample)
+    {
+        const float inputLeft =
+            left[sample];
+
+        const float inputRight =
+            right[sample];
+
+        // Centro de la señal.
+        const float mid =
+            (inputLeft + inputRight) * 0.5f;
+
+        // Información estéreo.
+        const float side =
+            (inputLeft - inputRight) * 0.5f;
+
+        //======================================================
+        // Aplicar WIDTH
+        //======================================================
+
+        const float newSide =
+            side * width;
+
+        //======================================================
+        // Mid / Side → Left / Right
+        //======================================================
+
+        left[sample] =
+            mid + newSide;
+
+        right[sample] =
+            mid - newSide;
     }
 }
