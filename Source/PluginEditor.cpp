@@ -154,25 +154,53 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
         ControlMode::gain);
 
     controlModeButton.onModeChanged =
-    [this](ControlMode mode)
+[this](ControlMode mode)
+{
+    switch (mode)
     {
-        switch (mode)
-        {
-        case ControlMode::gain:
-            DBG("Mode: GAIN");
-            break;
+    case ControlMode::gain:
 
-        case ControlMode::pan:
-            DBG("Mode: PAN");
-            break;
+        gainKnob.setTitle("GAIN");
+        gainKnob.setUnit("dB");
 
-        case ControlMode::width:
-            DBG("Mode: WIDTH");
-            break;
-        }
-    };
+        gainKnob.getSlider().setRange(
+            -24.0,
+            24.0,
+            0.01);
 
-   
+        break;
+
+
+    case ControlMode::pan:
+
+        gainKnob.setTitle("PAN");
+        gainKnob.setUnit("%");
+
+        gainKnob.getSlider().setRange(
+            -100.0,
+            100.0,
+            0.01);
+
+        break;
+
+
+    case ControlMode::width:
+
+        gainKnob.setTitle("WIDTH");
+        gainKnob.setUnit("%");
+
+        gainKnob.getSlider().setRange(
+            0.0,
+            200.0,
+            0.01);
+
+        break;
+    }
+
+    updateKnobAttachment(mode);
+};
+
+
 
 
     //==========================================================
@@ -312,3 +340,60 @@ void AudioPluginAudioProcessorEditor::refreshButtons()
         processorRef.getMuteParameter());
 }
 
+//==========================================================
+// Update Knob Attachment
+//==========================================================
+
+void AudioPluginAudioProcessorEditor::updateKnobAttachment(
+    ControlMode mode)
+{
+    // Desconectamos el attachment actual.
+    gainAttachment.reset();
+    panAttachment.reset();
+    widthAttachment.reset();
+
+
+    //==========================================================
+    // GAIN
+    //==========================================================
+
+    if (mode == ControlMode::gain)
+    {
+        gainAttachment =
+            std::make_unique<
+                juce::AudioProcessorValueTreeState::SliderAttachment>(
+                    processorRef.getAPVTS(),
+                    "GAIN",
+                    gainKnob.getSlider());
+    }
+
+
+    //==========================================================
+    // PAN
+    //==========================================================
+
+    else if (mode == ControlMode::pan)
+    {
+        panAttachment =
+            std::make_unique<
+                juce::AudioProcessorValueTreeState::SliderAttachment>(
+                    processorRef.getAPVTS(),
+                    "PAN",
+                    gainKnob.getSlider());
+    }
+
+
+    //==========================================================
+    // WIDTH
+    //==========================================================
+
+    else if (mode == ControlMode::width)
+    {
+        widthAttachment =
+            std::make_unique<
+                juce::AudioProcessorValueTreeState::SliderAttachment>(
+                    processorRef.getAPVTS(),
+                    "WIDTH",
+                    gainKnob.getSlider());
+    }
+}

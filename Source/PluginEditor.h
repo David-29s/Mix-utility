@@ -33,6 +33,12 @@ private:
     std::unique_ptr<
         juce::AudioProcessorValueTreeState::SliderAttachment> gainAttachment;
 
+    std::unique_ptr<
+    juce::AudioProcessorValueTreeState::SliderAttachment> panAttachment;
+
+    std::unique_ptr<
+        juce::AudioProcessorValueTreeState::SliderAttachment> widthAttachment;
+
     //==========================================================
     // Buttons
     //==========================================================
@@ -54,6 +60,9 @@ private:
     int index);
 
     void refreshButtons();
+
+    void updateKnobAttachment(
+    ControlMode mode);
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioPluginAudioProcessorEditor)
 };
