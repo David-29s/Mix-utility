@@ -23,7 +23,7 @@ namespace IconMetrics
     // Todos los dibujos deben calcularse a partir de esta medida.
     // Si cambia este valor, todos los iconos crecerán o disminuirán
     // manteniendo sus proporciones.
-    inline constexpr float iconSize = 14.0f;
+    inline constexpr float iconSize = 17.0f;
 
     //Medida circulo de seleccion gris
     inline constexpr float glowRadius = 20.0f;

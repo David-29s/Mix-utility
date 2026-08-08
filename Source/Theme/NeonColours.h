@@ -40,4 +40,12 @@ namespace NeonColours
 
     inline const juce::Colour cyanGlow   { 0x8014D8FF };
     inline const juce::Colour whiteGlow  { 0x40FFFFFF };
+
+    //==========================================================
+    // Control Modes
+    //==========================================================
+
+    inline const juce::Colour gainNeon  { 0xff20E878 };
+    inline const juce::Colour panNeon   { 0xffffe600 };
+    inline const juce::Colour widthNeon { 0xff3D7BFF };
 }

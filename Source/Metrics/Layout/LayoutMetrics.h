@@ -44,7 +44,7 @@ namespace LayoutMetrics
     // Control Mode Button
     //==========================================================
 
-    inline constexpr int controlModeButtonX = -6;
+    inline constexpr int controlModeButtonX = -4;
 
-    inline constexpr int controlModeButtonY = 18;
+    inline constexpr int controlModeButtonY = 26;
 }

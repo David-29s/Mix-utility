@@ -747,13 +747,13 @@ juce::Colour ControlModeButton::getCurrentColour() const
     switch (mode)
     {
         case ControlMode::gain:
-            return NeonColours::neonGreen;
+            return NeonColours::gainNeon;
 
         case ControlMode::pan:
-            return NeonColours::cyan;
+            return NeonColours::panNeon;
 
         case ControlMode::width:
-            return NeonColours::violet;
+            return NeonColours::widthNeon;
     }
 
     return NeonColours::grey;
