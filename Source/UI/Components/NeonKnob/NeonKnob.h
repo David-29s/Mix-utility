@@ -21,6 +21,8 @@ public:
 
     juce::Slider& getSlider();
 
+    NeonLookAndFeel& getLookAndFeel();
+
     void setTitle(const juce::String& newTitle);
 
     void setUnit(const juce::String& newUnit);

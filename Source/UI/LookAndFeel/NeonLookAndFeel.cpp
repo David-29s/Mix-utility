@@ -13,6 +13,16 @@ NeonLookAndFeel::NeonLookAndFeel()
 }
 
 //============================================================
+// Knob Mode
+//============================================================
+
+void NeonLookAndFeel::setKnobMode(
+    KnobMode newMode)
+{
+    knobMode = newMode;
+}
+
+//============================================================
 // Main Renderer
 //============================================================
 
@@ -536,6 +546,38 @@ void NeonLookAndFeel::drawLabels(
     float /*startAngle*/,
     float /*endAngle*/)
 {
+    //============================================================
+    // Labels según el modo
+    //============================================================
+
+    juce::String leftLabel;
+    juce::String rightLabel;
+
+    switch (knobMode)
+    {
+    case KnobMode::gain:
+
+        leftLabel = "-24";
+        rightLabel = "+24";
+
+        break;
+
+
+    case KnobMode::pan:
+
+        leftLabel = "L";
+        rightLabel = "R";
+
+        break;
+
+
+    case KnobMode::width:
+
+        leftLabel = "N";
+        rightLabel = "W";
+
+        break;
+    }
     KnobScale scale = createGainScale();
     const auto& marks = scale.getMarks();
 
@@ -549,58 +591,266 @@ void NeonLookAndFeel::drawLabels(
     //--------------------------------------------------
     // Apariencia
     //--------------------------------------------------
+    //============================================================
+    // Configuración de etiquetas
+    //============================================================
 
-    constexpr float labelRadius = 12.0f;
+    //----------------------
+    // GAIN
+    //----------------------
 
-    constexpr float labelWidth  = 46.0f;
-    constexpr float labelHeight = 18.0f;
+    constexpr float gainRadius = 12.0f;
 
-    g.setColour(juce::Colours::white.withAlpha(0.60f));
-    g.setFont(15.0f); //Tamaño de los numeros del knob
+    constexpr float gainWidth  = 46.0f;
+    constexpr float gainHeight = 18.0f;
 
-    //--------------------------------------------------
+    constexpr float gainFontSize = 13.0f;
+
+    // Posición general
+    constexpr float gainX = 0.0f;
+    constexpr float gainY = 9.0f;
+
+    // Posición individual
+    constexpr float gainLeftX  = -6.0f;
+    constexpr float gainLeftY  = 0.0f;
+
+    constexpr float gainRightX = 6.0f;
+    constexpr float gainRightY = 0.0f;
+
+
+    //----------------------
+    // PAN
+    //----------------------
+
+    constexpr float panRadius = 12.0f;
+
+    constexpr float panWidth  = 46.0f;
+    constexpr float panHeight = 18.0f;
+
+    constexpr float panFontSize = 13.0f;
+
+    // Posición general
+    constexpr float panX = 0.0f;
+    constexpr float panY = 9.0f;
+
+    // Posición individual
+    constexpr float panLeftX  = -4.0f;
+    constexpr float panLeftY  = 0.0f;
+
+    constexpr float panRightX = 4.0f;
+    constexpr float panRightY = 0.0f;
+
+
+    //----------------------
+    // WIDTH
+    //----------------------
+
+    constexpr float widthRadius = 13.0f;
+
+    constexpr float widthLabelWidth  = 62.0f;
+    constexpr float widthLabelHeight = 18.0f;
+
+    constexpr float widthFontSize = 14.0f;
+
+    // Posición general
+    constexpr float widthX = 0.0f;
+    constexpr float widthY = 8.0f;
+
+    // Posición individual
+    constexpr float widthLeftX  = -4.0f;
+    constexpr float widthLeftY  = 0.0f;
+
+    constexpr float widthRightX = 4.0f;
+    constexpr float widthRightY = 0.0f;
+
+
+    g.setColour(
+        juce::Colours::white.withAlpha(0.60f));
+
+
+    //============================================================
     // Dibujar Labels
-    //--------------------------------------------------
+    //============================================================
 
-    for (const auto& mark : marks)
+    const float leftAngle =
+        juce::degreesToRadians(128.0f);
+
+    const float rightAngle =
+        juce::degreesToRadians(412.0f);
+
+    const auto drawLabel =
+ [&](const juce::String& text,
+     float angle,
+     float individualX,
+     float individualY)
+ {
+     float radius = 0.0f;
+     float width = 0.0f;
+     float height = 0.0f;
+     float fontSize = 0.0f;
+     float generalX = 0.0f;
+     float generalY = 0.0f;
+
+     //============================================================
+     // Configuración según el modo
+     //============================================================
+
+     switch (knobMode)
+     {
+     case KnobMode::gain:
+
+         radius = gainRadius;
+         width = gainWidth;
+         height = gainHeight;
+         fontSize = gainFontSize;
+
+         generalX = gainX;
+         generalY = gainY;
+
+         break;
+
+
+     case KnobMode::pan:
+
+         radius = panRadius;
+         width = panWidth;
+         height = panHeight;
+         fontSize = panFontSize;
+
+         generalX = panX;
+         generalY = panY;
+
+         break;
+
+
+     case KnobMode::width:
+
+         radius = widthRadius;
+         width = widthLabelWidth;
+         height = widthLabelHeight;
+         fontSize = widthFontSize;
+
+         generalX = widthX;
+         generalY = widthY;
+
+         break;
+     }
+
+
+     //============================================================
+     // Dirección
+     //============================================================
+
+     const auto direction =
+         juce::Point<float>(
+             std::cos(angle),
+             std::sin(angle));
+
+
+     //============================================================
+     // Posición radial
+     //============================================================
+
+     const float finalRadius =
+         geo.tickRadius + radius;
+
+     auto centre =
+         geo.centre +
+         direction * finalRadius;
+
+
+     //============================================================
+     // Posición general + posición individual
+     //============================================================
+
+     centre.x += generalX + individualX;
+     centre.y += generalY + individualY;
+
+
+     //============================================================
+     // Área del texto
+     //============================================================
+
+     juce::Rectangle<float> area(
+         width,
+         height);
+
+     area.setCentre(centre);
+
+
+     //============================================================
+     // Fuente
+     //============================================================
+
+     g.setFont(fontSize);
+
+
+     //============================================================
+     // Dibujar
+     //============================================================
+
+     g.drawFittedText(
+         text,
+         area.toNearestInt(),
+         juce::Justification::centred,
+         1);
+ };
+
+
+    //============================================================
+    // Left Label & Right Label
+    //============================================================
+
+    switch (knobMode)
     {
-        if (mark.label.isEmpty())
-            continue;
+    case KnobMode::gain:
 
-        const float angle = juce::jmap(
-            mark.position,
-            0.0f,
-            1.0f,
-            tickStart,
-            tickEnd);
+        drawLabel(
+            leftLabel,
+            leftAngle,
+            gainLeftX,
+            gainLeftY);
 
-        const auto direction = juce::Point<float>(
-            std::cos(angle),
-            std::sin(angle));
+        drawLabel(
+            rightLabel,
+            rightAngle,
+            gainRightX,
+            gainRightY);
 
-        //==================================================
-        // Posición final del label
-        //==================================================
+        break;
 
-        const float radius =
-            geo.tickRadius +
-            labelRadius +
-            mark.labelRadiusOffset;
 
-        auto centre =
-            geo.centre +
-            direction * radius;
+    case KnobMode::pan:
 
-        juce::Rectangle<float> area(
-            labelWidth,
-            labelHeight);
+        drawLabel(
+            leftLabel,
+            leftAngle,
+            panLeftX,
+            panLeftY);
 
-        area.setCentre(centre);
+        drawLabel(
+            rightLabel,
+            rightAngle,
+            panRightX,
+            panRightY);
 
-        g.drawFittedText(
-            mark.label,
-            area.toNearestInt(),
-            juce::Justification::centred,
-            1);
+        break;
+
+
+    case KnobMode::width:
+
+        drawLabel(
+            leftLabel,
+            leftAngle,
+            widthLeftX,
+            widthLeftY);
+
+        drawLabel(
+            rightLabel,
+            rightAngle,
+            widthRightX,
+            widthRightY);
+
+        break;
     }
 }

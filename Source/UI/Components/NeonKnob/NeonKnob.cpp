@@ -172,6 +172,11 @@ juce::Slider& NeonKnob::getSlider()
     return slider;
 }
 
+NeonLookAndFeel& NeonKnob::getLookAndFeel()
+{
+    return lookAndFeel;
+}
+
 void NeonKnob::setTitle(
     const juce::String& newTitle)
 {

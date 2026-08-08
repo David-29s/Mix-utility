@@ -163,6 +163,9 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
         gainKnob.setTitle("GAIN");
         gainKnob.setUnit("dB");
 
+        gainKnob.getLookAndFeel().setKnobMode(
+        NeonLookAndFeel::KnobMode::gain);
+
         gainKnob.getSlider().setRange(
             -24.0,
             24.0,
@@ -175,6 +178,9 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
 
         gainKnob.setTitle("PAN");
         gainKnob.setUnit("%");
+
+        gainKnob.getLookAndFeel().setKnobMode(
+        NeonLookAndFeel::KnobMode::pan);
 
         gainKnob.getSlider().setRange(
             -100.0,
@@ -189,6 +195,9 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
         gainKnob.setTitle("WIDTH");
         gainKnob.setUnit("%");
 
+        gainKnob.getLookAndFeel().setKnobMode(
+        NeonLookAndFeel::KnobMode::width);
+
         gainKnob.getSlider().setRange(
             0.0,
             200.0,
@@ -198,6 +207,8 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
     }
 
     updateKnobAttachment(mode);
+
+    gainKnob.getSlider().repaint();
 };
 
 

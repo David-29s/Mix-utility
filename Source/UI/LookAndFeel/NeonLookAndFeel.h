@@ -8,6 +8,17 @@ public:
 
     NeonLookAndFeel();
 
+    //cambio de etiquetas cuando cambias de modo
+
+    enum class KnobMode
+    {
+        gain,
+        pan,
+        width
+    };
+
+    void setKnobMode(KnobMode newMode);
+
     void drawRotarySlider(
         juce::Graphics& g,
         int x,
@@ -41,6 +52,8 @@ private:
     //     int y,
     //     int width,
     //     int height) const;
+
+    KnobMode knobMode = KnobMode::gain;
 
     void drawKnobBody(
         juce::Graphics& g,
