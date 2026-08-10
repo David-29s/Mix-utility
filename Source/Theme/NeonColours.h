@@ -16,7 +16,7 @@ namespace NeonColours
     // Frame
     //==========================================================
 
-    inline const juce::Colour frameBorder      { 0xff252B34 };
+    inline const juce::Colour frameBorder      { 0xff252B34 }; //Color del fondo de la ventana original
     inline const juce::Colour frameHighlight   { 0xff4A515E };
     inline const juce::Colour frameShadow      { 0xff3A2617 };
     inline const juce::Colour frameInnerBorder { 0xff8C6542 };
@@ -48,4 +48,9 @@ namespace NeonColours
     inline const juce::Colour gainNeon  { 0xff20E878 };
     inline const juce::Colour panNeon   { 0xffffe600 };
     inline const juce::Colour widthNeon { 0xff3D7BFF };
+
+    // otros colores para el fondo
+    //inline const juce::Colour frameBorder { 0xff1B1D29 };
+    //inline const juce::Colour frameBorder { 0xff21272f};
+
 }
