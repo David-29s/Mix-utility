@@ -41,11 +41,21 @@ NeonKnob::NeonKnob(const juce::String& title)
 
     slider.onValueChange = [this]()
     {
-        valueLabel.setText(
-            juce::String(slider.getValue(), 1)
-            + " "
-            + knobUnit,
-            juce::dontSendNotification);
+        if (knobUnit == "%")
+        {
+            valueLabel.setText(
+                juce::String(
+                    juce::roundToInt(slider.getValue()))
+                + " %",
+                juce::dontSendNotification);
+        }
+        else
+        {
+            valueLabel.setText(
+                juce::String(slider.getValue(), 1)
+                + " dB",
+                juce::dontSendNotification);
+        }
     };
 
     addAndMakeVisible(valueEditor);
@@ -190,11 +200,21 @@ void NeonKnob::setUnit(
 {
     knobUnit = newUnit;
 
-    valueLabel.setText(
-        juce::String(slider.getValue(), 1)
-        + " "
-        + knobUnit,
-        juce::dontSendNotification);
+    if (newUnit == "%")
+    {
+        valueLabel.setText(
+            juce::String(
+                juce::roundToInt(slider.getValue()))
+            + " %",
+            juce::dontSendNotification);
+    }
+    else
+    {
+        valueLabel.setText(
+            juce::String(slider.getValue(), 1)
+            + " dB",
+            juce::dontSendNotification);
+    }
 
     repaint();
 }
