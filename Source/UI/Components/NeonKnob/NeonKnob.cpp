@@ -47,7 +47,7 @@ NeonKnob::NeonKnob(const juce::String& title)
         // Scroll normal = 0.10
 
         const double sensitivity =
-            fineControl ? 0.006 : 0.10;
+            fineControl ? 0.006 : 0.15;
 
         const double delta =
             wheel.deltaY * range * sensitivity;
