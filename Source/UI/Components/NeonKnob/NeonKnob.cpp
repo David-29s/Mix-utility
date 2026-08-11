@@ -218,7 +218,7 @@ void NeonKnob::resized()
             .withTrimmedTop(25));
 
     wheelHelper.setBounds(
-     slider.getBounds().reduced(200));
+     slider.getBounds().reduced(100));
 
     // Colocar el valor en el centro del knob
     auto sliderBounds = slider.getBounds();
