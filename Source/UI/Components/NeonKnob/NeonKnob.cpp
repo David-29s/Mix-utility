@@ -5,6 +5,62 @@ NeonKnob::NeonKnob(const juce::String& title)
 {
     addAndMakeVisible(slider);
 
+    //==========================================================
+    // Slider auxiliar para mouse wheel
+    //==========================================================
+
+    wheelHelper.setSliderStyle(
+        juce::Slider::RotaryHorizontalVerticalDrag);
+
+    wheelHelper.setTextBoxStyle(
+        juce::Slider::TextBoxBelow,
+        false,
+        80,
+        25);
+
+    wheelHelper.setRange(
+        0.0,
+        100.0,
+        1.0);
+
+    wheelHelper.setValue(
+        0.0,
+        juce::dontSendNotification);
+
+    addAndMakeVisible(wheelHelper);
+
+    // Invisible, pero conserva la interacción del Slider de JUCE
+    wheelHelper.setAlpha(0.0f);
+
+    wheelHelper.onWheel =
+    [this](const juce::MouseEvent& event,
+           const juce::MouseWheelDetails& wheel)
+    {
+        const bool fineControl =
+            event.mods.isShiftDown();
+
+        const double range =
+            slider.getMaximum() -
+            slider.getMinimum();
+
+        // Shift + Scroll = 0.005
+        // Scroll normal = 0.10
+
+        const double sensitivity =
+            fineControl ? 0.006 : 0.10;
+
+        const double delta =
+            wheel.deltaY * range * sensitivity;
+
+        slider.setValue(
+            slider.getValue() + delta,
+            juce::sendNotificationSync);
+    };
+
+
+    //==========================================================
+    // Slider principal
+    //==========================================================
 
     slider.setSliderStyle(
       juce::Slider::RotaryHorizontalVerticalDrag);
@@ -160,6 +216,9 @@ void NeonKnob::resized()
         bounds
             .reduced(2)
             .withTrimmedTop(25));
+
+    wheelHelper.setBounds(
+     slider.getBounds().reduced(200));
 
     // Colocar el valor en el centro del knob
     auto sliderBounds = slider.getBounds();

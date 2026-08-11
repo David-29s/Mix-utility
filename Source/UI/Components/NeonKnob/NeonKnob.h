@@ -3,6 +3,22 @@
 #include <juce_gui_basics/juce_gui_basics.h>
 #include "../../LookAndFeel/NeonLookAndFeel.h"
 
+
+class WheelHelperSlider : public juce::Slider
+{
+public:
+
+    std::function<void(const juce::MouseEvent&, const juce::MouseWheelDetails&)> onWheel;
+
+    void mouseWheelMove(
+        const juce::MouseEvent& event,
+        const juce::MouseWheelDetails& wheel) override
+    {
+        if (onWheel != nullptr)
+            onWheel(event, wheel);
+    }
+};
+
 class NeonKnob : public juce::Component
 {
 public:
@@ -34,6 +50,8 @@ private:
     juce::String knobUnit = "dB";
 
     juce::Slider slider;
+
+    WheelHelperSlider wheelHelper;
 
     NeonLookAndFeel lookAndFeel;
 
