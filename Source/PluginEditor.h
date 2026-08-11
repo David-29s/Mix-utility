@@ -64,7 +64,7 @@ private:
     void updateKnobAttachment(
     ControlMode mode);
 
-    juce::Slider wheelHelper; // este knob esta tranparente con el fin de usar el Scroll en mi propio knob
+
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioPluginAudioProcessorEditor)
 };
