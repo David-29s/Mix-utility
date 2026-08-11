@@ -8,6 +8,33 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
     : AudioProcessorEditor(&p),
       processorRef(p)
 {
+    //*****************************************************
+    // Perilla de ayuda para que funcione el scroll personalizado
+
+    wheelHelper.setSliderStyle(
+       juce::Slider::RotaryHorizontalVerticalDrag);
+
+    wheelHelper.setTextBoxStyle(
+        juce::Slider::TextBoxBelow,
+        false,
+        0,
+        0);
+
+    wheelHelper.setRange(0.0, 100.0, 1.0);
+    wheelHelper.setValue(0.0);
+
+    wheelHelper.setColour(
+        juce::Slider::rotarySliderFillColourId,
+        juce::Colours::red);
+
+    addAndMakeVisible(wheelHelper);
+
+    wheelHelper.setAlpha(0.0f);
+
+    // wheelHelper.toFront(true);
+
+    //*****************************************************
+
     addAndMakeVisible(gainKnob);
 
 
@@ -266,6 +293,8 @@ void AudioPluginAudioProcessorEditor::paint (juce::Graphics& g)
 }
 void AudioPluginAudioProcessorEditor::resized()
 {
+
+    wheelHelper.setBounds(200, 20, 200, 200);
     //==========================================================
     // Knob
     //==========================================================
