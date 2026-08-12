@@ -9,6 +9,8 @@ struct KnobGeometry
 
     juce::Point<float> centre;
 
+
+
     float radius = 0.0f;
     float innerRadius = 0.0f;
     float tickRadius = 0.0f;

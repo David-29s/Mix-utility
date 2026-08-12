@@ -32,30 +32,6 @@ NeonKnob::NeonKnob(const juce::String& title)
     // Invisible, pero conserva la interacción del Slider de JUCE
     wheelHelper.setAlpha(0.0f);
 
-    wheelHelper.onWheel =
-    [this](const juce::MouseEvent& event,
-           const juce::MouseWheelDetails& wheel)
-    {
-        const bool fineControl =
-            event.mods.isShiftDown();
-
-        const double range =
-            slider.getMaximum() -
-            slider.getMinimum();
-
-        // Shift + Scroll = 0.005
-        // Scroll normal = 0.10
-
-        const double sensitivity =
-            fineControl ? 0.006 : 0.15;
-
-        const double delta =
-            wheel.deltaY * range * sensitivity;
-
-        slider.setValue(
-            slider.getValue() + delta,
-            juce::sendNotificationSync);
-    };
 
 
     //==========================================================
@@ -92,8 +68,8 @@ NeonKnob::NeonKnob(const juce::String& title)
         juce::Font(19.0f, juce::Font::bold));
 
     valueLabel.setColour(
-        juce::Label::textColourId,
-        juce::Colours::cyan);
+    juce::Label::textColourId,
+    juce::Colours::white.withAlpha(0.85f));
 
     slider.onValueChange = [this]()
     {
@@ -191,7 +167,8 @@ NeonKnob::~NeonKnob()
 
 void NeonKnob::paint(juce::Graphics& g)
 {
-    g.setColour(juce::Colours::white);
+    g.setColour(
+      juce::Colours::white.withAlpha(0.85f));
 
     g.setFont(
         juce::Font(22.0f, juce::Font::bold));
@@ -217,8 +194,7 @@ void NeonKnob::resized()
             .reduced(2)
             .withTrimmedTop(25));
 
-    wheelHelper.setBounds(
-     slider.getBounds().reduced(100));
+    wheelHelper.setBounds(0, 0, 0, 0);
 
     // Colocar el valor en el centro del knob
     auto sliderBounds = slider.getBounds();

@@ -49,7 +49,7 @@ void NeonLookAndFeel::drawRotarySlider(
           width,
           height);
 
-    // drawShadow( g,geometry);
+     // drawShadow( g,geometry);
 
     drawKnobBody(g, geometry);
 
@@ -95,7 +95,7 @@ void NeonLookAndFeel::drawRotarySlider(
 //     juce::Graphics& g,
 //     const KnobGeometry& geo)
 // {
-//     auto shadowBounds = geo.outerBounds.expanded(6.0f);
+//     auto shadowBounds = geo.outerBounds.expanded(0.5f);
 //
 //     for (int i = 0; i < 6; ++i)
 //     {
@@ -103,11 +103,11 @@ void NeonLookAndFeel::drawRotarySlider(
 //
 //         g.setColour(
 //             juce::Colours::black.withAlpha(
-//                 0.12f - i * 0.018f));
+//                 0.92f - i * 0.018f));
 //
 //         g.drawEllipse(
 //             current,
-//             2.0f);
+//             0.2f);
 //     }
 // }
 
@@ -126,23 +126,23 @@ void NeonLookAndFeel::drawKnobBody(
 
     // Borde
 
-    g.setColour(juce::Colour(0xff2C3C52));
-    g.drawEllipse(geo.outerBounds, 1.0f);
+    // g.setColour(juce::Colour(0xff2C3C52));
+    // g.drawEllipse(geo.outerBounds, 1.5f);
 
     //aro neon
 
-    g.setColour(
-    NeonColours::cyan.withAlpha(0.95f));
-
-    g.drawEllipse(
-        geo.outerBounds.reduced(2.5f),
-        1.0f);
+    // g.setColour(
+    // NeonColours::cyan.withAlpha(0.95f));
+    //
+    // g.drawEllipse(
+    //     geo.outerBounds.reduced(2.5f),
+    //     2.0f);
 
 
     // Centro
 
     juce::ColourGradient centerGradient(
-    juce::Colour(0xff303B4D),
+    juce::Colour(0xff303B4D).withAlpha(0.65f),
     geo.centre,
 
     juce::Colour(0xff151A22),
@@ -155,13 +155,13 @@ void NeonLookAndFeel::drawKnobBody(
     g.fillEllipse(geo.innerBounds);
 
     //aro del centro blanco
-    auto centerCore =
-    geo.innerBounds.reduced(8.50f);
+    // auto centerCore =
+    // geo.innerBounds.reduced(8.50f);
+    //
+    // g.setColour(
+    // juce::Colour(0xff1B2028));
 
-    g.setColour(
-    juce::Colour(0xff1B2028));
-
-    g.fillEllipse(centerCore);
+    // g.fillEllipse(centerCore);
 
 }
 
@@ -173,17 +173,29 @@ void NeonLookAndFeel::drawOuterRing(
     juce::Graphics& g,
     const KnobGeometry& geo)
 {
-    constexpr float ringThickness = 3.0f;
+    constexpr float ringThickness = 14.0f;
 
     auto ringBounds =
-        geo.outerBounds.reduced(2.0f);
+        geo.outerBounds.reduced(6.0f);
+
+    juce::Path ringArc;
+
+    ringArc.addCentredArc(
+        ringBounds.getCentreX(),
+        ringBounds.getCentreY(),
+        ringBounds.getWidth() * 0.5f,
+        ringBounds.getHeight() * 0.5f,
+        1.9f,
+        juce::MathConstants<float>::pi * 0.6f,
+        juce::MathConstants<float>::twoPi * 1.10f,
+        true);
 
     g.setColour(
         juce::Colour(0xff2F3742));
 
-    g.drawEllipse(
-        ringBounds,
-        ringThickness);
+    g.strokePath(
+        ringArc,
+        juce::PathStrokeType(ringThickness));
 }
 
 //============================================================
@@ -223,11 +235,15 @@ void NeonLookAndFeel::drawProgressArc(
 
     drawArcHalo(g, arc, geo);
 
+
+
     drawArcGlow(g, arc, geo);
+
+    drawArcHighlight(g, arc);
 
     drawArcCore(g, arc, geo);
 
-    drawArcHighlight(g, arc);
+
 }
 
 //============================================================
@@ -258,7 +274,7 @@ void NeonLookAndFeel::drawArcHalo(
         NeonColours::cyan.withAlpha(0.45f),
         geo.outerBounds.getTopLeft(),
 
-        NeonColours::magenta.withAlpha(0.45f),
+        NeonColours::magenta.withAlpha(0.75f),
         geo.outerBounds.getBottomRight(),
 
         false);
@@ -267,7 +283,7 @@ void NeonLookAndFeel::drawArcHalo(
 
     g.strokePath(
         arc,
-        juce::PathStrokeType(13.0f));
+        juce::PathStrokeType(16.0f));
 }
 
 //============================================================
@@ -308,7 +324,7 @@ void NeonLookAndFeel::drawArcGlow(
 
     g.strokePath(
         arc,
-        juce::PathStrokeType(13.0f));
+        juce::PathStrokeType(18.0f));
 }
 
 //============================================================
@@ -342,11 +358,16 @@ void NeonLookAndFeel::drawArcCore(
 
         false);
 
+    // Hace que el magenta aparezca antes
+    gradient.addColour(
+        0.78,
+        NeonColours::magenta);
+
     g.setGradientFill(gradient);
 
     g.strokePath(
         arc,
-        juce::PathStrokeType(3.0f));
+        juce::PathStrokeType(18.0f));
 }
 
 //============================================================
@@ -377,7 +398,7 @@ void NeonLookAndFeel::drawArcHighlight(
 
     g.strokePath(
         arc,
-        juce::PathStrokeType(3.0f));
+        juce::PathStrokeType(20.0f));
 }
 
 
@@ -469,11 +490,20 @@ void NeonLookAndFeel::drawMajorTicks(
 
     constexpr float majorInset = 1.5f;
 
-    const float minorInner = geo.tickRadius;
-    const float minorOuter = geo.tickRadius + minorLength;
+    // Distancia adicional desde el centro
+    constexpr float tickOffset = 4.4f;
 
-    const float majorInner = geo.tickRadius - majorInset;
-    const float majorOuter = geo.tickRadius + majorLength;
+    const float minorInner =
+        geo.tickRadius + tickOffset;
+
+    const float minorOuter =
+        geo.tickRadius + tickOffset + minorLength;
+
+    const float majorInner =
+        geo.tickRadius + tickOffset - majorInset;
+
+    const float majorOuter =
+        geo.tickRadius + tickOffset + majorLength;
 
     //--------------------------------------------------
     // Colores
