@@ -137,9 +137,10 @@ private:
     // +1.0 = derecha
     float pan = 0.0f;
 
-    // 0.0 = Mono
-    // 1.0 = Stereo normal
-    // 2.0 = Stereo ampliado
+    // 0.0 = mono
+    // 1.0 = stereo normal
+    // 2.0 = stereo ampliado
+    // 4.0 = stereo muy ampliado
     float width = 1.0f;
 
     //==========================================================

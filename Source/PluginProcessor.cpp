@@ -74,10 +74,17 @@ AudioPluginAudioProcessor::createParameterLayout()
             "WIDTH",
             "Width",
 
-            juce::NormalisableRange<float>(
-                0.0f,
-                400.0f,
-                0.01f),
+            []()
+            {
+                juce::NormalisableRange<float> range(
+                    0.0f,
+                    400.0f,
+                    0.01f);
+
+                range.setSkewForCentre(100.0f);
+
+                return range;
+            }(),
 
             100.0f
         ));

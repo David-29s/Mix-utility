@@ -210,7 +210,7 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
 
         gainKnob.getSlider().setRange(
             0.0,
-            200.0,
+            400.0,
             0.01);
 
         break;

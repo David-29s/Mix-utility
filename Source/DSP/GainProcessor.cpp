@@ -62,7 +62,7 @@ void GainProcessor::setWidth(
 {
     width = juce::jlimit(
         0.0f,
-        2.0f,
+        4.0f,
         newWidth);
 }
 
