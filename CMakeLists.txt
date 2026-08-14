@@ -84,8 +84,7 @@ target_sources(AudioPluginExample
         Source/UI/Buttons/ControlModeButton.cpp
 
         Source/DSP/Metering/MeteringProcessor.cpp
-        Source/UI/Components/Meters/LevelMeter.cpp
-        Source/UI/Components/Meters/OutputMeter.cpp)
+        Source/UI/Components/Meters/LevelMeter.cpp)
 
 # `target_compile_definitions` adds some preprocessor definitions to our target. In a Projucer
 # project, these might be passed in the 'Preprocessor Definitions' field. JUCE modules also make use

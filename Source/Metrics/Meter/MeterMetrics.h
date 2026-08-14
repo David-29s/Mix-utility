@@ -13,8 +13,8 @@ namespace MeterMetrics
     // Meter dimensions
     //==========================================================
 
-    inline constexpr int meterWidth = 20;
-    inline constexpr int meterHeight = 290;
+    inline constexpr int meterWidth = 18;
+    inline constexpr int meterHeight = 270;
 
     //==========================================================
     // Stereo channels
@@ -28,7 +28,7 @@ namespace MeterMetrics
     //==========================================================
 
     inline constexpr float peakHoldTimeMs = 500.0f; // el pico permanecera 500 ms antes de empezar a bajar
-    inline constexpr float peakDecayDbPerSecond = 100.0f; //significa que después del hold la línea bajará 
+    inline constexpr float peakDecayDbPerSecond = 100.0f; //significa que después del hold la línea bajará
 
     //==========================================================
     // Meter frame
@@ -48,21 +48,21 @@ namespace MeterMetrics
     // Input Meter Position
     //==========================================================
 
-    inline constexpr int inputMeterX = 10;
-    inline constexpr int inputMeterY = 45;
+    inline constexpr int inputMeterX = 5;
+    inline constexpr int inputMeterY = 25;
 
     //==========================================================
     // Output Meter Position
     //==========================================================
 
-    inline constexpr int outputMeterX = 330;
-    inline constexpr int outputMeterY = 105;
+    inline constexpr int outputMeterX = 420;
+    inline constexpr int outputMeterY = 25;
 
     //==========================================================
     // Meter labels
     //==========================================================
 
-    inline constexpr int labelTopHeight = 24;
+    inline constexpr int labelTopHeight = 42;
     inline constexpr int labelBottomHeight = 20;
 
     inline constexpr int componentHeight =
