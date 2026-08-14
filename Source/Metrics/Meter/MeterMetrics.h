@@ -71,4 +71,14 @@ namespace MeterMetrics
         labelBottomHeight;
 
     inline constexpr int inputLabelWidth = 50;
+
+    //==========================================================
+    // Correlation Meter
+    //==========================================================
+
+    inline constexpr int correlationX = 230;
+    inline constexpr int correlationY = 380;
+
+    inline constexpr int correlationWidth = 250;
+    inline constexpr int correlationHeight = 100;
 }
