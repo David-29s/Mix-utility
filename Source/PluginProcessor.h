@@ -31,6 +31,12 @@ public:
     void setMuteParameter(bool enabled);
     bool getMuteParameter();
 
+    void setBassMonoParameter(bool enabled);
+    bool getBassMonoParameter();
+
+    void setBassMonoCrossoverParameter(float frequency);
+    float getBassMonoCrossoverParameter();
+
     //==========================================================
     // States
     //==========================================================

@@ -139,6 +139,28 @@ AudioPluginAudioProcessor::createParameterLayout()
     // Return
     //==========================================================
 
+    //==========================================================
+    // Bass Mono
+    //==========================================================
+
+    layout.add(
+        std::make_unique<juce::AudioParameterBool>(
+            "BASS_MONO",
+            "Bass Mono",
+            false));
+
+    layout.add(
+        std::make_unique<juce::AudioParameterFloat>(
+            "BASS_MONO_CROSSOVER",
+            "Bass Mono Crossover",
+
+            juce::NormalisableRange<float>(
+                20.0f,
+                500.0f,
+                0.01f),
+
+            150.0f));
+
     // Devuelve todos los parámetros registrados.
     return layout;
 }
@@ -824,6 +846,18 @@ void AudioPluginAudioProcessor::updateParameters()
 
     gainProcessor.setMute(
         muteEnabled);
+
+    //==========================================================
+    // Bass Mono
+    //==========================================================
+
+    gainProcessor.setBassMono(
+        apvts.getRawParameterValue(
+            "BASS_MONO")->load() > 0.5f);
+
+    gainProcessor.setBassMonoCrossover(
+        apvts.getRawParameterValue(
+            "BASS_MONO_CROSSOVER")->load());
 }
 
 void AudioPluginAudioProcessor::setBypassParameter(
@@ -902,4 +936,44 @@ bool AudioPluginAudioProcessor::getMuteParameter()
         return value->load() > 0.5f;
 
     return false;
+}
+
+//==========================================================
+// Bass Mono Parameters
+//==========================================================
+
+void AudioPluginAudioProcessor::setBassMonoParameter(
+    bool enabled)
+{
+    if (auto* parameter =
+            apvts.getParameter("BASS_MONO"))
+    {
+        parameter->setValueNotifyingHost(
+            enabled ? 1.0f : 0.0f);
+    }
+}
+
+bool AudioPluginAudioProcessor::getBassMonoParameter()
+{
+    return apvts.getRawParameterValue(
+        "BASS_MONO")->load() > 0.5f;
+}
+
+void AudioPluginAudioProcessor::setBassMonoCrossoverParameter(
+    float frequency)
+{
+    if (auto* parameter =
+            apvts.getParameter("BASS_MONO_CROSSOVER"))
+    {
+        parameter->setValueNotifyingHost(
+            apvts.getParameterRange(
+                "BASS_MONO_CROSSOVER")
+                .convertTo0to1(frequency));
+    }
+}
+
+float AudioPluginAudioProcessor::getBassMonoCrossoverParameter()
+{
+    return apvts.getRawParameterValue(
+        "BASS_MONO_CROSSOVER")->load();
 }
