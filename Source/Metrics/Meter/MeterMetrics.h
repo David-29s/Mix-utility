@@ -55,7 +55,7 @@ namespace MeterMetrics
     // Output Meter Position
     //==========================================================
 
-    inline constexpr int outputMeterX = 420;
+    inline constexpr int outputMeterX = 455;
     inline constexpr int outputMeterY = 25;
 
     //==========================================================
@@ -76,9 +76,9 @@ namespace MeterMetrics
     // Correlation Meter
     //==========================================================
 
-    inline constexpr int correlationX = 230;
+    inline constexpr int correlationX = 273;
     inline constexpr int correlationY = 380;
 
     inline constexpr int correlationWidth = 250;
-    inline constexpr int correlationHeight = 100;
+    inline constexpr int correlationHeight = 105;
 }
