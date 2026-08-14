@@ -131,9 +131,9 @@ NeonKnob::NeonKnob(const juce::String& title)
             valueEditor.getText().getDoubleValue();
 
         newValue = juce::jlimit(
-            -24.0,
-            24.0,
-            newValue);
+    slider.getMinimum(),
+    slider.getMaximum(),
+    newValue);
 
         slider.setValue(
             newValue,
