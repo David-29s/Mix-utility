@@ -6,12 +6,40 @@
 
 GainProcessor::GainProcessor()
 {
-
+    
 }
 
 GainProcessor::~GainProcessor()
 {
 
+}
+
+void GainProcessor::prepare(
+    double newSampleRate)
+{
+    sampleRate = newSampleRate;
+
+    bassMonoLowPassL.reset();
+    bassMonoLowPassR.reset();
+
+    bassMonoHighPassL.reset();
+    bassMonoHighPassR.reset();
+
+    const auto lowPass =
+        juce::dsp::IIR::Coefficients<float>::makeLowPass(
+            sampleRate,
+            bassMonoCrossover);
+
+    const auto highPass =
+        juce::dsp::IIR::Coefficients<float>::makeHighPass(
+            sampleRate,
+            bassMonoCrossover);
+
+    *bassMonoLowPassL.coefficients = *lowPass;
+    *bassMonoLowPassR.coefficients = *lowPass;
+
+    *bassMonoHighPassL.coefficients = *highPass;
+    *bassMonoHighPassR.coefficients = *highPass;
 }
 
 //==========================================================
@@ -70,6 +98,55 @@ void GainProcessor::setWidth(
 float GainProcessor::getWidth() const
 {
     return width;
+}
+
+//==========================================================
+// Bass Mono
+//==========================================================
+
+void GainProcessor::setBassMono(
+    bool shouldBeBassMono)
+{
+    bassMono = shouldBeBassMono;
+}
+
+bool GainProcessor::isBassMonoEnabled() const
+{
+    return bassMono;
+}
+
+void GainProcessor::setBassMonoCrossover(
+    float newCrossover)
+{
+    bassMonoCrossover =
+        juce::jlimit(
+            20.0f,
+            500.0f,
+            newCrossover);
+
+    if (sampleRate <= 0.0)
+        return;
+
+    const auto lowPass =
+        juce::dsp::IIR::Coefficients<float>::makeLowPass(
+            sampleRate,
+            bassMonoCrossover);
+
+    const auto highPass =
+        juce::dsp::IIR::Coefficients<float>::makeHighPass(
+            sampleRate,
+            bassMonoCrossover);
+
+    *bassMonoLowPassL.coefficients = *lowPass;
+    *bassMonoLowPassR.coefficients = *lowPass;
+
+    *bassMonoHighPassL.coefficients = *highPass;
+    *bassMonoHighPassR.coefficients = *highPass;
+}
+
+float GainProcessor::getBassMonoCrossover() const
+{
+    return bassMonoCrossover;
 }
 
 //==========================================================
@@ -163,6 +240,8 @@ void GainProcessor::process(
     processPan(buffer);
 
     processWidth(buffer);
+
+    processBassMono(buffer);
 
     processGain(buffer);
 }
@@ -432,5 +511,76 @@ void GainProcessor::processWidth(
 
         right[sample] =
             mid - newSide;
+    }
+}
+
+//==========================================================
+// Bass Mono
+//==========================================================
+
+void GainProcessor::processBassMono(
+    juce::AudioBuffer<float>& buffer)
+{
+    if (!bassMono)
+        return;
+
+    if (buffer.getNumChannels() < 2)
+        return;
+
+    const int numSamples =
+        buffer.getNumSamples();
+
+    auto* left =
+        buffer.getWritePointer(0);
+
+    auto* right =
+        buffer.getWritePointer(1);
+
+    for (int sample = 0;
+         sample < numSamples;
+         ++sample)
+    {
+        const float inputLeft =
+            left[sample];
+
+        const float inputRight =
+            right[sample];
+
+        //======================================================
+        // Low frequencies
+        //======================================================
+
+        const float lowLeft =
+            bassMonoLowPassL.processSample(
+                inputLeft);
+
+        const float lowRight =
+            bassMonoLowPassR.processSample(
+                inputRight);
+
+        const float monoLow =
+            (lowLeft + lowRight) * 0.5f;
+
+        //======================================================
+        // High frequencies
+        //======================================================
+
+        const float highLeft =
+            bassMonoHighPassL.processSample(
+                inputLeft);
+
+        const float highRight =
+            bassMonoHighPassR.processSample(
+                inputRight);
+
+        //======================================================
+        // Reconstruct L / R
+        //======================================================
+
+        left[sample] =
+            monoLow + highLeft;
+
+        right[sample] =
+            monoLow + highRight;
     }
 }

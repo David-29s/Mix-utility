@@ -1,6 +1,7 @@
 #pragma once
 
 #include <juce_audio_basics/juce_audio_basics.h>
+#include <juce_dsp/juce_dsp.h>
 
 class GainProcessor
 {
@@ -49,6 +50,25 @@ public:
 
     // Devuelve el ancho estéreo actual.
     float getWidth() const;
+
+    //==========================================================
+    // Bass Mono
+    //==========================================================
+
+    // Activa o desactiva Bass Mono.
+    void setBassMono(bool shouldBeBassMono);
+
+    // Devuelve el estado actual de Bass Mono.
+    bool isBassMonoEnabled() const;
+
+    // Establece la frecuencia de crossover.
+    void setBassMonoCrossover(float newCrossover);
+
+    // Devuelve la frecuencia de crossover.
+    float getBassMonoCrossover() const;
+
+    // Prepara el procesamiento DSP.
+    void prepare(double sampleRate);
 
     //==========================================================
     // States
@@ -124,6 +144,23 @@ private:
     void processWidth(
         juce::AudioBuffer<float>& buffer);
 
+    // Aplica Bass Mono a las frecuencias por debajo
+    // del crossover.
+    void processBassMono(
+        juce::AudioBuffer<float>& buffer);
+
+    //==========================================================
+    // Bass Mono Filters
+    //==========================================================
+
+    using Filter = juce::dsp::IIR::Filter<float>;
+
+    Filter bassMonoLowPassL;
+    Filter bassMonoLowPassR;
+
+    Filter bassMonoHighPassL;
+    Filter bassMonoHighPassR;
+
     //==========================================================
     // Parameters
     //==========================================================
@@ -142,6 +179,19 @@ private:
     // 2.0 = stereo ampliado
     // 4.0 = stereo muy ampliado
     float width = 1.0f;
+
+    //==========================================================
+    // Bass Mono
+    //==========================================================
+
+    // Indica si Bass Mono está activo.
+    bool bassMono = false;
+
+    // Frecuencia donde termina Bass Mono.
+    float bassMonoCrossover = 150.0f;
+
+    // Sample rate actual del procesador.
+    double sampleRate = 44100.0;
 
     //==========================================================
     // States
