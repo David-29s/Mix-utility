@@ -76,7 +76,7 @@ AudioPluginAudioProcessor::createParameterLayout()
 
             juce::NormalisableRange<float>(
                 0.0f,
-                200.0f,
+                400.0f,
                 0.01f),
 
             100.0f
@@ -259,6 +259,11 @@ float AudioPluginAudioProcessor::getOutputLevelL() const
 float AudioPluginAudioProcessor::getOutputLevelR() const
 {
     return meteringProcessor.getOutputLevelR();
+}
+
+float AudioPluginAudioProcessor::getOutputCorrelation() const
+{
+    return meteringProcessor.getOutputCorrelation();
 }
 
 //==========================================================
