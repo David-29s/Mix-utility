@@ -8,7 +8,7 @@
 AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
 (AudioPluginAudioProcessor& p)
     : AudioProcessorEditor(&p),
-      processorRef(p)
+      processorRef(p), bassMono(p)
 {
 
     addAndMakeVisible(inputMeter);
