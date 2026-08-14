@@ -171,13 +171,13 @@ void NeonKnob::paint(juce::Graphics& g)
       juce::Colours::white.withAlpha(0.85f));
 
     g.setFont(
-        juce::Font(22.0f, juce::Font::bold));
+        juce::Font(25.0f, juce::Font::bold));
 
     auto titleBounds =
         getLocalBounds()
             .removeFromTop(25);
 
-    titleBounds.translate(0, 56); //Modificar esta linea para ajustar el texto (Gain)
+    titleBounds.translate(0, 24); //Modificar esta linea para ajustar el texto (Gain)
 
     g.drawText(
         knobTitle,
