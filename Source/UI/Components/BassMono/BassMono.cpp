@@ -46,7 +46,7 @@ BassMono::BassMono(
     crossoverSlider.setRange(
         20.0,
         500.0,
-        0.01);
+        1.0);
 
     crossoverSlider.setValue(
         150.0,
