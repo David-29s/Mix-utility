@@ -3,6 +3,7 @@
 #include "Graphics/Frame/PluginFrame.h"
 #include "Metrics/Layout/LayoutMetrics.h"
 #include "Metrics/Meter/MeterMetrics.h"
+#include "Metrics/BassMono/BassMonoMetrics.h"
 
 AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
 (AudioPluginAudioProcessor& p)
@@ -20,6 +21,8 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
     outputMeter.setScaleOnRight(true);
 
     addAndMakeVisible(correlationMeter);
+
+    addAndMakeVisible(bassMono);
 
     addAndMakeVisible(gainKnob);
 
@@ -306,6 +309,16 @@ void AudioPluginAudioProcessorEditor::resized()
         MeterMetrics::correlationY,
         MeterMetrics::correlationWidth,
         MeterMetrics::correlationHeight);
+
+    //==========================================================
+    // Bass Mono
+    //==========================================================
+
+    bassMono.setBounds(
+        BassMonoMetrics::panelX,
+        BassMonoMetrics::panelY,
+        BassMonoMetrics::panelWidth,
+        BassMonoMetrics::panelHeight);
 
     //==========================================================
     // Knob

@@ -7,6 +7,7 @@
 #include "UI/Buttons/ControlModeButton.h"
 #include "UI/Components/Meters/LevelMeter.h"
 #include "UI/Components/Meters/CorrelationMeter.h"
+#include "UI/Components/BassMono/BassMono.h"
 
 
 //==============================================================================
@@ -33,6 +34,8 @@ private:
     NeonKnob gainKnob { "GAIN" };
 
     CorrelationMeter correlationMeter;
+
+    BassMono bassMono;
 
     void timerCallback() override;
 
