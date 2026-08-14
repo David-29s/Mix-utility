@@ -29,12 +29,12 @@ namespace BassMonoMetrics
     // Enabled
     //==========================================================
 
-    inline constexpr int enabledLabelX = 115;
+    inline constexpr int enabledLabelX = 135;
     inline constexpr int enabledLabelY = 10;
     inline constexpr int enabledLabelWidth = 60;
     inline constexpr int enabledLabelHeight = 18;
 
-    inline constexpr int toggleX = 170;
+    inline constexpr int toggleX = 190;
     inline constexpr int toggleY = 10;
     inline constexpr int toggleWidth = 37;
     inline constexpr int toggleHeight = 17;
@@ -66,4 +66,13 @@ namespace BassMonoMetrics
     inline constexpr int minLabelY = 84;
     inline constexpr int maxLabelX = 175;
     inline constexpr int maxLabelY = 84;
+
+    //==========================================================
+    // Listen Icon
+    //==========================================================
+
+    inline constexpr int listenIconX = 100;
+    inline constexpr int listenIconY = 8;
+    inline constexpr int listenIconWidth = 24;
+    inline constexpr int listenIconHeight = 24;
 }
