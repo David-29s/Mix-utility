@@ -33,7 +33,7 @@ namespace LayoutMetrics
     //==========================================================
 
     inline constexpr int buttonSize = 80;
-    inline constexpr int buttonSpacing = -20;
+    inline constexpr int buttonSpacing = -26;
     inline constexpr int buttonY = 285;
 
 
