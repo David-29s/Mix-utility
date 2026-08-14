@@ -4,11 +4,11 @@ namespace BassMonoMetrics
     // Panel
     //==========================================================
 
-    inline constexpr int panelX = 10;
+    inline constexpr int panelX = 15;
     inline constexpr int panelY = 380;
 
-    inline constexpr int panelWidth = 220;
-    inline constexpr int panelHeight = 100;
+    inline constexpr int panelWidth = 250;
+    inline constexpr int panelHeight = 105;
 
     //==========================================================
     // General
@@ -36,7 +36,7 @@ namespace BassMonoMetrics
 
     inline constexpr int toggleX = 170;
     inline constexpr int toggleY = 10;
-    inline constexpr int toggleWidth = 35;
+    inline constexpr int toggleWidth = 37;
     inline constexpr int toggleHeight = 17;
 
     //==========================================================
@@ -59,8 +59,8 @@ namespace BassMonoMetrics
 
     inline constexpr int sliderX = 70;
     inline constexpr int sliderY = 72;
-    inline constexpr int sliderWidth = 125;
-    inline constexpr int sliderHeight = 12;
+    inline constexpr int sliderWidth = 140;
+    inline constexpr int sliderHeight = 20;
 
     inline constexpr int minLabelX = 65;
     inline constexpr int minLabelY = 84;
