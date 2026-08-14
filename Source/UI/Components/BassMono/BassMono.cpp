@@ -147,6 +147,92 @@ void BassMono::paint(juce::Graphics& g)
         BassMonoMetrics::titleHeight,
         juce::Justification::centredLeft);
 
+    //==========================================================
+    // Listen Icon
+    //==========================================================
+
+    const float listenX =
+       static_cast<float>(BassMonoMetrics::listenIconX);
+
+    const float listenY =
+        static_cast<float>(BassMonoMetrics::listenIconY);
+
+    const float listenWidth =
+        static_cast<float>(BassMonoMetrics::listenIconWidth);
+
+    const float listenHeight =
+        static_cast<float>(BassMonoMetrics::listenIconHeight);
+
+    auto listenBounds =
+        juce::Rectangle<float>(
+            listenX,
+            listenY,
+            listenWidth,
+            listenHeight);
+
+    // Background
+    g.setColour(
+     listenEnabled
+         ? juce::Colour::fromRGB(0, 230, 255).withAlpha(0.18f)
+         : juce::Colour::fromRGB(35, 45, 50));
+
+    g.fillRoundedRectangle(
+        listenBounds,
+        6.0f);
+
+    // Border
+    g.setColour(
+     listenEnabled
+         ? juce::Colour::fromRGB(0, 230, 255)
+         : juce::Colour::fromRGB(80, 90, 95));
+
+    g.drawRoundedRectangle(
+        listenBounds,
+        6.0f,
+        1.2f);
+
+    // Headphones
+    g.setColour(
+     listenEnabled
+         ? juce::Colour::fromRGB(0, 230, 255)
+         : juce::Colours::lightgrey);
+
+    juce::Path headphones;
+
+    headphones.startNewSubPath(
+        listenX + 4.0f,
+        listenY + 11.0f);
+
+    headphones.cubicTo(
+        listenX + 4.0f,
+        listenY + 2.0f,
+        listenX + 20.0f,
+        listenY + 2.0f,
+        listenX + 20.0f,
+        listenY + 11.0f);
+
+    g.strokePath(
+        headphones,
+        juce::PathStrokeType(1.0f));
+
+    // Left ear cup
+    g.drawRoundedRectangle(
+        listenX + 3.0f,
+        listenY + 10.0f,
+        4.0f,
+        7.0f,
+        1.5f,
+        1.5f);
+
+    // Right ear cup
+    g.drawRoundedRectangle(
+        listenX + 17.0f,
+        listenY + 10.0f,
+        4.0f,
+        7.0f,
+        1.5f,
+        1.5f);
+
 
     //==========================================================
     // ENABLED
@@ -359,4 +445,21 @@ void BassMono::resized()
         BassMonoMetrics::sliderY,
         BassMonoMetrics::sliderWidth,
         BassMonoMetrics::sliderHeight);
+}
+
+void BassMono::mouseDown(const juce::MouseEvent& event)
+{
+    const auto listenBounds =
+        juce::Rectangle<float>(
+            static_cast<float>(BassMonoMetrics::listenIconX),
+            static_cast<float>(BassMonoMetrics::listenIconY),
+            static_cast<float>(BassMonoMetrics::listenIconWidth),
+            static_cast<float>(BassMonoMetrics::listenIconHeight));
+
+    if (listenBounds.contains(event.position))
+    {
+        listenEnabled = !listenEnabled;
+
+        repaint();
+    }
 }

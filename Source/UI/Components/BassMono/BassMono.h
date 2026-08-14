@@ -12,11 +12,15 @@ public:
     void paint(juce::Graphics& g) override;
     void resized() override;
 
+    void mouseDown(const juce::MouseEvent& event) override;
+
 private:
 
     AudioPluginAudioProcessor& processorRef;
 
     juce::ToggleButton enabledButton;
+
+    bool listenEnabled = false;
 
     juce::Slider crossoverSlider;
 
