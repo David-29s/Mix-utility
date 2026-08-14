@@ -237,6 +237,20 @@ bool AudioPluginAudioProcessor::isMuteEnabled() const
 }
 
 //==========================================================
+// Metering
+//==========================================================
+
+float AudioPluginAudioProcessor::getInputLevelL() const
+{
+    return meteringProcessor.getInputLevelL();
+}
+
+float AudioPluginAudioProcessor::getInputLevelR() const
+{
+    return meteringProcessor.getInputLevelR();
+}
+
+//==========================================================
 // A/B Compare
 //==========================================================
 
@@ -455,6 +469,16 @@ void AudioPluginAudioProcessor::processBlock(
 
     // Actualiza todos los parámetros del DSP.
     updateParameters();
+
+
+    //==========================================================
+    // Metering
+    //==========================================================
+
+    // Mide el nivel de la señal de entrada
+    // antes de aplicar cualquier procesamiento.
+    meteringProcessor.processInput(
+        buffer);
 
     //==========================================================
     // DSP

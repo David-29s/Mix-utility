@@ -2,6 +2,7 @@
 
 #include <juce_audio_processors/juce_audio_processors.h>
 #include "DSP/GainProcessor.h"
+#include "DSP/Metering/MeteringProcessor.h"
 
 
 
@@ -63,6 +64,13 @@ public:
 
     // Devuelve el estado actual del mute.
     bool isMuteEnabled() const;
+
+    //==========================================================
+    // Metering
+    //==========================================================
+
+    float getInputLevelL() const;
+    float getInputLevelR() const;
 
     //==========================================================
     // A/B Compare
@@ -131,6 +139,8 @@ private:
     //==========================================================
 
     GainProcessor gainProcessor;
+
+    MeteringProcessor meteringProcessor;
 
     //==========================================================
     // Parameters
