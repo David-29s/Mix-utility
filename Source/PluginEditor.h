@@ -17,7 +17,7 @@ public:
 
 
     LevelMeter inputMeter;
-
+    LevelMeter outputMeter;
     //==============================================================================
     void paint (juce::Graphics&) override;
     void resized() override;
