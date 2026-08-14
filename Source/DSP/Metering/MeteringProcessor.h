@@ -1,0 +1,18 @@
+#pragma once
+
+#include <juce_audio_basics/juce_audio_basics.h>
+
+class MeteringProcessor
+{
+public:
+
+    void processInput(const juce::AudioBuffer<float>& buffer);
+
+    float getInputLevelL() const;
+    float getInputLevelR() const;
+
+private:
+
+    std::atomic<float> inputLevelL { -60.0f };
+    std::atomic<float> inputLevelR { -60.0f };
+};
