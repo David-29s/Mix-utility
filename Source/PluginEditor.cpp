@@ -19,6 +19,8 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
     inputMeter.setScaleOnRight(false);
     outputMeter.setScaleOnRight(true);
 
+    addAndMakeVisible(correlationMeter);
+
     addAndMakeVisible(gainKnob);
 
 
@@ -296,6 +298,16 @@ void AudioPluginAudioProcessorEditor::resized()
      MeterMetrics::componentHeight);
 
     //==========================================================
+    // Correlation Meter
+    //==========================================================
+
+    correlationMeter.setBounds(
+        MeterMetrics::correlationX,
+        MeterMetrics::correlationY,
+        MeterMetrics::correlationWidth,
+        MeterMetrics::correlationHeight);
+
+    //==========================================================
     // Knob
     //==========================================================
 
@@ -362,6 +374,9 @@ void AudioPluginAudioProcessorEditor::timerCallback()
     outputMeter.setLevels(
       processorRef.getOutputLevelL(),
       processorRef.getOutputLevelR());
+
+    correlationMeter.setCorrelation(
+    processorRef.getOutputCorrelation());
 
     repaint();
 }

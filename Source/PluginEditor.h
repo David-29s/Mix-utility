@@ -6,6 +6,7 @@
 #include "UI/Buttons/IconToggleButton.h"
 #include "UI/Buttons/ControlModeButton.h"
 #include "UI/Components/Meters/LevelMeter.h"
+#include "UI/Components/Meters/CorrelationMeter.h"
 
 
 //==============================================================================
@@ -30,6 +31,8 @@ private:
     AudioPluginAudioProcessor& processorRef;
 
     NeonKnob gainKnob { "GAIN" };
+
+    CorrelationMeter correlationMeter;
 
     void timerCallback() override;
 
