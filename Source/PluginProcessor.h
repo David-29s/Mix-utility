@@ -75,6 +75,8 @@ public:
     float getOutputLevelL() const;
     float getOutputLevelR() const;
 
+    float getOutputCorrelation() const;
+
     //==========================================================
     // A/B Compare
     //==========================================================
