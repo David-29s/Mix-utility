@@ -15,8 +15,17 @@ public:
     void paint(
         juce::Graphics& g) override;
 
+    void setLabel(const juce::String& label);
+
+    void setScaleOnRight(bool shouldBeOnRight);
+
 private:
 
+    juce::String labelText = "INPUT";
+
+    float displayedLevelDb = -60.0f;
+
+    bool scaleOnRight = false;
     //==========================================================
     // Current levels
     //==========================================================

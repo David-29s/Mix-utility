@@ -10,6 +10,29 @@ LevelMeter::LevelMeter()
 }
 
 //==========================================================
+// Set label
+//==========================================================
+
+void LevelMeter::setLabel(
+    const juce::String& label)
+{
+    labelText = label;
+
+    repaint();
+}
+
+//==========================================================
+// Set scale side
+//==========================================================
+
+void LevelMeter::setScaleOnRight(bool shouldBeOnRight)
+{
+    scaleOnRight = shouldBeOnRight;
+
+    repaint();
+}
+
+//==========================================================
 // Set levels
 //==========================================================
 
@@ -121,9 +144,10 @@ void LevelMeter::paint(
     const auto bounds =
         getLocalBounds().toFloat();
 
-    const float meterOffset =
-    MeterMetrics::scaleWidth +
-    MeterMetrics::labelGap;
+    const float meterOffset = scaleOnRight
+      ? 0.0f
+      : MeterMetrics::scaleWidth +
+        MeterMetrics::labelGap;
 
     const float meterTotalWidth =
     meterWidth * 2.0f + channelGap;
@@ -199,16 +223,24 @@ void LevelMeter::paint(
             juce::String(
                 static_cast<int>(db));
 
+        const float scaleX = scaleOnRight
+    ? meterOffset + meterTotalWidth + MeterMetrics::labelGap
+    : 0.0f;
+
+        const auto scaleJustification = scaleOnRight
+            ? juce::Justification::centredLeft
+            : juce::Justification::centredRight;
+
         g.drawText(
-       text,
-       0.0f,
-       juce::jlimit(
-           0.0f,
-           meterHeight - -14.0f,
-           y - 6.0f),
-       MeterMetrics::scaleWidth,
-       12.0f,
-       juce::Justification::centredRight);
+            text,
+            scaleX,
+            juce::jlimit(
+                0.0f,
+                meterHeight + 36.0f, // cambiar la altura del numero -60
+                y - 6.0f),
+            MeterMetrics::scaleWidth,
+            12.0f,
+            scaleJustification);
     }
 
     //======================================================
@@ -361,19 +393,50 @@ void LevelMeter::paint(
     // Draw INPUT label
     //==========================================================
 
+    //==========================================================
+    // Draw meter label
+    //==========================================================
+
     g.setColour(
         juce::Colours::white);
 
     g.setFont(
-        juce::FontOptions(11.0f));
+        juce::FontOptions(13.0f)); // cambiar tamano input/output
 
     g.drawText(
-    "INPUT",
-    meterOffset,
-    0.0f,
-    MeterMetrics::inputLabelWidth,
-    MeterMetrics::labelTopHeight,
-    juce::Justification::centred);
+        labelText,
+        meterOffset,
+        0.0f,
+        MeterMetrics::inputLabelWidth,
+        18.0f,
+        juce::Justification::centred);
+
+    //==========================================================
+    // Draw current level
+    //==========================================================
+
+    const float currentLevelDb =
+     juce::jmax(leftLevelDb, rightLevelDb);
+
+    displayedLevelDb +=
+        (currentLevelDb - displayedLevelDb) * 0.02f; //para suavisar el texto que muestra db
+
+    const juce::String currentLevelText =
+    juce::String(displayedLevelDb, 1) + " dB";
+
+    g.setFont(
+        juce::FontOptions(11.0f)); //Cambiar tamano texto de abajo
+
+    g.setColour(
+        juce::Colours::white.withAlpha(0.75f));
+
+    g.drawText(
+        currentLevelText,
+        meterOffset - 5.0f ,
+        17.0f,
+        MeterMetrics::inputLabelWidth,
+        18.0f,
+        juce::Justification::centred);
 
     //==========================================================
     // Draw L/R
