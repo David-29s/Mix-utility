@@ -85,7 +85,9 @@ target_sources(AudioPluginExample
 
         Source/DSP/Metering/MeteringProcessor.cpp
         Source/UI/Components/Meters/LevelMeter.cpp
-        Source/UI/Components/Meters/CorrelationMeter.cpp)
+        Source/UI/Components/Meters/CorrelationMeter.cpp
+
+        Source/UI/Components/BassMono/BassMono.cpp)
 
 # `target_compile_definitions` adds some preprocessor definitions to our target. In a Projucer
 # project, these might be passed in the 'Preprocessor Definitions' field. JUCE modules also make use
@@ -120,6 +122,7 @@ target_link_libraries(AudioPluginExample
     PRIVATE
         # AudioPluginData           # If we'd created a binary data target, we'd link to it here
         juce::juce_audio_utils
+        juce::juce_dsp
     PUBLIC
         juce::juce_recommended_config_flags
         juce::juce_recommended_lto_flags
