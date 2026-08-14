@@ -12,7 +12,7 @@ namespace LayoutMetrics
     // Ventana Plugin
     //==========================================================
 
-    inline constexpr int pluginWidth = 500;
+    inline constexpr int pluginWidth = 540;
 
     inline constexpr int pluginHeight = 500;
 
