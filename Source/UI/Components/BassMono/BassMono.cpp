@@ -1,8 +1,11 @@
 #include "BassMono.h"
 #include "../../../Metrics/BassMono/BassMonoMetrics.h"
+#include "../../../PluginProcessor.h"
 
 
-BassMono::BassMono()
+BassMono::BassMono(
+    AudioPluginAudioProcessor& processor)
+    : processorRef(processor)
 {
     //==========================================================
     // Enabled
@@ -18,6 +21,9 @@ BassMono::BassMono()
 
     enabledButton.onClick = [this]
     {
+        processorRef.setBassMonoParameter(
+            enabledButton.getToggleState());
+
         repaint();
     };
 
@@ -56,9 +62,16 @@ BassMono::BassMono()
 
     crossoverSlider.onValueChange = [this]
     {
+        const auto frequency =
+            static_cast<float>(
+                crossoverSlider.getValue());
+
+        processorRef.setBassMonoCrossoverParameter(
+            frequency);
+
         crossoverLabel.setText(
             juce::String(
-                crossoverSlider.getValue(),
+                frequency,
                 0)
                 + " Hz",
             juce::dontSendNotification);

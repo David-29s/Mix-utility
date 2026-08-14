@@ -2,16 +2,19 @@
 
 #include <juce_gui_basics/juce_gui_basics.h>
 
+class AudioPluginAudioProcessor;
 class BassMono : public juce::Component
 {
 public:
 
-    BassMono();
+    BassMono(AudioPluginAudioProcessor& processor);
 
     void paint(juce::Graphics& g) override;
     void resized() override;
 
 private:
+
+    AudioPluginAudioProcessor& processorRef;
 
     juce::ToggleButton enabledButton;
 
