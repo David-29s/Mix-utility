@@ -12,9 +12,9 @@ namespace LayoutMetrics
     // Ventana Plugin
     //==========================================================
 
-    inline constexpr int pluginWidth = 280;
+    inline constexpr int pluginWidth = 500;
 
-    inline constexpr int pluginHeight = 300;
+    inline constexpr int pluginHeight = 400;
 
     //==========================================================
     // Gain Knob
@@ -29,22 +29,19 @@ namespace LayoutMetrics
     inline constexpr int knobOffsetY = -20;
 
     //==========================================================
-    // icons
+    // Buttons
     //==========================================================
 
     inline constexpr int buttonSize = 80;
+    inline constexpr int buttonSpacing = -20;
+    inline constexpr int buttonY = 285;
 
-    inline constexpr int buttonSpacing = 49;
-
-    inline constexpr int buttonStartX = 6;
-
-    inline constexpr int buttonY = 205;
 
     //==========================================================
     // Control Mode Button
     //==========================================================
 
-    inline constexpr int controlModeButtonX = -4;
+    inline constexpr int controlModeButtonX = 80;
 
     inline constexpr int controlModeButtonY = 26;
 }
