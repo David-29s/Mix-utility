@@ -5,6 +5,8 @@
 #include "Animation/NeonAnimator.h"
 #include "UI/Buttons/IconToggleButton.h"
 #include "UI/Buttons/ControlModeButton.h"
+#include "UI/Components/Meters/LevelMeter.h"
+
 
 //==============================================================================
 class AudioPluginAudioProcessorEditor final : public juce::AudioProcessorEditor,private juce::Timer
@@ -12,6 +14,9 @@ class AudioPluginAudioProcessorEditor final : public juce::AudioProcessorEditor,
 public:
     explicit AudioPluginAudioProcessorEditor (AudioPluginAudioProcessor&);
     ~AudioPluginAudioProcessorEditor() override;
+
+
+    LevelMeter inputMeter;
 
     //==============================================================================
     void paint (juce::Graphics&) override;
@@ -63,8 +68,6 @@ private:
 
     void updateKnobAttachment(
     ControlMode mode);
-
-
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioPluginAudioProcessorEditor)
 };

@@ -2,12 +2,16 @@
 #include "PluginEditor.h"
 #include "Graphics/Frame/PluginFrame.h"
 #include "Metrics/Layout/LayoutMetrics.h"
+#include "Metrics/Meter/MeterMetrics.h"
 
 AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
 (AudioPluginAudioProcessor& p)
     : AudioProcessorEditor(&p),
       processorRef(p)
 {
+
+    addAndMakeVisible(inputMeter);
+
     addAndMakeVisible(gainKnob);
 
 
@@ -267,6 +271,16 @@ void AudioPluginAudioProcessorEditor::paint (juce::Graphics& g)
 void AudioPluginAudioProcessorEditor::resized()
 {
 
+    //==========================================================
+    // Input Meter
+    //==========================================================
+
+    inputMeter.setBounds(
+      MeterMetrics::inputMeterX,
+      MeterMetrics::inputMeterY,
+      MeterMetrics::componentWidth,
+      MeterMetrics::componentHeight);
+
 
     //==========================================================
     // Knob
@@ -328,22 +342,39 @@ void AudioPluginAudioProcessorEditor::timerCallback()
 
     refreshButtons();
 
+    inputMeter.setLevels(
+    processorRef.getInputLevelL(),
+    processorRef.getInputLevelR());
+
     repaint();
 }
 
 void AudioPluginAudioProcessorEditor::setButtonPosition(
-    IconToggleButton& button,
+   IconToggleButton& button,
     int index)
 {
+    const int buttonSize =
+        LayoutMetrics::buttonSize;
+
+    const int totalWidth =
+        (buttonSize * 5) +
+        (LayoutMetrics::buttonSpacing * 4);
+
+    const int startX =
+        (getWidth() - totalWidth) / 2;
+
+    const int knobTop =
+        (getHeight() - LayoutMetrics::knobHeight) / 2;
+
+    const int buttonY =
+     LayoutMetrics::buttonY;
+
     button.setBounds(
-        LayoutMetrics::buttonStartX +
-        LayoutMetrics::buttonSpacing * index,
-
-        LayoutMetrics::buttonY,
-
-        LayoutMetrics::buttonSize,
-
-        LayoutMetrics::buttonSize);
+        startX +
+            (buttonSize + LayoutMetrics::buttonSpacing) * index,
+        buttonY,
+        buttonSize,
+        buttonSize);
 }
 
 void AudioPluginAudioProcessorEditor::refreshButtons()
