@@ -1,4 +1,5 @@
 #include "CorrelationMeter.h"
+#include "../../../Theme/NeonColours.h"
 
 CorrelationMeter::CorrelationMeter()
 {
@@ -16,7 +17,7 @@ void CorrelationMeter::setCorrelation(float newCorrelation)
         newCorrelation);
 
     correlation +=
-        (targetCorrelation - correlation) * 0.05f; //Suaviza el marcador 
+        (targetCorrelation - correlation) * 0.05f; //Suaviza el marcador
 
     repaint();
 }
@@ -44,6 +45,15 @@ void CorrelationMeter::paint(juce::Graphics& g)
     g.fillRoundedRectangle(
         bounds,
         8.0f);
+
+    // Border
+    g.setColour(
+        NeonColours::violet.withAlpha(0.9f));
+
+    g.drawRoundedRectangle(
+        bounds.reduced(0.5f),
+        8.0f,
+        1.5f);
 
     //==========================================================
     // Title
