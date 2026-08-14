@@ -53,3 +53,44 @@ float MeteringProcessor::getInputLevelR() const
 {
     return inputLevelR.load();
 }
+
+float MeteringProcessor::getOutputLevelL() const
+{
+    return outputLevelL.load();
+}
+
+float MeteringProcessor::getOutputLevelR() const
+{
+    return outputLevelR.load();
+}
+//--------------------------------------------------
+
+//==========================================================
+// Output metering
+//==========================================================
+
+void MeteringProcessor::processOutput(
+    const juce::AudioBuffer<float>& buffer)
+{
+    if (buffer.getNumChannels() == 0 ||
+        buffer.getNumSamples() == 0)
+        return;
+
+    const float leftPeak =
+        buffer.getMagnitude(0, 0, buffer.getNumSamples());
+
+    const float rightPeak =
+        buffer.getNumChannels() > 1
+            ? buffer.getMagnitude(1, 0, buffer.getNumSamples())
+            : leftPeak;
+
+    outputLevelL.store(
+        juce::Decibels::gainToDecibels(
+            leftPeak,
+            -60.0f));
+
+    outputLevelR.store(
+        juce::Decibels::gainToDecibels(
+            rightPeak,
+            -60.0f));
+}
