@@ -64,7 +64,7 @@ namespace FrameMetrics
 
     inline constexpr float decorationY = 36.0f;
 
-    inline constexpr float decorationMargin = 18.0f;
+    inline constexpr float decorationMargin = 110.0f; // se corten de ambos lados, aumenta:
 
     inline constexpr float decorationGap = 50.0f;
 
