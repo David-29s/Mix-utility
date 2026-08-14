@@ -250,6 +250,17 @@ float AudioPluginAudioProcessor::getInputLevelR() const
     return meteringProcessor.getInputLevelR();
 }
 
+
+float AudioPluginAudioProcessor::getOutputLevelL() const
+{
+    return meteringProcessor.getOutputLevelL();
+}
+
+float AudioPluginAudioProcessor::getOutputLevelR() const
+{
+    return meteringProcessor.getOutputLevelR();
+}
+
 //==========================================================
 // A/B Compare
 //==========================================================
@@ -487,6 +498,9 @@ void AudioPluginAudioProcessor::processBlock(
     // Procesa el bloque completo de audio.
     gainProcessor.process(
         buffer);
+
+    // Output metering
+    meteringProcessor.processOutput(buffer);
 }
 
 //==============================================================================

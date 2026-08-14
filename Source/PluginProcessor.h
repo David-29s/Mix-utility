@@ -72,6 +72,9 @@ public:
     float getInputLevelL() const;
     float getInputLevelR() const;
 
+    float getOutputLevelL() const;
+    float getOutputLevelR() const;
+
     //==========================================================
     // A/B Compare
     //==========================================================
