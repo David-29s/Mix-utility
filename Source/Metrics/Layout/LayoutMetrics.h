@@ -14,7 +14,7 @@ namespace LayoutMetrics
 
     inline constexpr int pluginWidth = 500;
 
-    inline constexpr int pluginHeight = 400;
+    inline constexpr int pluginHeight = 500;
 
     //==========================================================
     // Gain Knob
@@ -26,7 +26,7 @@ namespace LayoutMetrics
 
     inline constexpr int knobOffsetX = 0;
 
-    inline constexpr int knobOffsetY = -20;
+    inline constexpr int knobOffsetY = -70;
 
     //==========================================================
     // Buttons
