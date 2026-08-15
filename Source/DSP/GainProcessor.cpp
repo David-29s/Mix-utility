@@ -19,6 +19,9 @@ void GainProcessor::prepare(
 {
     sampleRate = newSampleRate;
 
+    smoothedGain.reset(sampleRate, 0.02);
+    smoothedGain.setCurrentAndTargetValue(1.0f);
+
     bassMonoLowPassL.reset();
     bassMonoLowPassR.reset();
 
@@ -47,16 +50,20 @@ void GainProcessor::prepare(
 //==========================================================
 
 // Establece la ganancia lineal que se aplicará al audio.
-void GainProcessor::setGain(
-    float newGain)
+void GainProcessor::setGain(float newGain)
 {
-    gain = newGain;
+    newGain = juce::jlimit(
+        0.0f,
+        10.0f,
+        newGain);
+
+    smoothedGain.setTargetValue(newGain);
 }
 
 // Devuelve la ganancia actual.
 float GainProcessor::getGain() const
 {
-    return gain;
+    return smoothedGain.getCurrentValue();
 }
 
 //==========================================================
@@ -381,18 +388,19 @@ void GainProcessor::processGain(
     const int numSamples =
         buffer.getNumSamples();
 
-    for (int channel = 0;
-         channel < numChannels;
-         ++channel)
+    for (int sample = 0;
+         sample < numSamples;
+         ++sample)
     {
-        auto* channelData =
-            buffer.getWritePointer(channel);
+        const float currentGain =
+            smoothedGain.getNextValue();
 
-        for (int sample = 0;
-             sample < numSamples;
-             ++sample)
+        for (int channel = 0;
+             channel < numChannels;
+             ++channel)
         {
-            channelData[sample] *= gain;
+            buffer.getWritePointer(channel)[sample]
+                *= currentGain;
         }
     }
 }

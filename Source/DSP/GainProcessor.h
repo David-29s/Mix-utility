@@ -170,9 +170,9 @@ private:
     //==========================================================
     // Parameters
     //==========================================================
-
-    // Ganancia lineal aplicada al audio.
-    float gain = 1.0f;
+    
+    // Ganancia lineal suavizada aplicada al audio.
+    juce::SmoothedValue<float> smoothedGain;
 
     // Paneo.
     // -1.0 = izquierda
