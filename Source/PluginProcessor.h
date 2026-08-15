@@ -37,6 +37,8 @@ public:
     void setBassMonoCrossoverParameter(float frequency);
     float getBassMonoCrossoverParameter();
 
+    void setBassMonoListen(bool shouldListen);
+
     //==========================================================
     // States
     //==========================================================

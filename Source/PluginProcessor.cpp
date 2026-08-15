@@ -953,6 +953,11 @@ void AudioPluginAudioProcessor::setBassMonoParameter(
     }
 }
 
+void AudioPluginAudioProcessor::setBassMonoListen(bool shouldListen)
+{
+    gainProcessor.setBassMonoListen(shouldListen);
+}
+
 bool AudioPluginAudioProcessor::getBassMonoParameter()
 {
     return apvts.getRawParameterValue(
