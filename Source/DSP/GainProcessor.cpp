@@ -422,7 +422,6 @@ void GainProcessor::processGain(
 void GainProcessor::processPan(
     juce::AudioBuffer<float>& buffer)
 {
-    // Necesitamos como mínimo L + R.
     if (buffer.getNumChannels() < 2)
         return;
 
@@ -439,21 +438,30 @@ void GainProcessor::processPan(
          sample < numSamples;
          ++sample)
     {
+        //======================================================
+        // Obtener Pan suavizado
+        //======================================================
+
         const float currentPan =
             smoothedPan.getNextValue();
 
-        const float panPosition =
-            (currentPan + 1.0f) * 0.5f;
+        //======================================================
+        // Aplicar Pan manteniendo unity en el centro
+        //======================================================
 
-        const float angle =
-            panPosition *
-            juce::MathConstants<float>::halfPi;
+        float leftGain = 1.0f;
+        float rightGain = 1.0f;
 
-        const float leftGain =
-            std::cos(angle);
-
-        const float rightGain =
-            std::sin(angle);
+        if (currentPan < 0.0f)
+        {
+            // Paneo hacia la izquierda.
+            rightGain = 1.0f + currentPan;
+        }
+        else if (currentPan > 0.0f)
+        {
+            // Paneo hacia la derecha.
+            leftGain = 1.0f - currentPan;
+        }
 
         left[sample] *= leftGain;
         right[sample] *= rightGain;
