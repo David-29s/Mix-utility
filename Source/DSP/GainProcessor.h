@@ -67,6 +67,9 @@ public:
     // Devuelve la frecuencia de crossover.
     float getBassMonoCrossover() const;
 
+    void setBassMonoListen(bool shouldListen);
+    bool isBassMonoListen() const;
+
     // Prepara el procesamiento DSP.
     void prepare(double sampleRate);
 
@@ -149,6 +152,9 @@ private:
     void processBassMono(
         juce::AudioBuffer<float>& buffer);
 
+    void processBassMonoListen(
+    juce::AudioBuffer<float>& buffer);
+
     //==========================================================
     // Bass Mono Filters
     //==========================================================
@@ -212,4 +218,7 @@ private:
 
     // Indica si el mute está activo.
     bool mute = false;
+
+    //indica si el icono de audifonos esta activo
+    bool bassMonoListen = false;
 };

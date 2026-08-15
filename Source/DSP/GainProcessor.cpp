@@ -6,7 +6,7 @@
 
 GainProcessor::GainProcessor()
 {
-    
+
 }
 
 GainProcessor::~GainProcessor()
@@ -233,17 +233,24 @@ void GainProcessor::process(
     if (processMute(buffer))
         return;
 
-    processMono(buffer);
+    if (bassMonoListen)
+    {
+        processBassMonoListen(buffer);
+    }
+    else
+    {
+        processMono(buffer);
 
-    processPhase(buffer);
+        processPhase(buffer);
 
-    processPan(buffer);
+        processPan(buffer);
 
-    processWidth(buffer);
+        processWidth(buffer);
 
-    processBassMono(buffer);
+        processBassMono(buffer);
 
-    processGain(buffer);
+        processGain(buffer);
+    }
 }
 
 //==========================================================
@@ -583,4 +590,70 @@ void GainProcessor::processBassMono(
         right[sample] =
             monoLow + highRight;
     }
+}
+
+void GainProcessor::processBassMonoListen(
+    juce::AudioBuffer<float>& buffer)
+{
+    if (buffer.getNumChannels() < 2)
+        return;
+
+    const int numSamples =
+        buffer.getNumSamples();
+
+    auto* left =
+        buffer.getWritePointer(0);
+
+    auto* right =
+        buffer.getWritePointer(1);
+
+    for (int sample = 0;
+         sample < numSamples;
+         ++sample)
+    {
+        const float inputLeft =
+            left[sample];
+
+        const float inputRight =
+            right[sample];
+
+        //======================================================
+        // Low frequencies
+        //======================================================
+
+        const float lowLeft =
+            bassMonoLowPassL.processSample(
+                inputLeft);
+
+        const float lowRight =
+            bassMonoLowPassR.processSample(
+                inputRight);
+
+        //======================================================
+        // Convert low frequencies to mono
+        //======================================================
+
+        const float monoLow =
+            (lowLeft + lowRight) * 0.5f;
+
+        //======================================================
+        // Output
+        //======================================================
+
+        left[sample] =
+            monoLow;
+
+        right[sample] =
+            monoLow;
+    }
+}
+
+void GainProcessor::setBassMonoListen(bool shouldListen)
+{
+    bassMonoListen = shouldListen;
+}
+
+bool GainProcessor::isBassMonoListen() const
+{
+    return bassMonoListen;
 }
