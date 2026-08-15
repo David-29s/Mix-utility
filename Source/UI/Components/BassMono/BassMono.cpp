@@ -460,6 +460,8 @@ void BassMono::mouseDown(const juce::MouseEvent& event)
     {
         listenEnabled = !listenEnabled;
 
+        processorRef.setBassMonoListen(listenEnabled);
+
         repaint();
     }
 }
