@@ -423,9 +423,11 @@ void AudioPluginAudioProcessor::prepareToPlay (
     double sampleRate,
     int samplesPerBlock)
 {
-    juce::ignoreUnused(samplesPerBlock);
+   
 
-    gainProcessor.prepare(sampleRate);
+    gainProcessor.prepare(
+    sampleRate,
+    samplesPerBlock);
 }
 
 void AudioPluginAudioProcessor::releaseResources()

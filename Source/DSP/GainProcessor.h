@@ -71,7 +71,9 @@ public:
     bool isBassMonoListen() const;
 
     // Prepara el procesamiento DSP.
-    void prepare(double sampleRate);
+    void prepare(
+      double sampleRate,
+      int samplesPerBlock);
 
     //==========================================================
     // States
@@ -159,13 +161,8 @@ private:
     // Bass Mono Filters
     //==========================================================
 
-    using Filter = juce::dsp::IIR::Filter<float>;
-
-    Filter bassMonoLowPassL;
-    Filter bassMonoLowPassR;
-
-    Filter bassMonoHighPassL;
-    Filter bassMonoHighPassR;
+    juce::dsp::LinkwitzRileyFilter<float> bassMonoFilterL;
+    juce::dsp::LinkwitzRileyFilter<float> bassMonoFilterR;
 
     //==========================================================
     // Parameters
@@ -197,6 +194,8 @@ private:
 
     // Frecuencia donde termina Bass Mono.
     float bassMonoCrossover = 150.0f;
+
+    juce::SmoothedValue<float> smoothedBassMonoCrossover;
 
     // Sample rate actual del procesador.
     double sampleRate = 44100.0;

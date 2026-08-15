@@ -15,9 +15,25 @@ GainProcessor::~GainProcessor()
 }
 
 void GainProcessor::prepare(
-    double newSampleRate)
+    double newSampleRate,
+    int samplesPerBlock)
 {
     sampleRate = newSampleRate;
+
+    //==========================================================
+    // ProcessSpec
+    //==========================================================
+
+    juce::dsp::ProcessSpec spec;
+
+    spec.sampleRate = sampleRate;
+    spec.maximumBlockSize =
+        static_cast<juce::uint32>(samplesPerBlock);
+    spec.numChannels = 1;
+
+    //==========================================================
+    // Smoothing
+    //==========================================================
 
     smoothedGain.reset(sampleRate, 0.02);
     smoothedGain.setCurrentAndTargetValue(1.0f);
@@ -28,27 +44,25 @@ void GainProcessor::prepare(
     smoothedWidth.reset(sampleRate, 0.02);
     smoothedWidth.setCurrentAndTargetValue(1.0f);
 
-    bassMonoLowPassL.reset();
-    bassMonoLowPassR.reset();
+    smoothedBassMonoCrossover.reset(
+        sampleRate,
+        0.02);
 
-    bassMonoHighPassL.reset();
-    bassMonoHighPassR.reset();
+    smoothedBassMonoCrossover.setCurrentAndTargetValue(
+        bassMonoCrossover);
 
-    const auto lowPass =
-        juce::dsp::IIR::Coefficients<float>::makeLowPass(
-            sampleRate,
-            bassMonoCrossover);
+    //==========================================================
+    // Bass Mono Filters
+    //==========================================================
 
-    const auto highPass =
-        juce::dsp::IIR::Coefficients<float>::makeHighPass(
-            sampleRate,
-            bassMonoCrossover);
+    bassMonoFilterL.prepare(spec);
+    bassMonoFilterR.prepare(spec);
 
-    *bassMonoLowPassL.coefficients = *lowPass;
-    *bassMonoLowPassR.coefficients = *lowPass;
+    bassMonoFilterL.setCutoffFrequency(
+        bassMonoCrossover);
 
-    *bassMonoHighPassL.coefficients = *highPass;
-    *bassMonoHighPassR.coefficients = *highPass;
+    bassMonoFilterR.setCutoffFrequency(
+        bassMonoCrossover);
 }
 
 //==========================================================
@@ -135,30 +149,15 @@ bool GainProcessor::isBassMonoEnabled() const
 void GainProcessor::setBassMonoCrossover(
     float newCrossover)
 {
-    bassMonoCrossover =
-        juce::jlimit(
-            20.0f,
-            500.0f,
-            newCrossover);
+    newCrossover = juce::jlimit(
+        20.0f,
+        500.0f,
+        newCrossover);
 
-    if (sampleRate <= 0.0)
-        return;
+    bassMonoCrossover = newCrossover;
 
-    const auto lowPass =
-        juce::dsp::IIR::Coefficients<float>::makeLowPass(
-            sampleRate,
-            bassMonoCrossover);
-
-    const auto highPass =
-        juce::dsp::IIR::Coefficients<float>::makeHighPass(
-            sampleRate,
-            bassMonoCrossover);
-
-    *bassMonoLowPassL.coefficients = *lowPass;
-    *bassMonoLowPassR.coefficients = *lowPass;
-
-    *bassMonoHighPassL.coefficients = *highPass;
-    *bassMonoHighPassR.coefficients = *highPass;
+    smoothedBassMonoCrossover.setTargetValue(
+        newCrossover);
 }
 
 float GainProcessor::getBassMonoCrossover() const
@@ -551,6 +550,23 @@ void GainProcessor::processBassMono(
          sample < numSamples;
          ++sample)
     {
+        //======================================================
+        // Crossover suavizado
+        //======================================================
+
+        const float currentCrossover =
+            smoothedBassMonoCrossover.getNextValue();
+
+        bassMonoFilterL.setCutoffFrequency(
+            currentCrossover);
+
+        bassMonoFilterR.setCutoffFrequency(
+            currentCrossover);
+
+        //======================================================
+        // Input
+        //======================================================
+
         const float inputLeft =
             left[sample];
 
@@ -558,31 +574,37 @@ void GainProcessor::processBassMono(
             right[sample];
 
         //======================================================
-        // Low frequencies
+        // Left crossover
         //======================================================
 
-        const float lowLeft =
-            bassMonoLowPassL.processSample(
-                inputLeft);
+        float lowLeft = 0.0f;
+        float highLeft = 0.0f;
 
-        const float lowRight =
-            bassMonoLowPassR.processSample(
-                inputRight);
+        bassMonoFilterL.processSample(
+            0,
+            inputLeft,
+            lowLeft,
+            highLeft);
+
+        //======================================================
+        // Right crossover
+        //======================================================
+
+        float lowRight = 0.0f;
+        float highRight = 0.0f;
+
+        bassMonoFilterR.processSample(
+            0,
+            inputRight,
+            lowRight,
+            highRight);
+
+        //======================================================
+        // Mono low frequencies
+        //======================================================
 
         const float monoLow =
             (lowLeft + lowRight) * 0.5f;
-
-        //======================================================
-        // High frequencies
-        //======================================================
-
-        const float highLeft =
-            bassMonoHighPassL.processSample(
-                inputLeft);
-
-        const float highRight =
-            bassMonoHighPassR.processSample(
-                inputRight);
 
         //======================================================
         // Reconstruct L / R
@@ -615,6 +637,23 @@ void GainProcessor::processBassMonoListen(
          sample < numSamples;
          ++sample)
     {
+        //======================================================
+        // Crossover suavizado
+        //======================================================
+
+        const float currentCrossover =
+            smoothedBassMonoCrossover.getNextValue();
+
+        bassMonoFilterL.setCutoffFrequency(
+            currentCrossover);
+
+        bassMonoFilterR.setCutoffFrequency(
+            currentCrossover);
+
+        //======================================================
+        // Input
+        //======================================================
+
         const float inputLeft =
             left[sample];
 
@@ -622,16 +661,30 @@ void GainProcessor::processBassMonoListen(
             right[sample];
 
         //======================================================
-        // Low frequencies
+        // Left crossover
         //======================================================
 
-        const float lowLeft =
-            bassMonoLowPassL.processSample(
-                inputLeft);
+        float lowLeft = 0.0f;
+        float highLeft = 0.0f;
 
-        const float lowRight =
-            bassMonoLowPassR.processSample(
-                inputRight);
+        bassMonoFilterL.processSample(
+            0,
+            inputLeft,
+            lowLeft,
+            highLeft);
+
+        //======================================================
+        // Right crossover
+        //======================================================
+
+        float lowRight = 0.0f;
+        float highRight = 0.0f;
+
+        bassMonoFilterR.processSample(
+            0,
+            inputRight,
+            lowRight,
+            highRight);
 
         //======================================================
         // Convert low frequencies to mono
