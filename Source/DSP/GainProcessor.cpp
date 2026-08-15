@@ -22,6 +22,12 @@ void GainProcessor::prepare(
     smoothedGain.reset(sampleRate, 0.02);
     smoothedGain.setCurrentAndTargetValue(1.0f);
 
+    smoothedPan.reset(sampleRate, 0.02);
+    smoothedPan.setCurrentAndTargetValue(0.0f);
+
+    smoothedWidth.reset(sampleRate, 0.02);
+    smoothedWidth.setCurrentAndTargetValue(1.0f);
+
     bassMonoLowPassL.reset();
     bassMonoLowPassR.reset();
 
@@ -75,17 +81,19 @@ float GainProcessor::getGain() const
 void GainProcessor::setPan(
     float newPan)
 {
-    pan = juce::jlimit(
+    newPan = juce::jlimit(
         -1.0f,
         1.0f,
         newPan);
+
+    smoothedPan.setTargetValue(newPan);
 }
 
 
 // Devuelve el paneo actual.
 float GainProcessor::getPan() const
 {
-    return pan;
+    return smoothedPan.getCurrentValue();
 }
 
 //==========================================================
@@ -95,16 +103,18 @@ float GainProcessor::getPan() const
 void GainProcessor::setWidth(
     float newWidth)
 {
-    width = juce::jlimit(
+    newWidth = juce::jlimit(
         0.0f,
         4.0f,
         newWidth);
+
+    smoothedWidth.setTargetValue(newWidth);
 }
 
 
 float GainProcessor::getWidth() const
 {
-    return width;
+    return smoothedWidth.getCurrentValue();
 }
 
 //==========================================================
@@ -426,43 +436,26 @@ void GainProcessor::processPan(
     auto* right =
         buffer.getWritePointer(1);
 
-    //==========================================================
-    // Pan
-    //==========================================================
-
-    // Convierte:
-    //
-    // -1.0 = izquierda
-    //  0.0 = centro
-    // +1.0 = derecha
-    //
-    // a una posición 0.0 → 1.0.
-
-    const float panPosition =
-        (pan + 1.0f) * 0.5f;
-
-    //==========================================================
-    // Equal Power Panning
-    //==========================================================
-
-    const float angle =
-        panPosition *
-        juce::MathConstants<float>::halfPi;
-
-    const float leftGain =
-        std::cos(angle);
-
-    const float rightGain =
-        std::sin(angle);
-
-    //==========================================================
-    // Processing
-    //==========================================================
-
     for (int sample = 0;
          sample < numSamples;
          ++sample)
     {
+        const float currentPan =
+            smoothedPan.getNextValue();
+
+        const float panPosition =
+            (currentPan + 1.0f) * 0.5f;
+
+        const float angle =
+            panPosition *
+            juce::MathConstants<float>::halfPi;
+
+        const float leftGain =
+            std::cos(angle);
+
+        const float rightGain =
+            std::sin(angle);
+
         left[sample] *= leftGain;
         right[sample] *= rightGain;
     }
@@ -514,8 +507,11 @@ void GainProcessor::processWidth(
         // Aplicar WIDTH
         //======================================================
 
+        const float currentWidth =
+    smoothedWidth.getNextValue();
+
         const float newSide =
-            side * width;
+            side * currentWidth;
 
         //======================================================
         // Mid / Side → Left / Right
