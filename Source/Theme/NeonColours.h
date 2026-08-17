@@ -53,4 +53,24 @@ namespace NeonColours
     //inline const juce::Colour frameBorder { 0xff1B1D29 };
     //inline const juce::Colour frameBorder { 0xff21272f};
 
+    //==========================================================
+    // Bass Mono
+    //==========================================================
+
+    inline const juce::Colour bassMonoPanel       { 0xff0C141C };
+    inline const juce::Colour bassMonoBorder      { 0xff006EFF };
+
+    inline const juce::Colour bassMonoControl     { 0xff232D32 };
+    inline const juce::Colour bassMonoControlOff  { 0xff505A5F };
+
+    inline const juce::Colour bassMonoActive      { 0xff00F078 };
+    inline const juce::Colour bassMonoInactive    { 0xffD3D7DA };
+
+    inline const juce::Colour bassMonoText        { 0xffD3D7DA }; //
+    inline const juce::Colour bassMonoBorderSoft  { 0x4DFFFFFF };
+
+    inline const juce::Colour bassMonoListenGlow  { 0x2E00E5FF };
+
+    inline const juce::Colour electricBlue { 0xff006EFF };
+
 }
