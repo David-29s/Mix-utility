@@ -1,6 +1,7 @@
 #include "BassMono.h"
 #include "../../../Metrics/BassMono/BassMonoMetrics.h"
 #include "../../../PluginProcessor.h"
+#include "../../../Theme/NeonColours.h"
 
 
 BassMono::BassMono(
@@ -12,6 +13,18 @@ BassMono::BassMono(
     //==========================================================
 
     enabledButton.setButtonText("");
+
+    enabledButton.setColour(
+        juce::ToggleButton::textColourId,
+        juce::Colours::transparentBlack);
+
+    enabledButton.setColour(
+        juce::ToggleButton::tickColourId,
+        juce::Colours::transparentBlack);
+
+    enabledButton.setColour(
+        juce::ToggleButton::tickDisabledColourId,
+        juce::Colours::transparentBlack);
 
     enabledButton.setClickingTogglesState(true);
 
@@ -53,12 +66,12 @@ BassMono::BassMono(
         juce::dontSendNotification);
 
     crossoverSlider.setColour(
-        juce::Slider::trackColourId,
-        juce::Colour::fromRGB(0, 210, 240));
+       juce::Slider::trackColourId,
+       NeonColours::electricBlue);
 
     crossoverSlider.setColour(
         juce::Slider::thumbColourId,
-        juce::Colours::white);
+        NeonColours::bassMonoInactive);
 
     crossoverSlider.onValueChange = [this]
     {
@@ -109,11 +122,11 @@ void BassMono::paint(juce::Graphics& g)
     auto bounds = getLocalBounds().toFloat();
 
     g.setColour(
-        juce::Colour::fromRGB(12, 20, 28));
+     NeonColours::bassMonoPanel);
 
     g.fillRoundedRectangle(
         bounds,
-        12.0f);
+        BassMonoMetrics::panelCornerRadius);
 
 
     //==========================================================
@@ -121,12 +134,13 @@ void BassMono::paint(juce::Graphics& g)
     //==========================================================
 
     g.setColour(
-        juce::Colour::fromRGB(0, 190, 220));
+    NeonColours::bassMonoBorder);
 
     g.drawRoundedRectangle(
-        bounds.reduced(1.0f),
-        12.0f,
-        1.5f);
+        bounds.reduced(
+            BassMonoMetrics::panelBorderInset),
+        BassMonoMetrics::panelBorderCornerRadius,
+        BassMonoMetrics::panelBorderThickness);
 
 
     //==========================================================
@@ -134,10 +148,10 @@ void BassMono::paint(juce::Graphics& g)
     //==========================================================
 
     g.setColour(
-        juce::Colour::fromRGB(0, 230, 255));
+      NeonColours::electricBlue);
 
     g.setFont(
-        16.0f);
+        BassMonoMetrics::titleFontSize);
 
     g.drawText(
         "BASS MONO",
@@ -147,21 +161,26 @@ void BassMono::paint(juce::Graphics& g)
         BassMonoMetrics::titleHeight,
         juce::Justification::centredLeft);
 
+
     //==========================================================
     // Listen Icon
     //==========================================================
 
     const float listenX =
-       static_cast<float>(BassMonoMetrics::listenIconX);
+        static_cast<float>(
+            BassMonoMetrics::listenIconX);
 
     const float listenY =
-        static_cast<float>(BassMonoMetrics::listenIconY);
+        static_cast<float>(
+            BassMonoMetrics::listenIconY);
 
     const float listenWidth =
-        static_cast<float>(BassMonoMetrics::listenIconWidth);
+        static_cast<float>(
+            BassMonoMetrics::listenIconWidth);
 
     const float listenHeight =
-        static_cast<float>(BassMonoMetrics::listenIconHeight);
+        static_cast<float>(
+            BassMonoMetrics::listenIconHeight);
 
     auto listenBounds =
         juce::Rectangle<float>(
@@ -170,68 +189,87 @@ void BassMono::paint(juce::Graphics& g)
             listenWidth,
             listenHeight);
 
+
     // Background
     g.setColour(
-     listenEnabled
-         ? juce::Colour::fromRGB(0, 230, 255).withAlpha(0.18f)
-         : juce::Colour::fromRGB(35, 45, 50));
+    listenEnabled
+        ? NeonColours::bassMonoListenGlow
+        : NeonColours::bassMonoControl);
 
-    g.fillRoundedRectangle(
-        listenBounds,
-        6.0f);
+    // g.fillRoundedRectangle(
+    //     listenBounds,
+    //     BassMonoMetrics::listenCornerRadius);
+
 
     // Border
-    g.setColour(
-     listenEnabled
-         ? juce::Colour::fromRGB(0, 230, 255)
-         : juce::Colour::fromRGB(80, 90, 95));
+    // g.setColour(
+    //  NeonColours::border);
+    //
+    // g.drawRoundedRectangle(
+    //     listenBounds,
+    //     BassMonoMetrics::listenCornerRadius,
+    //     BassMonoMetrics::listenBorderThickness);
 
-    g.drawRoundedRectangle(
-        listenBounds,
-        6.0f,
-        1.2f);
 
     // Headphones
     g.setColour(
-     listenEnabled
-         ? juce::Colour::fromRGB(0, 230, 255)
-         : juce::Colours::lightgrey);
+      listenEnabled
+          ? NeonColours::electricBlue
+          : NeonColours::bassMonoInactive);
+
 
     juce::Path headphones;
 
     headphones.startNewSubPath(
-        listenX + 4.0f,
-        listenY + 11.0f);
+        listenX +
+            BassMonoMetrics::headphonesStartX,
+        listenY +
+            BassMonoMetrics::headphonesStartY);
 
     headphones.cubicTo(
-        listenX + 4.0f,
-        listenY + 2.0f,
-        listenX + 20.0f,
-        listenY + 2.0f,
-        listenX + 20.0f,
-        listenY + 11.0f);
+        listenX +
+            BassMonoMetrics::headphonesCurveTopX,
+        listenY +
+            BassMonoMetrics::headphonesCurveTopY,
+
+        listenX +
+            BassMonoMetrics::headphonesCurveControl1X,
+        listenY +
+            BassMonoMetrics::headphonesCurveControl1Y,
+
+        listenX +
+            BassMonoMetrics::headphonesCurveEndX,
+        listenY +
+            BassMonoMetrics::headphonesCurveEndY);
 
     g.strokePath(
         headphones,
-        juce::PathStrokeType(1.0f));
+        juce::PathStrokeType(
+            BassMonoMetrics::headphonesStrokeWidth));
+
 
     // Left ear cup
     g.drawRoundedRectangle(
-        listenX + 3.0f,
-        listenY + 10.0f,
-        4.0f,
-        7.0f,
-        1.5f,
-        1.5f);
+        listenX +
+            BassMonoMetrics::leftEarX,
+        listenY +
+            BassMonoMetrics::leftEarY,
+        BassMonoMetrics::leftEarWidth,
+        BassMonoMetrics::leftEarHeight,
+        BassMonoMetrics::leftEarCornerX,
+        BassMonoMetrics::leftEarCornerY);
+
 
     // Right ear cup
     g.drawRoundedRectangle(
-        listenX + 17.0f,
-        listenY + 10.0f,
-        4.0f,
-        7.0f,
-        1.5f,
-        1.5f);
+        listenX +
+            BassMonoMetrics::rightEarX,
+        listenY +
+            BassMonoMetrics::rightEarY,
+        BassMonoMetrics::rightEarWidth,
+        BassMonoMetrics::rightEarHeight,
+        BassMonoMetrics::rightEarCornerX,
+        BassMonoMetrics::rightEarCornerY);
 
 
     //==========================================================
@@ -239,10 +277,10 @@ void BassMono::paint(juce::Graphics& g)
     //==========================================================
 
     g.setColour(
-        juce::Colour::fromRGB(0, 230, 255));
+    NeonColours::electricBlue);
 
     g.setFont(
-        12.0f);
+        BassMonoMetrics::enabledFontSize);
 
     g.drawText(
         "ENABLED",
@@ -258,16 +296,20 @@ void BassMono::paint(juce::Graphics& g)
     //==========================================================
 
     const auto switchX =
-        static_cast<float>(BassMonoMetrics::toggleX);
+        static_cast<float>(
+            BassMonoMetrics::toggleX);
 
     const auto switchY =
-        static_cast<float>(BassMonoMetrics::toggleY);
+        static_cast<float>(
+            BassMonoMetrics::toggleY);
 
     const auto switchWidth =
-        static_cast<float>(BassMonoMetrics::toggleWidth);
+        static_cast<float>(
+            BassMonoMetrics::toggleWidth);
 
     const auto switchHeight =
-        static_cast<float>(BassMonoMetrics::toggleHeight);
+        static_cast<float>(
+            BassMonoMetrics::toggleHeight);
 
     const auto switchBounds =
         juce::Rectangle<float>(
@@ -279,50 +321,96 @@ void BassMono::paint(juce::Graphics& g)
 
     // Background
     g.setColour(
-        juce::Colour::fromRGB(35, 45, 50));
+     NeonColours::bassMonoControl);
 
     g.fillRoundedRectangle(
         switchBounds,
-        switchHeight * 0.5f);
+        switchHeight *
+            BassMonoMetrics::toggleCornerRadius);
 
 
     // State
     if (enabledButton.getToggleState())
     {
+        // Fondo del switch
         g.setColour(
-            juce::Colour::fromRGB(0, 240, 120));
+            juce::Colour::fromRGB(35, 45, 50));
 
         g.fillRoundedRectangle(
-            switchBounds.reduced(2.0f),
-            (switchHeight - 4.0f) * 0.5f);
+            switchBounds,
+            switchHeight *
+                BassMonoMetrics::toggleCornerRadius);
 
-        // Knob
+
+        // Borde
         g.setColour(
-            juce::Colours::white);
+                NeonColours::bassMonoBorderSoft);
+
+        g.drawRoundedRectangle(
+            switchBounds,
+            switchHeight *
+                BassMonoMetrics::toggleCornerRadius,
+                BassMonoMetrics::toggleBorderThickness);
+
+
+        // Círculo ON
+        g.setColour(
+                NeonColours::bassMonoActive);
 
         g.fillEllipse(
-            switchBounds.getRight() - switchHeight + 3.0f,
-            switchBounds.getY() + 3.0f,
-            switchHeight - 6.0f,
-            switchHeight - 6.0f);
+            switchBounds.getRight()
+                - switchHeight
+                + BassMonoMetrics::toggleCircleInset,
+
+            switchBounds.getY()
+                + BassMonoMetrics::toggleCircleInset,
+
+            switchHeight
+                - BassMonoMetrics::toggleCircleSizeReduction,
+
+            switchHeight
+                - BassMonoMetrics::toggleCircleSizeReduction);
     }
     else
     {
-        g.setColour(
-            juce::Colour::fromRGB(80, 90, 95));
+            g.setColour(
+                NeonColours::bassMonoControlOff);
 
         g.fillRoundedRectangle(
-            switchBounds.reduced(2.0f),
-            (switchHeight - 4.0f) * 0.5f);
+            switchBounds.reduced(
+                BassMonoMetrics::toggleInnerInset),
+            (switchHeight
+                - BassMonoMetrics::toggleInnerHeightReduction)
+                * 0.5f);
 
+
+        // Borde
         g.setColour(
-            juce::Colours::lightgrey);
+            juce::Colours::white.withAlpha(0.3f));
+
+        g.drawRoundedRectangle(
+            switchBounds,
+            switchHeight *
+                BassMonoMetrics::toggleCornerRadius,
+                BassMonoMetrics::toggleBorderThickness);
+
+
+        // Círculo OFF
+        g.setColour(
+            NeonColours::bassMonoInactive);
 
         g.fillEllipse(
-            switchBounds.getX() + 3.0f,
-            switchBounds.getY() + 3.0f,
-            switchHeight - 6.0f,
-            switchHeight - 6.0f);
+            switchBounds.getX()
+                + BassMonoMetrics::toggleCircleInset,
+
+            switchBounds.getY()
+                + BassMonoMetrics::toggleCircleInset,
+
+            switchHeight
+                - BassMonoMetrics::toggleCircleSizeReduction,
+
+            switchHeight
+                - BassMonoMetrics::toggleCircleSizeReduction);
     }
 
 
@@ -330,55 +418,104 @@ void BassMono::paint(juce::Graphics& g)
     // Bass Mono Icon
     //==========================================================
 
-    const float iconCentreX = 35.0f;
-    const float iconCentreY = 62.0f;
-    const float iconRadius = 24.0f;
+    const float iconCentreX =
+        BassMonoMetrics::iconCentreX;
+
+    const float iconCentreY =
+        BassMonoMetrics::iconCentreY;
+
+    const float iconRadius =
+        BassMonoMetrics::iconRadius;
 
     g.setColour(
-        juce::Colour::fromRGB(0, 230, 255));
+            NeonColours::electricBlue);
 
     g.drawEllipse(
         iconCentreX - iconRadius,
         iconCentreY - iconRadius,
         iconRadius * 2.0f,
         iconRadius * 2.0f,
-        2.0f);
+        BassMonoMetrics::iconStrokeWidth);
 
 
+    //==========================================================
     // Waveform
+    //==========================================================
+
     juce::Path wave;
 
     wave.startNewSubPath(
-        iconCentreX - 16.0f,
-        iconCentreY);
+        iconCentreX +
+            BassMonoMetrics::waveStartX,
+
+        iconCentreY +
+            BassMonoMetrics::waveStartY);
+
 
     wave.cubicTo(
-        iconCentreX - 11.0f,
-        iconCentreY - 15.0f,
-        iconCentreX - 7.0f,
-        iconCentreY - 15.0f,
-        iconCentreX - 3.0f,
-        iconCentreY);
+        iconCentreX +
+            BassMonoMetrics::waveControl1X,
+
+        iconCentreY +
+            BassMonoMetrics::waveControl1Y,
+
+        iconCentreX +
+            BassMonoMetrics::waveControl2X,
+
+        iconCentreY +
+            BassMonoMetrics::waveControl2Y,
+
+        iconCentreX +
+            BassMonoMetrics::waveEnd1X,
+
+        iconCentreY +
+            BassMonoMetrics::waveEnd1Y);
+
 
     wave.cubicTo(
-        iconCentreX + 2.0f,
-        iconCentreY + 15.0f,
-        iconCentreX + 7.0f,
-        iconCentreY + 15.0f,
-        iconCentreX + 12.0f,
-        iconCentreY);
+        iconCentreX +
+            BassMonoMetrics::waveControl3X,
+
+        iconCentreY +
+            BassMonoMetrics::waveControl3Y,
+
+        iconCentreX +
+            BassMonoMetrics::waveControl4X,
+
+        iconCentreY +
+            BassMonoMetrics::waveControl4Y,
+
+        iconCentreX +
+            BassMonoMetrics::waveEnd2X,
+
+        iconCentreY +
+            BassMonoMetrics::waveEnd2Y);
+
 
     wave.cubicTo(
-        iconCentreX + 15.0f,
-        iconCentreY - 8.0f,
-        iconCentreX + 17.0f,
-        iconCentreY - 8.0f,
-        iconCentreX + 18.0f,
-        iconCentreY);
+        iconCentreX +
+            BassMonoMetrics::waveControl5X,
+
+        iconCentreY +
+            BassMonoMetrics::waveControl5Y,
+
+        iconCentreX +
+            BassMonoMetrics::waveControl6X,
+
+        iconCentreY +
+            BassMonoMetrics::waveControl6Y,
+
+        iconCentreX +
+            BassMonoMetrics::waveEnd3X,
+
+        iconCentreY +
+            BassMonoMetrics::waveEnd3Y);
+
 
     g.strokePath(
         wave,
-        juce::PathStrokeType(2.5f));
+        juce::PathStrokeType(
+            BassMonoMetrics::waveStrokeWidth));
 
 
     //==========================================================
@@ -386,10 +523,10 @@ void BassMono::paint(juce::Graphics& g)
     //==========================================================
 
     g.setColour(
-        juce::Colours::lightgrey);
+        NeonColours::bassMonoText);
 
     g.setFont(
-        12.0f);
+        BassMonoMetrics::crossoverFontSize);
 
     g.drawText(
         "CROSSOVER",
@@ -405,22 +542,22 @@ void BassMono::paint(juce::Graphics& g)
     //==========================================================
 
     g.setFont(
-        11.0f);
+        BassMonoMetrics::frequencyFontSize);
 
     g.drawText(
         "20 Hz",
         BassMonoMetrics::minLabelX,
         BassMonoMetrics::minLabelY,
-        40,
-        16,
+        BassMonoMetrics::minLabelWidth,
+        BassMonoMetrics::minLabelHeight,
         juce::Justification::centred);
 
     g.drawText(
         "500 Hz",
         BassMonoMetrics::maxLabelX,
         BassMonoMetrics::maxLabelY,
-        45,
-        16,
+        BassMonoMetrics::maxLabelWidth,
+        BassMonoMetrics::maxLabelHeight,
         juce::Justification::centred);
 }
 
@@ -464,4 +601,36 @@ void BassMono::mouseDown(const juce::MouseEvent& event)
 
         repaint();
     }
+}
+
+void BassMono::mouseMove(const juce::MouseEvent& event)
+{
+    const auto listenBounds =
+        juce::Rectangle<float>(
+            static_cast<float>(
+                BassMonoMetrics::listenIconX),
+            static_cast<float>(
+                BassMonoMetrics::listenIconY),
+            static_cast<float>(
+                BassMonoMetrics::listenIconWidth),
+            static_cast<float>(
+                BassMonoMetrics::listenIconHeight));
+
+    if (listenBounds.contains(event.position))
+    {
+        setMouseCursor(
+            juce::MouseCursor::PointingHandCursor);
+    }
+    else
+    {
+        setMouseCursor(
+            juce::MouseCursor::NormalCursor);
+    }
+}
+
+
+void BassMono::mouseExit(const juce::MouseEvent&)
+{
+    setMouseCursor(
+        juce::MouseCursor::NormalCursor);
 }
