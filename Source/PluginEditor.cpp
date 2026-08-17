@@ -4,6 +4,7 @@
 #include "Metrics/Layout/LayoutMetrics.h"
 #include "Metrics/Meter/MeterMetrics.h"
 #include "Metrics/BassMono/BassMonoMetrics.h"
+#include "Metrics/CorrelationMetrics/CorrelationMetrics.h"
 
 AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
 (AudioPluginAudioProcessor& p)
@@ -305,10 +306,10 @@ void AudioPluginAudioProcessorEditor::resized()
     //==========================================================
 
     correlationMeter.setBounds(
-        MeterMetrics::correlationX,
-        MeterMetrics::correlationY,
-        MeterMetrics::correlationWidth,
-        MeterMetrics::correlationHeight);
+    CorrelationMetrics::x,
+    CorrelationMetrics::y,
+    CorrelationMetrics::width,
+    CorrelationMetrics::height);
 
     //==========================================================
     // Bass Mono
