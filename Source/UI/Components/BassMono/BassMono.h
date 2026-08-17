@@ -2,6 +2,7 @@
 
 #include <juce_gui_basics/juce_gui_basics.h>
 
+
 class AudioPluginAudioProcessor;
 class BassMono : public juce::Component
 {
@@ -13,6 +14,8 @@ public:
     void resized() override;
 
     void mouseDown(const juce::MouseEvent& event) override;
+    void mouseMove(const juce::MouseEvent& event) override;
+    void mouseExit(const juce::MouseEvent& event) override;
 
 private:
 
