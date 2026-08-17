@@ -1,5 +1,6 @@
 #include "CorrelationMeter.h"
 #include "../../../Theme/NeonColours.h"
+#include "../../../Metrics/CorrelationMetrics/CorrelationMetrics.h"
 
 CorrelationMeter::CorrelationMeter()
 {
@@ -25,15 +26,11 @@ void CorrelationMeter::setCorrelation(float newCorrelation)
 //==========================================================
 // Paint
 //==========================================================
-
-//==========================================================
-// Paint
-//==========================================================
-
 void CorrelationMeter::paint(juce::Graphics& g)
 {
     auto bounds =
         getLocalBounds().toFloat();
+
 
     //==========================================================
     // Background
@@ -44,67 +41,75 @@ void CorrelationMeter::paint(juce::Graphics& g)
 
     g.fillRoundedRectangle(
         bounds,
-        8.0f);
+        CorrelationMetrics::panelCornerRadius);
 
+
+    //==========================================================
     // Border
+    //==========================================================
+
     g.setColour(
         NeonColours::violet.withAlpha(0.9f));
 
     g.drawRoundedRectangle(
-        bounds.reduced(0.5f),
-        8.0f,
-        1.5f);
+        bounds.reduced(
+            CorrelationMetrics::panelBorderInset),
+        CorrelationMetrics::panelCornerRadius,
+        CorrelationMetrics::panelBorderThickness);
+
 
     //==========================================================
     // Title
     //==========================================================
 
     auto titleArea =
-        bounds.removeFromTop(24.0f);
+        bounds.removeFromTop(
+            CorrelationMetrics::titleHeight);
 
     g.setColour(
         juce::Colours::white);
 
     g.setFont(
-        juce::FontOptions(13.0f));
+        juce::FontOptions(
+            CorrelationMetrics::titleFontSize));
 
     g.drawText(
         "CORRELATION",
         titleArea,
         juce::Justification::centred);
 
+
     //==========================================================
-    // Scale labels
+    // Scale
     //==========================================================
 
-    const float sidePadding = 12.0f;
+    const float sidePadding =
+        CorrelationMetrics::scaleSidePadding;
 
     auto scaleArea =
-        bounds.removeFromTop(22.0f);
+        bounds.removeFromTop(
+            CorrelationMetrics::scaleHeight);
 
     const float scaleX =
         scaleArea.getX() + sidePadding;
 
     const float scaleWidth =
-        scaleArea.getWidth() -
-        sidePadding * 2.0f;
+        scaleArea.getWidth()
+        - sidePadding * 2.0f;
 
-    const float labelWidth = 30.0f;
+    const float labelWidth =
+        CorrelationMetrics::scaleLabelWidth;
 
-    g.setColour(
-        juce::Colours::white.withAlpha(0.75f));
-
-    g.setFont(
-        juce::FontOptions(12.0f));
 
     const float positions[] =
     {
         0.0f,
         0.25f,
-        0.5f,
+        0.50f,
         0.75f,
         1.0f
     };
+
 
     const juce::String labels[] =
     {
@@ -115,6 +120,15 @@ void CorrelationMeter::paint(juce::Graphics& g)
         "+1"
     };
 
+
+    g.setColour(
+        juce::Colours::white.withAlpha(0.75f));
+
+    g.setFont(
+        juce::FontOptions(
+            CorrelationMetrics::scaleFontSize));
+
+
     for (int i = 0; i < 5; ++i)
     {
         const float x =
@@ -124,25 +138,84 @@ void CorrelationMeter::paint(juce::Graphics& g)
         g.drawText(
             labels[i],
             x - labelWidth * 0.5f,
-            scaleArea.getY(),
+            scaleArea.getY()
+    + CorrelationMetrics::scaleLabelOffsetY,
             labelWidth,
             scaleArea.getHeight(),
             juce::Justification::centred);
     }
 
+
     //==========================================================
-    // Correlation bar
+    // Tick Marks
     //==========================================================
 
-    const float barHeight = 18.0f;
+    const float tickAreaY =
+        scaleArea.getBottom()
+        + CorrelationMetrics::tickOffsetY;
+
+    for (int i = 0;
+         i < CorrelationMetrics::numberOfTicks;
+         ++i)
+    {
+        const float normalized =
+            static_cast<float>(i)
+            / static_cast<float>(
+                CorrelationMetrics::numberOfTicks - 1);
+
+        const float x =
+            scaleX +
+            normalized * scaleWidth;
+
+        const bool isMajor =
+            (i % 4 == 0);
+
+        const float tickHeight =
+            isMajor
+                ? CorrelationMetrics::majorTickHeight
+                : CorrelationMetrics::minorTickHeight;
+
+        const float tickWidth =
+            isMajor
+                ? CorrelationMetrics::majorTickWidth
+                : CorrelationMetrics::minorTickWidth;
+
+        g.setColour(
+            isMajor
+                ? juce::Colours::white.withAlpha(0.75f)
+                : juce::Colours::white.withAlpha(0.30f));
+
+        const float currentTickY =
+     isMajor
+         ? tickAreaY
+         : tickAreaY + CorrelationMetrics::minorTickOffsetY;
+
+        g.fillRect(
+            x - tickWidth * 0.5f,
+            currentTickY,
+            tickWidth,
+            tickHeight);
+    }
+
+
+    //==========================================================
+    // Correlation Bar
+    //==========================================================
+
 
     auto barArea =
-        bounds.removeFromTop(barHeight);
+      bounds.removeFromTop(
+          CorrelationMetrics::barHeight);
+
+    barArea.translate(
+     CorrelationMetrics::barOffsetX,
+     CorrelationMetrics::barOffsetY);
 
     barArea =
         barArea.reduced(
             sidePadding,
             0.0f);
+
 
     // Background
     g.setColour(
@@ -150,7 +223,8 @@ void CorrelationMeter::paint(juce::Graphics& g)
 
     g.fillRoundedRectangle(
         barArea,
-        2.0f);
+        CorrelationMetrics::barCornerRadius);
+
 
     //==========================================================
     // Gradient
@@ -164,7 +238,9 @@ void CorrelationMeter::paint(juce::Graphics& g)
         juce::Colours::green,
         barArea.getRight(),
         barArea.getCentreY(),
+
         false);
+
 
     gradient.addColour(
         0.25,
@@ -178,15 +254,17 @@ void CorrelationMeter::paint(juce::Graphics& g)
         0.75,
         juce::Colours::green);
 
+
     g.setGradientFill(
         gradient);
 
     g.fillRoundedRectangle(
         barArea,
-        2.0f);
+        CorrelationMetrics::barCornerRadius);
+
 
     //==========================================================
-    // Correlation marker
+    // Correlation Marker
     //==========================================================
 
     const float normalized =
@@ -198,15 +276,164 @@ void CorrelationMeter::paint(juce::Graphics& g)
             1.0f);
 
     const float markerX =
-        barArea.getX() +
-        normalized * barArea.getWidth();
+        barArea.getX()
+        + normalized * barArea.getWidth();
+
 
     g.setColour(
         juce::Colours::white);
 
     g.fillRect(
-        markerX - 1.5f,
-        barArea.getY() - 5.0f,
-        3.0f,
-        barArea.getHeight() + 10.0f);
+        markerX
+            - CorrelationMetrics::markerWidth * 0.5f,
+
+        barArea.getY()
+            - CorrelationMetrics::markerTopExtension,
+
+        CorrelationMetrics::markerWidth,
+
+        barArea.getHeight()
+            + CorrelationMetrics::markerTopExtension
+            + CorrelationMetrics::markerBottomExtension);
+
+
+    //==========================================================
+    // Zone Guide Lines
+    //==========================================================
+
+    const float guideY =
+        barArea.getBottom()
+        + CorrelationMetrics::guideStartOffset;
+
+
+    const float outOfPhaseX =
+        barArea.getX()
+        + CorrelationMetrics::outOfPhasePosition
+            * barArea.getWidth();
+
+    const float lowX =
+        barArea.getX()
+        + CorrelationMetrics::lowPosition
+            * barArea.getWidth();
+
+    const float inPhaseX =
+        barArea.getX()
+        + CorrelationMetrics::inPhasePosition
+            * barArea.getWidth();
+
+
+    // OUT OF PHASE
+    g.setColour(
+        juce::Colours::red.withAlpha(0.75f));
+
+    g.fillRect(
+        outOfPhaseX
+            - CorrelationMetrics::guideWidth * 0.5f,
+
+        guideY,
+
+        CorrelationMetrics::guideWidth,
+
+        CorrelationMetrics::guideLength);
+
+
+    // LOW
+    g.setColour(
+        juce::Colours::yellow.withAlpha(0.75f));
+
+    g.fillRect(
+        lowX
+            - CorrelationMetrics::guideWidth * 0.5f,
+
+        guideY,
+
+        CorrelationMetrics::guideWidth,
+
+        CorrelationMetrics::guideLength);
+
+
+    // IN PHASE
+    g.setColour(
+        juce::Colours::green.withAlpha(0.75f));
+
+    g.fillRect(
+        inPhaseX
+            - CorrelationMetrics::guideWidth * 0.5f,
+
+        guideY,
+
+        CorrelationMetrics::guideWidth,
+
+        CorrelationMetrics::guideLength);
+
+
+    //==========================================================
+    // Zone Labels
+    //==========================================================
+
+    const float labelY =
+        guideY
+        + CorrelationMetrics::guideLength
+        + 2.0f;
+
+
+    // OUT OF PHASE
+    g.setColour(
+        juce::Colours::red.withAlpha(0.85f));
+
+    g.setFont(
+        juce::FontOptions(
+            CorrelationMetrics::zoneLabelFontSize));
+
+    g.drawText(
+        "OUT OF PHASE",
+
+        outOfPhaseX
+            - CorrelationMetrics::zoneLabelWidth * 0.5f,
+
+        labelY,
+
+        CorrelationMetrics::zoneLabelWidth,
+
+        CorrelationMetrics::zoneLabelHeight,
+
+        juce::Justification::centred);
+
+
+    // LOW
+    g.setColour(
+        juce::Colours::yellow.withAlpha(0.85f));
+
+    g.drawText(
+        "LOW",
+
+        lowX
+            - CorrelationMetrics::zoneLabelWidth * 0.5f,
+
+        labelY,
+
+        CorrelationMetrics::zoneLabelWidth,
+
+        CorrelationMetrics::zoneLabelHeight,
+
+        juce::Justification::centred);
+
+
+    // IN PHASE
+    g.setColour(
+        juce::Colours::green.withAlpha(0.85f));
+
+    g.drawText(
+        "IN PHASE",
+
+        inPhaseX
+            - CorrelationMetrics::zoneLabelWidth * 0.5f,
+
+        labelY,
+
+        CorrelationMetrics::zoneLabelWidth,
+
+        CorrelationMetrics::zoneLabelHeight,
+
+        juce::Justification::centred);
 }
