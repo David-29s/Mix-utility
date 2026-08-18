@@ -62,9 +62,9 @@ namespace BassMonoMetrics
     //==========================================================
 
     inline constexpr int sliderX = 70;
-    inline constexpr int sliderY = 72;
+    inline constexpr int sliderY = 65;
     inline constexpr int sliderWidth = 140;
-    inline constexpr int sliderHeight = 20;
+    inline constexpr int sliderHeight = 26;
 
     inline constexpr int minLabelX = 65;
     inline constexpr int minLabelY = 84;
