@@ -65,7 +65,7 @@ NeonKnob::NeonKnob(const juce::String& title)
         juce::Justification::centred);
 
     valueLabel.setFont(
-        juce::Font(19.0f, juce::Font::bold));
+        juce::Font(23.0f, juce::Font::plain));
 
     valueLabel.setColour(
     juce::Label::textColourId,
@@ -103,7 +103,7 @@ NeonKnob::NeonKnob(const juce::String& title)
         juce::Justification::centred);
 
     valueEditor.setFont(
-        juce::Font(22.0f, juce::Font::bold));
+        juce::Font(23.0f, juce::Font::plain));
 
     valueEditor.setColour(
     juce::TextEditor::textColourId,
@@ -171,13 +171,13 @@ void NeonKnob::paint(juce::Graphics& g)
       juce::Colours::white.withAlpha(0.85f));
 
     g.setFont(
-        juce::Font(25.0f, juce::Font::bold));
+        juce::Font(25.0f, juce::Font::plain));
 
     auto titleBounds =
         getLocalBounds()
             .removeFromTop(25);
 
-    titleBounds.translate(0, 24); //Modificar esta linea para ajustar el texto (Gain)
+    titleBounds.translate(0, 32); //Modificar esta linea para ajustar el texto (Gain)
 
     g.drawText(
         knobTitle,
