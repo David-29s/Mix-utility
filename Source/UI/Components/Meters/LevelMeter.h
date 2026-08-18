@@ -9,11 +9,22 @@ public:
     LevelMeter();
 
     void setLevels(
-        float leftDb,
-        float rightDb);
+        float peakLeftDb,
+        float peakRightDb,
+        float rmsLeftDb,
+        float rmsRightDb);
 
     void paint(
         juce::Graphics& g) override;
+
+    void mouseDown(
+    const juce::MouseEvent& event) override;
+
+    void mouseMove(
+    const juce::MouseEvent& event) override;
+
+    bool isPeakReadoutArea(
+    juce::Point<int> position) const;
 
     void setLabel(const juce::String& label);
 
@@ -24,6 +35,7 @@ private:
     juce::String labelText = "INPUT";
 
     float displayedLevelDb = -60.0f;
+    float peakReadoutDb = -60.0f;
 
     bool scaleOnRight = false;
     //==========================================================
@@ -32,6 +44,12 @@ private:
 
     float leftLevelDb  = -60.0f;
     float rightLevelDb = -60.0f;
+
+    float leftRmsDb  = -60.0f;
+    float rightRmsDb = -60.0f;
+
+    float smoothedRmsLeftDb  = -60.0f;
+    float smoothedRmsRightDb = -60.0f;
 
     //==========================================================
     // Peak hold

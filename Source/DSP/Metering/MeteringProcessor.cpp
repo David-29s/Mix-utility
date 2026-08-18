@@ -23,6 +23,23 @@ void MeteringProcessor::processInput(
             -60.0f);
 
         inputLevelL.store(dbL);
+
+        //======================================================
+        // Input RMS - Left
+        //======================================================
+
+        const float rmsL =
+            buffer.getRMSLevel(
+                0,
+                0,
+                numSamples);
+
+        const float rmsDbL =
+            juce::Decibels::gainToDecibels(
+                rmsL,
+                -60.0f);
+
+        inputRmsL.store(rmsDbL);
     }
 
     // Right channel
@@ -38,10 +55,28 @@ void MeteringProcessor::processInput(
             -60.0f);
 
         inputLevelR.store(dbR);
+
+        //======================================================
+        // Input RMS - Right
+        //======================================================
+
+        const float rmsR =
+            buffer.getRMSLevel(
+                1,
+                0,
+                numSamples);
+
+        const float rmsDbR =
+            juce::Decibels::gainToDecibels(
+                rmsR,
+                -60.0f);
+
+        inputRmsR.store(rmsDbR);
     }
     else
     {
         inputLevelR.store(inputLevelL.load());
+        inputRmsR.store(inputRmsL.load());
     }
 }
 
@@ -63,6 +98,26 @@ float MeteringProcessor::getOutputLevelL() const
 float MeteringProcessor::getOutputLevelR() const
 {
     return outputLevelR.load();
+}
+
+float MeteringProcessor::getInputRmsL() const
+{
+    return inputRmsL.load();
+}
+
+float MeteringProcessor::getInputRmsR() const
+{
+    return inputRmsR.load();
+}
+
+float MeteringProcessor::getOutputRmsL() const
+{
+    return outputRmsL.load();
+}
+
+float MeteringProcessor::getOutputRmsR() const
+{
+    return outputRmsR.load();
 }
 //--------------------------------------------------
 
@@ -94,9 +149,41 @@ void MeteringProcessor::processOutput(
             leftPeak,
             -60.0f));
 
+    //==========================================================
+    // Output RMS - Left
+    //==========================================================
+
+    const float leftRms =
+        buffer.getRMSLevel(
+            0,
+            0,
+            buffer.getNumSamples());
+
+    outputRmsL.store(
+        juce::Decibels::gainToDecibels(
+            leftRms,
+            -60.0f));
+
     outputLevelR.store(
         juce::Decibels::gainToDecibels(
             rightPeak,
+            -60.0f));
+
+    //==========================================================
+    // Output RMS - Right
+    //==========================================================
+
+    const float rightRms =
+     buffer.getNumChannels() > 1
+         ? buffer.getRMSLevel(
+               1,
+               0,
+               buffer.getNumSamples())
+         : leftRms;
+
+    outputRmsR.store(
+        juce::Decibels::gainToDecibels(
+            rightRms,
             -60.0f));
 
     //==========================================================

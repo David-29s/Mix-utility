@@ -15,6 +15,12 @@ public:
     float getOutputLevelL() const;
     float getOutputLevelR() const;
 
+    float getInputRmsL() const;
+    float getInputRmsR() const;
+
+    float getOutputRmsL() const;
+    float getOutputRmsR() const;
+
     float getOutputCorrelation() const;
 
 private:
@@ -24,6 +30,12 @@ private:
 
     std::atomic<float> outputLevelL { -60.0f };
     std::atomic<float> outputLevelR { -60.0f };
+
+    std::atomic<float> inputRmsL { -60.0f };
+    std::atomic<float> inputRmsR { -60.0f };
+
+    std::atomic<float> outputRmsL { -60.0f };
+    std::atomic<float> outputRmsR { -60.0f };
 
     std::atomic<float> outputCorrelation { 0.0f };
 
