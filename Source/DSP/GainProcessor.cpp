@@ -231,11 +231,6 @@ bool GainProcessor::isMuted() const
 //==========================================================
 
 // Procesa el bloque completo de audio.
-//==========================================================
-// Processing
-//==========================================================
-
-// Procesa el bloque completo de audio.
 void GainProcessor::process(
     juce::AudioBuffer<float>& buffer)
 {
@@ -249,24 +244,31 @@ void GainProcessor::process(
     if (processMute(buffer))
         return;
 
+    //==========================================================
+    // Bass Mono Listen
+    //==========================================================
+
     if (bassMonoListen)
     {
         processBassMonoListen(buffer);
+        return;
     }
-    else
-    {
-        processMono(buffer);
 
-        processPhase(buffer);
+    //==========================================================
+    // Normal Processing
+    //==========================================================
 
-        processPan(buffer);
+    processMono(buffer);
 
-        processWidth(buffer);
+    processPhase(buffer);
 
-        processBassMono(buffer);
+    processPan(buffer);
 
-        processGain(buffer);
-    }
+    processWidth(buffer);
+
+    processBassMono(buffer);
+
+    processGain(buffer);
 }
 
 //==========================================================
@@ -695,21 +697,38 @@ void GainProcessor::processBassMonoListen(
             highRight);
 
         //======================================================
-        // Convert low frequencies to mono
-        //======================================================
-
-        const float monoLow =
-            (lowLeft + lowRight) * 0.5f;
-
-        //======================================================
         // Output
         //======================================================
 
-        left[sample] =
-            monoLow;
+        if (bassMono)
+        {
+            //==================================================
+            // Bass Mono ON
+            // LOW → MONO
+            //==================================================
 
-        right[sample] =
-            monoLow;
+            const float monoLow =
+                (lowLeft + lowRight) * 0.5f;
+
+            left[sample] =
+                monoLow;
+
+            right[sample] =
+                monoLow;
+        }
+        else
+        {
+            //==================================================
+            // Bass Mono OFF
+            // LOW → STEREO
+            //==================================================
+
+            left[sample] =
+                lowLeft;
+
+            right[sample] =
+                lowRight;
+        }
     }
 }
 
