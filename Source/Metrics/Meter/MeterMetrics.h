@@ -28,8 +28,11 @@ namespace MeterMetrics
     //==========================================================
 
     inline constexpr float peakHoldTimeMs = 500.0f; // el pico permanecera 500 ms antes de empezar a bajar
-    inline constexpr float peakDecayDbPerSecond = 100.0f; //significa que después del hold la línea bajará
+    inline constexpr float peakDecayDbPerSecond = 90.0f; //significa que después del hold la línea bajará
 
+
+    inline constexpr float labelRiseDbPerSecond = 10.0f;
+    inline constexpr float labelFallDbPerSecond = 60.0f;
     //==========================================================
     // Meter frame
     //==========================================================
@@ -71,5 +74,8 @@ namespace MeterMetrics
         labelBottomHeight;
 
     inline constexpr int inputLabelWidth = 50;
-    
+
+
+
+
 }

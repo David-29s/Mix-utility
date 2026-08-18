@@ -59,6 +59,44 @@ void LevelMeter::setLevels(
     lastUpdateTimeMs = currentTimeMs;
 
     //==========================================================
+    // Displayed level
+    //==========================================================
+
+    if (leftLevelDb > displayedLevelDb ||
+        rightLevelDb > displayedLevelDb)
+    {
+        const float currentLevelDb =
+            juce::jmax(
+                leftLevelDb,
+                rightLevelDb);
+
+        displayedLevelDb +=
+            MeterMetrics::labelRiseDbPerSecond
+            * deltaTimeSeconds;
+
+        displayedLevelDb =
+            juce::jmin(
+                displayedLevelDb,
+                currentLevelDb);
+    }
+    else
+    {
+        const float currentLevelDb =
+            juce::jmax(
+                leftLevelDb,
+                rightLevelDb);
+
+        displayedLevelDb -=
+            MeterMetrics::labelFallDbPerSecond
+            * deltaTimeSeconds;
+
+        displayedLevelDb =
+            juce::jmax(
+                displayedLevelDb,
+                currentLevelDb);
+    }
+
+    //==========================================================
     // Left peak detection
     //==========================================================
 
@@ -414,12 +452,12 @@ void LevelMeter::paint(
     //==========================================================
     // Draw current level
     //==========================================================
-
-    const float currentLevelDb =
-     juce::jmax(leftLevelDb, rightLevelDb);
-
-    displayedLevelDb +=
-        (currentLevelDb - displayedLevelDb) * 0.05f; //para suavisar el texto que muestra db
+    //
+    // const float currentLevelDb =
+    //  juce::jmax(leftLevelDb, rightLevelDb);
+    //
+    // displayedLevelDb +=
+    //     (currentLevelDb - displayedLevelDb) * 0.02f; //para suavisar el texto que muestra db
 
     const juce::String currentLevelText =
     juce::String(displayedLevelDb, 1) + " dB";
