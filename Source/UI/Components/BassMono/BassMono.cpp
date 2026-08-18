@@ -179,7 +179,7 @@ void BassMono::paint(juce::Graphics& g)
     //==========================================================
 
     g.setColour(
-      NeonColours::electricBlue);
+      NeonColours::electricBlue.withAlpha(0.8f));
 
     g.setFont(
         BassMonoMetrics::titleFontSize);
@@ -308,7 +308,7 @@ void BassMono::paint(juce::Graphics& g)
     //==========================================================
 
     g.setColour(
-    NeonColours::electricBlue);
+    NeonColours::electricBlue.withAlpha(0.8f));
 
     g.setFont(
         BassMonoMetrics::enabledFontSize);
