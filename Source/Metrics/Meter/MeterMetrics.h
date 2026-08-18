@@ -13,7 +13,7 @@ namespace MeterMetrics
     // Meter dimensions
     //==========================================================
 
-    inline constexpr int meterWidth = 18;
+    inline constexpr int meterWidth = 23;
     inline constexpr int meterHeight = 270;
 
     //==========================================================
@@ -51,14 +51,14 @@ namespace MeterMetrics
     // Input Meter Position
     //==========================================================
 
-    inline constexpr int inputMeterX = 5;
+    inline constexpr int inputMeterX = 9;
     inline constexpr int inputMeterY = 25;
 
     //==========================================================
     // Output Meter Position
     //==========================================================
 
-    inline constexpr int outputMeterX = 455;
+    inline constexpr int outputMeterX = 445;
     inline constexpr int outputMeterY = 25;
 
     //==========================================================
@@ -74,6 +74,17 @@ namespace MeterMetrics
         labelBottomHeight;
 
     inline constexpr int inputLabelWidth = 50;
+
+
+    inline constexpr int inputReadoutOffsetX = -2;
+    inline constexpr int outputReadoutOffsetX = 1;
+
+    //Input / output Text
+    inline constexpr int inputLabelOffsetX = 0;
+    inline constexpr int outputLabelOffsetX = 0;
+
+    inline constexpr int inputLabelOffsetY = -4;
+    inline constexpr int outputLabelOffsetY = -4;
 
 
 
