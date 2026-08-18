@@ -49,8 +49,6 @@ void NeonLookAndFeel::drawRotarySlider(
           width,
           height);
 
-     // drawShadow( g,geometry);
-
     drawKnobBody(g, geometry);
 
     drawOuterRing(
@@ -84,35 +82,8 @@ void NeonLookAndFeel::drawRotarySlider(
     rotaryEndAngle);
 }
 
-
-
-
 //============================================================
-// Layer 01 - Shadow
-//============================================================
-
-// void NeonLookAndFeel::drawShadow(
-//     juce::Graphics& g,
-//     const KnobGeometry& geo)
-// {
-//     auto shadowBounds = geo.outerBounds.expanded(0.5f);
-//
-//     for (int i = 0; i < 6; ++i)
-//     {
-//         auto current = shadowBounds.expanded((float)i);
-//
-//         g.setColour(
-//             juce::Colours::black.withAlpha(
-//                 0.92f - i * 0.018f));
-//
-//         g.drawEllipse(
-//             current,
-//             0.2f);
-//     }
-// }
-
-//============================================================
-// Layer 02 - Knob Body
+// Layer 01 - Knob Body
 //============================================================
 
 void NeonLookAndFeel::drawKnobBody(
@@ -123,21 +94,6 @@ void NeonLookAndFeel::drawKnobBody(
 
     g.setColour(NeonColours::background);
     g.fillEllipse(geo.outerBounds);
-
-    // Borde
-
-    // g.setColour(juce::Colour(0xff2C3C52));
-    // g.drawEllipse(geo.outerBounds, 1.5f);
-
-    //aro neon
-
-    // g.setColour(
-    // NeonColours::cyan.withAlpha(0.95f));
-    //
-    // g.drawEllipse(
-    //     geo.outerBounds.reduced(2.5f),
-    //     2.0f);
-
 
     // Centro
 
@@ -154,19 +110,10 @@ void NeonLookAndFeel::drawKnobBody(
 
     g.fillEllipse(geo.innerBounds);
 
-    //aro del centro blanco
-    // auto centerCore =
-    // geo.innerBounds.reduced(8.50f);
-    //
-    // g.setColour(
-    // juce::Colour(0xff1B2028));
-
-    // g.fillEllipse(centerCore);
-
 }
 
 //============================================================
-// Layer 03 - Outer Ring
+// Layer 02 - Outer Ring
 //============================================================
 
 void NeonLookAndFeel::drawOuterRing(
@@ -199,7 +146,7 @@ void NeonLookAndFeel::drawOuterRing(
 }
 
 //============================================================
-// Layer 04 - Progress Arc
+// Layer 03 - Progress Arc
 //============================================================
 
 void NeonLookAndFeel::drawProgressArc(
@@ -235,36 +182,21 @@ void NeonLookAndFeel::drawProgressArc(
 
     drawArcHalo(g, arc, geo);
 
-
-
     drawArcGlow(g, arc, geo);
 
     drawArcHighlight(g, arc);
 
     drawArcCore(g, arc, geo);
 
-
 }
 
 //============================================================
-// Arc Layer 01 - Halo
+// Arc Layer 04 - Halo
 //============================================================
-//
 // Función:
 // Dibuja la luz más externa del arco.
 // Es una capa muy tenue que simula la dispersión de la luz.
-//
-// Parámetros para modificar:
-//
-// Alpha
-//     Intensidad del halo.
-//
-// PathStrokeType
-//     Qué tan grande es el halo.
-//
-// ColourGradient
-//     Colores del halo.
-//
+
 void NeonLookAndFeel::drawArcHalo(
     juce::Graphics& g,
     const juce::Path& arc,
@@ -287,24 +219,11 @@ void NeonLookAndFeel::drawArcHalo(
 }
 
 //============================================================
-// Arc Layer 02 - Glow
+// Arc Layer 05 - Glow
 //============================================================
-//
 // Función:
 // Dibuja el brillo principal alrededor del arco.
 // Es más visible que el Halo.
-//
-// Parámetros para modificar:
-//
-// Alpha
-//     Intensidad del glow.
-//
-// PathStrokeType
-//     Grosor del glow.
-//
-// ColourGradient
-//     Colores del glow.
-//
 
 void NeonLookAndFeel::drawArcGlow(
     juce::Graphics& g,
@@ -330,19 +249,9 @@ void NeonLookAndFeel::drawArcGlow(
 //============================================================
 // Arc Layer 03 - Core
 //============================================================
-//
 // Función:
 // Dibuja el arco principal.
 // Es la línea que realmente representa el valor del knob.
-//
-// Parámetros para modificar:
-//
-// ColourGradient
-//     Colores principales.
-//
-// PathStrokeType
-//     Grosor del arco.
-//
 
 void NeonLookAndFeel::drawArcCore(
     juce::Graphics& g,
@@ -373,22 +282,10 @@ void NeonLookAndFeel::drawArcCore(
 //============================================================
 // Arc Layer 04 - Highlight
 //============================================================
-//
 // Función:
 // Dibuja un reflejo encima del arco.
 // Hace que parezca un material brillante.
-//
-// Parámetros para modificar:
-//
-// Alpha
-//     Intensidad del reflejo.
-//
-// Colour
-//     Color del reflejo.
-//
-// PathStrokeType
-//     Grosor del reflejo.
-//
+
 void NeonLookAndFeel::drawArcHighlight(
     juce::Graphics& g,
     const juce::Path& arc)
@@ -403,7 +300,7 @@ void NeonLookAndFeel::drawArcHighlight(
 
 
 //============================================================
-// Layer 06 - Indicator
+// Layer 05 - Indicator
 //============================================================
 
 void NeonLookAndFeel::drawIndicator(
@@ -619,11 +516,8 @@ void NeonLookAndFeel::drawLabels(
     const float tickEnd   = juce::degreesToRadians(412.0f);
 
     //--------------------------------------------------
-    // Apariencia
+    // Apariencia -> Configuración de etiquetas
     //--------------------------------------------------
-    //============================================================
-    // Configuración de etiquetas
-    //============================================================
 
     //----------------------
     // GAIN

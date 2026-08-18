@@ -8,8 +8,6 @@ public:
 
     NeonLookAndFeel();
 
-    //cambio de etiquetas cuando cambias de modo
-
     enum class KnobMode
     {
         gain,
@@ -31,27 +29,6 @@ public:
         juce::Slider&) override;
 
 private:
-
-    // struct KnobGeometry
-    // {
-    //     juce::Rectangle<float> outerBounds;
-    //     juce::Rectangle<float> innerBounds;
-    //
-    //     juce::Point<float> centre;
-    //
-    //     float radius = 0.0f;
-    //     float innerRadius = 0.0f;
-    //
-    //     float tickRadius = 0.0f;      // NUEVO
-    //
-    //
-    // };
-
-    // KnobGeometry createGeometry(
-    //     int x,
-    //     int y,
-    //     int width,
-    //     int height) const;
 
     KnobMode knobMode = KnobMode::gain;
 
