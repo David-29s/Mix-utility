@@ -26,7 +26,7 @@ namespace LayoutMetrics
 
     inline constexpr int knobOffsetX = 0;
 
-    inline constexpr int knobOffsetY = -70;
+    inline constexpr int knobOffsetY = -80;
 
     //==========================================================
     // Buttons
