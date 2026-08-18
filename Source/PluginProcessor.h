@@ -85,6 +85,12 @@ public:
     float getOutputLevelL() const;
     float getOutputLevelR() const;
 
+    float getInputRmsL() const;
+    float getInputRmsR() const;
+
+    float getOutputRmsL() const;
+    float getOutputRmsR() const;
+
     float getOutputCorrelation() const;
 
     //==========================================================

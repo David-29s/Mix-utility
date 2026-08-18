@@ -296,6 +296,26 @@ float AudioPluginAudioProcessor::getOutputLevelR() const
     return meteringProcessor.getOutputLevelR();
 }
 
+float AudioPluginAudioProcessor::getInputRmsL() const
+{
+    return meteringProcessor.getInputRmsL();
+}
+
+float AudioPluginAudioProcessor::getInputRmsR() const
+{
+    return meteringProcessor.getInputRmsR();
+}
+
+float AudioPluginAudioProcessor::getOutputRmsL() const
+{
+    return meteringProcessor.getOutputRmsL();
+}
+
+float AudioPluginAudioProcessor::getOutputRmsR() const
+{
+    return meteringProcessor.getOutputRmsR();
+}
+
 float AudioPluginAudioProcessor::getOutputCorrelation() const
 {
     return meteringProcessor.getOutputCorrelation();
