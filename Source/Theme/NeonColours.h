@@ -73,4 +73,47 @@ namespace NeonColours
 
     inline const juce::Colour electricBlue { 0xff006EFF };
 
+    //==========================================================
+    // Correlation Meter
+    //==========================================================
+
+    inline const juce::Colour correlationPanel { 0xff0C141C };
+
+    inline const juce::Colour correlationBorder { 0xff353B44 };
+
+    inline const juce::Colour correlationText { 0xffD3D7DA };
+
+    inline const juce::Colour correlationTextSecondary { 0xff8E969E };
+
+    inline const juce::Colour correlationMarker { 0xffffffff };
+
+    inline const juce::Colour correlationBarBackground  { 0xff15181d };
+
+
+    //----------------------------------------------------------
+    // Correlation Zones
+    //----------------------------------------------------------
+
+    inline const juce::Colour correlationOutOfPhase { 0xffff3030 };
+
+    inline const juce::Colour correlationLow { 0xffffe600 };
+
+    inline const juce::Colour correlationInPhase { 0xff00C96A };
+
+
+    //----------------------------------------------------------
+    // Correlation Gradient
+    //----------------------------------------------------------
+
+    inline const juce::Colour correlationGradientRed { 0xffff3030 };
+
+    inline const juce::Colour correlationGradientOrange { 0xffffa500 };
+
+    inline const juce::Colour correlationGradientYellow { 0xffffe600 };
+
+    inline const juce::Colour correlationGradientGreen { 0xff00C96A };
+
+
+
+
 }
