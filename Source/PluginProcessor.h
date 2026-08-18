@@ -39,6 +39,8 @@ public:
 
     void setBassMonoListen(bool shouldListen);
 
+    bool getBassMonoListenParameter();
+
     //==========================================================
     // States
     //==========================================================

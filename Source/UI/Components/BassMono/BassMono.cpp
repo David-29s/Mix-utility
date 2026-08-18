@@ -8,6 +8,9 @@ BassMono::BassMono(
     AudioPluginAudioProcessor& processor)
     : processorRef(processor)
 {
+
+    listenEnabled =
+    processorRef.getBassMonoListenParameter();
     //==========================================================
     // Enabled
     //==========================================================
@@ -29,8 +32,8 @@ BassMono::BassMono(
     enabledButton.setClickingTogglesState(true);
 
     enabledButton.setToggleState(
-        false,
-        juce::dontSendNotification);
+    processorRef.getBassMonoParameter(),
+    juce::dontSendNotification);
 
     enabledButton.onClick = [this]
     {
@@ -62,8 +65,8 @@ BassMono::BassMono(
         1.0);
 
     crossoverSlider.setValue(
-        150.0,
-        juce::dontSendNotification);
+      processorRef.getBassMonoCrossoverParameter(),
+      juce::dontSendNotification);
 
     crossoverSlider.setColour(
        juce::Slider::trackColourId,
@@ -100,8 +103,10 @@ BassMono::BassMono(
     //==========================================================
 
     crossoverLabel.setText(
-        "150 Hz",
-        juce::dontSendNotification);
+    juce::String(
+        crossoverSlider.getValue(),
+        0) + " Hz",
+    juce::dontSendNotification);
 
     crossoverLabel.setJustificationType(
         juce::Justification::centred);

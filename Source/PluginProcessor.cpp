@@ -150,6 +150,12 @@ AudioPluginAudioProcessor::createParameterLayout()
             false));
 
     layout.add(
+    std::make_unique<juce::AudioParameterBool>(
+        "BASS_MONO_LISTEN",
+        "Bass Mono Listen",
+        false));
+
+    layout.add(
         std::make_unique<juce::AudioParameterFloat>(
             "BASS_MONO_CROSSOVER",
             "Bass Mono Crossover",
@@ -859,6 +865,10 @@ void AudioPluginAudioProcessor::updateParameters()
     gainProcessor.setBassMonoCrossover(
         apvts.getRawParameterValue(
             "BASS_MONO_CROSSOVER")->load());
+
+    gainProcessor.setBassMonoListen(
+    apvts.getRawParameterValue(
+        "BASS_MONO_LISTEN")->load() > 0.5f);
 }
 
 void AudioPluginAudioProcessor::setBypassParameter(
@@ -956,7 +966,26 @@ void AudioPluginAudioProcessor::setBassMonoParameter(
 
 void AudioPluginAudioProcessor::setBassMonoListen(bool shouldListen)
 {
-    gainProcessor.setBassMonoListen(shouldListen);
+    if (auto* parameter =
+        apvts.getParameter("BASS_MONO_LISTEN"))
+    {
+        parameter->setValueNotifyingHost(
+            shouldListen ? 1.0f : 0.0f);
+    }
+
+    gainProcessor.setBassMonoListen(
+        shouldListen);
+}
+
+bool AudioPluginAudioProcessor::getBassMonoListenParameter()
+{
+    if (auto* value =
+        apvts.getRawParameterValue("BASS_MONO_LISTEN"))
+    {
+        return value->load() > 0.5f;
+    }
+
+    return false;
 }
 
 bool AudioPluginAudioProcessor::getBassMonoParameter()
