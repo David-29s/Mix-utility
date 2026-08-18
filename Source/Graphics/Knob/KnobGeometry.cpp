@@ -8,7 +8,7 @@ KnobGeometry createKnobGeometry(
 {
     KnobGeometry geo;
 
-    constexpr float knobDiameter = 174.0f; // aumentar para hacer mas grande el knob disminuir para lo contrario.
+    constexpr float knobDiameter = 190.0f; // aumentar para hacer mas grande el knob disminuir para lo contrario.
 
     const float diameter = knobDiameter;
 
