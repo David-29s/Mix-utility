@@ -381,6 +381,8 @@ void AudioPluginAudioProcessorEditor::timerCallback()
 
     refreshButtons();
 
+    bassMono.refreshState();
+
     inputMeter.setLevels(
     processorRef.getInputLevelL(),
     processorRef.getInputLevelR());

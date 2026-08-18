@@ -245,17 +245,20 @@ void GainProcessor::process(
         return;
 
     //==========================================================
-    // Bass Mono Listen
+    // Bass Mono / Listen
     //==========================================================
 
     if (bassMonoListen)
     {
         processBassMonoListen(buffer);
-        return;
+    }
+    else
+    {
+        processBassMono(buffer);
     }
 
     //==========================================================
-    // Normal Processing
+    // Other Processing
     //==========================================================
 
     processMono(buffer);
@@ -265,8 +268,6 @@ void GainProcessor::process(
     processPan(buffer);
 
     processWidth(buffer);
-
-    processBassMono(buffer);
 
     processGain(buffer);
 }

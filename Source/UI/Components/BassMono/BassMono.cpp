@@ -118,6 +118,32 @@ BassMono::BassMono(
     addAndMakeVisible(crossoverLabel);
 }
 
+
+void BassMono::refreshState()
+{
+    enabledButton.setToggleState(
+        processorRef.getBassMonoParameter(),
+        juce::dontSendNotification);
+
+    const auto frequency =
+        processorRef.getBassMonoCrossoverParameter();
+
+    crossoverSlider.setValue(
+        frequency,
+        juce::dontSendNotification);
+
+    crossoverLabel.setText(
+        juce::String(
+            frequency,
+            0) + " Hz",
+        juce::dontSendNotification);
+
+    listenEnabled =
+        processorRef.getBassMonoListenParameter();
+
+    repaint();
+}
+
 void BassMono::paint(juce::Graphics& g)
 {
     //==========================================================
