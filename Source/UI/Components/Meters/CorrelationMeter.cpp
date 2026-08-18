@@ -37,7 +37,7 @@ void CorrelationMeter::paint(juce::Graphics& g)
     //==========================================================
 
     g.setColour(
-        juce::Colours::black.withAlpha(0.25f));
+        NeonColours::correlationPanel.withAlpha(0.25f));
 
     g.fillRoundedRectangle(
         bounds,
@@ -49,7 +49,7 @@ void CorrelationMeter::paint(juce::Graphics& g)
     //==========================================================
 
     g.setColour(
-        NeonColours::violet.withAlpha(0.9f));
+        NeonColours::correlationGradientGreen.withAlpha(0.8f));
 
     g.drawRoundedRectangle(
         bounds.reduced(
@@ -67,7 +67,7 @@ void CorrelationMeter::paint(juce::Graphics& g)
             CorrelationMetrics::titleHeight);
 
     g.setColour(
-        juce::Colours::white);
+        NeonColours::correlationText);
 
     g.setFont(
         juce::FontOptions(
@@ -122,7 +122,7 @@ void CorrelationMeter::paint(juce::Graphics& g)
 
 
     g.setColour(
-        juce::Colours::white.withAlpha(0.75f));
+        NeonColours::correlationText.withAlpha(0.75f));
 
     g.setFont(
         juce::FontOptions(
@@ -139,7 +139,7 @@ void CorrelationMeter::paint(juce::Graphics& g)
             labels[i],
             x - labelWidth * 0.5f,
             scaleArea.getY()
-    + CorrelationMetrics::scaleLabelOffsetY,
+                + CorrelationMetrics::scaleLabelOffsetY,
             labelWidth,
             scaleArea.getHeight(),
             juce::Justification::centred);
@@ -182,13 +182,14 @@ void CorrelationMeter::paint(juce::Graphics& g)
 
         g.setColour(
             isMajor
-                ? juce::Colours::white.withAlpha(0.75f)
-                : juce::Colours::white.withAlpha(0.30f));
+                ? NeonColours::correlationText.withAlpha(0.75f)
+                : NeonColours::correlationTextSecondary.withAlpha(0.30f));
 
         const float currentTickY =
-     isMajor
-         ? tickAreaY
-         : tickAreaY + CorrelationMetrics::minorTickOffsetY;
+            isMajor
+                ? tickAreaY
+                : tickAreaY
+                    + CorrelationMetrics::minorTickOffsetY;
 
         g.fillRect(
             x - tickWidth * 0.5f,
@@ -202,14 +203,13 @@ void CorrelationMeter::paint(juce::Graphics& g)
     // Correlation Bar
     //==========================================================
 
-
     auto barArea =
-      bounds.removeFromTop(
-          CorrelationMetrics::barHeight);
+        bounds.removeFromTop(
+            CorrelationMetrics::barHeight);
 
     barArea.translate(
-     CorrelationMetrics::barOffsetX,
-     CorrelationMetrics::barOffsetY);
+        CorrelationMetrics::barOffsetX,
+        CorrelationMetrics::barOffsetY);
 
     barArea =
         barArea.reduced(
@@ -219,7 +219,7 @@ void CorrelationMeter::paint(juce::Graphics& g)
 
     // Background
     g.setColour(
-        juce::Colours::black.withAlpha(0.35f));
+        NeonColours::correlationBarBackground);
 
     g.fillRoundedRectangle(
         barArea,
@@ -231,11 +231,11 @@ void CorrelationMeter::paint(juce::Graphics& g)
     //==========================================================
 
     juce::ColourGradient gradient(
-        juce::Colours::red,
+        NeonColours::correlationGradientRed,
         barArea.getX(),
         barArea.getCentreY(),
 
-        juce::Colours::green,
+        NeonColours::correlationGradientGreen,
         barArea.getRight(),
         barArea.getCentreY(),
 
@@ -244,15 +244,15 @@ void CorrelationMeter::paint(juce::Graphics& g)
 
     gradient.addColour(
         0.25,
-        juce::Colours::orange);
+        NeonColours::correlationGradientOrange);
 
     gradient.addColour(
         0.50,
-        juce::Colours::yellow);
+        NeonColours::correlationGradientYellow);
 
     gradient.addColour(
         0.75,
-        juce::Colours::green);
+        NeonColours::correlationGradientGreen);
 
 
     g.setGradientFill(
@@ -275,13 +275,14 @@ void CorrelationMeter::paint(juce::Graphics& g)
             0.0f,
             1.0f);
 
+
     const float markerX =
         barArea.getX()
         + normalized * barArea.getWidth();
 
 
     g.setColour(
-        juce::Colours::white);
+        NeonColours::correlationMarker);
 
     g.fillRect(
         markerX
@@ -324,7 +325,8 @@ void CorrelationMeter::paint(juce::Graphics& g)
 
     // OUT OF PHASE
     g.setColour(
-        juce::Colours::red.withAlpha(0.75f));
+        NeonColours::correlationOutOfPhase
+            .withAlpha(0.75f));
 
     g.fillRect(
         outOfPhaseX
@@ -339,7 +341,8 @@ void CorrelationMeter::paint(juce::Graphics& g)
 
     // LOW
     g.setColour(
-        juce::Colours::yellow.withAlpha(0.75f));
+        NeonColours::correlationLow
+            .withAlpha(0.75f));
 
     g.fillRect(
         lowX
@@ -354,7 +357,8 @@ void CorrelationMeter::paint(juce::Graphics& g)
 
     // IN PHASE
     g.setColour(
-        juce::Colours::green.withAlpha(0.75f));
+        NeonColours::correlationInPhase
+            .withAlpha(0.75f));
 
     g.fillRect(
         inPhaseX
@@ -379,7 +383,8 @@ void CorrelationMeter::paint(juce::Graphics& g)
 
     // OUT OF PHASE
     g.setColour(
-        juce::Colours::red.withAlpha(0.85f));
+        NeonColours::correlationOutOfPhase
+            .withAlpha(0.85f));
 
     g.setFont(
         juce::FontOptions(
@@ -402,7 +407,8 @@ void CorrelationMeter::paint(juce::Graphics& g)
 
     // LOW
     g.setColour(
-        juce::Colours::yellow.withAlpha(0.85f));
+        NeonColours::correlationLow
+            .withAlpha(0.85f));
 
     g.drawText(
         "LOW",
@@ -421,7 +427,8 @@ void CorrelationMeter::paint(juce::Graphics& g)
 
     // IN PHASE
     g.setColour(
-        juce::Colours::green.withAlpha(0.85f));
+        NeonColours::correlationInPhase
+            .withAlpha(0.85f));
 
     g.drawText(
         "IN PHASE",
