@@ -441,29 +441,30 @@ void GainProcessor::processPan(
          sample < numSamples;
          ++sample)
     {
-        //======================================================
-        // Obtener Pan suavizado
-        //======================================================
-
         const float currentPan =
             smoothedPan.getNextValue();
 
-        //======================================================
-        // Aplicar Pan manteniendo unity en el centro
-        //======================================================
+        const float panAmount =
+            std::abs(currentPan);
+
+        // Curva híbrida:
+        // conserva unity en el centro,
+        // pero hace más progresivo el movimiento.
+        const float curvedPan =
+            std::pow(panAmount, 0.75f);
 
         float leftGain = 1.0f;
         float rightGain = 1.0f;
 
         if (currentPan < 0.0f)
         {
-            // Paneo hacia la izquierda.
-            rightGain = 1.0f + currentPan;
+            rightGain =
+                1.0f - curvedPan;
         }
         else if (currentPan > 0.0f)
         {
-            // Paneo hacia la derecha.
-            leftGain = 1.0f - currentPan;
+            leftGain =
+                1.0f - curvedPan;
         }
 
         left[sample] *= leftGain;
