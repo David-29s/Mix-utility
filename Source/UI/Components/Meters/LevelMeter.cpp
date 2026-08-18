@@ -419,7 +419,7 @@ void LevelMeter::paint(
      juce::jmax(leftLevelDb, rightLevelDb);
 
     displayedLevelDb +=
-        (currentLevelDb - displayedLevelDb) * 0.02f; //para suavisar el texto que muestra db
+        (currentLevelDb - displayedLevelDb) * 0.05f; //para suavisar el texto que muestra db
 
     const juce::String currentLevelText =
     juce::String(displayedLevelDb, 1) + " dB";
