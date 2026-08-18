@@ -581,17 +581,39 @@ auto drawChannel =
     //==========================================================
 
     const juce::String currentLevelText =
-     juce::String(peakReadoutDb, 1) + " dB";
+        juce::String(peakReadoutDb, 1) + " dB";
 
     g.setFont(
-        juce::FontOptions(11.0f)); //Cambiar tamano texto de abajo
-
-    g.setColour(
-        juce::Colours::white.withAlpha(0.75f));
+        juce::FontOptions(11.0f)); //Cambiar tamano de los numeros de la etiqueta
 
     const float readoutOffsetX = scaleOnRight
-    ? MeterMetrics::outputReadoutOffsetX
-    : MeterMetrics::inputReadoutOffsetX;
+        ? MeterMetrics::outputReadoutOffsetX
+        : MeterMetrics::inputReadoutOffsetX;
+
+    const bool isClipping = peakReadoutDb > 0.0f;
+
+    //==========================================================
+    // Readout background
+    //==========================================================
+
+    g.setColour(
+        isClipping
+            ? juce::Colour(220, 45, 45)
+            : juce::Colour(10, 15, 19));
+
+    g.fillRoundedRectangle(
+        meterOffset + readoutOffsetX,
+        17.0f,
+        static_cast<float>(MeterMetrics::inputLabelWidth),
+        18.0f,
+        3.0f);
+
+    //==========================================================
+    // Readout text
+    //==========================================================
+
+    g.setColour(
+        juce::Colours::white);
 
     g.drawText(
         currentLevelText,
@@ -601,8 +623,14 @@ auto drawChannel =
         18.0f,
         juce::Justification::centred);
 
+    //==========================================================
+    // Readout border
+    //==========================================================
+
     g.setColour(
-        juce::Colours::white.withAlpha(0.6f));
+        isClipping
+            ? juce::Colour(255, 70, 70)
+            : juce::Colours::white.withAlpha(0.1f));
 
     g.drawRoundedRectangle(
         meterOffset + readoutOffsetX,
@@ -610,8 +638,7 @@ auto drawChannel =
         static_cast<float>(MeterMetrics::inputLabelWidth),
         18.0f,
         3.0f,
-        1.0f);
-
+        0.50f);
     //==========================================================
     // Draw L/R
     //==========================================================
