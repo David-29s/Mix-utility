@@ -63,7 +63,7 @@ namespace CorrelationMetrics
     inline constexpr float majorTickWidth = 1.5f;
     inline constexpr float minorTickWidth = 1.0f;
 
-    inline constexpr float tickOffsetY = -11.0f;
+    inline constexpr float tickOffsetY = -9.0f;
 
 
     //==========================================================
