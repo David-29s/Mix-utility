@@ -384,12 +384,16 @@ void AudioPluginAudioProcessorEditor::timerCallback()
     bassMono.refreshState();
 
     inputMeter.setLevels(
-    processorRef.getInputLevelL(),
-    processorRef.getInputLevelR());
+     processorRef.getInputLevelL(),
+     processorRef.getInputLevelR(),
+     processorRef.getInputRmsL(),
+     processorRef.getInputRmsR());
 
     outputMeter.setLevels(
-      processorRef.getOutputLevelL(),
-      processorRef.getOutputLevelR());
+        processorRef.getOutputLevelL(),
+        processorRef.getOutputLevelR(),
+        processorRef.getOutputRmsL(),
+        processorRef.getOutputRmsR());
 
     correlationMeter.setCorrelation(
     processorRef.getOutputCorrelation());
