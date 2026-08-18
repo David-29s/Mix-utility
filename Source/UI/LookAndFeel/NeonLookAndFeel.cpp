@@ -491,7 +491,7 @@ void NeonLookAndFeel::drawMajorTicks(
     constexpr float majorInset = 1.5f;
 
     // Distancia adicional desde el centro
-    constexpr float tickOffset = 4.4f;
+    constexpr float tickOffset = 6.6f;
 
     const float minorInner =
         geo.tickRadius + tickOffset;
@@ -634,11 +634,11 @@ void NeonLookAndFeel::drawLabels(
     constexpr float gainWidth  = 46.0f;
     constexpr float gainHeight = 18.0f;
 
-    constexpr float gainFontSize = 13.0f;
+    constexpr float gainFontSize = 15.0f;
 
     // Posición general
     constexpr float gainX = 0.0f;
-    constexpr float gainY = 9.0f;
+    constexpr float gainY = 13.0f;
 
     // Posición individual
     constexpr float gainLeftX  = -6.0f;
@@ -657,11 +657,11 @@ void NeonLookAndFeel::drawLabels(
     constexpr float panWidth  = 46.0f;
     constexpr float panHeight = 18.0f;
 
-    constexpr float panFontSize = 13.0f;
+    constexpr float panFontSize = 15.0f;
 
     // Posición general
     constexpr float panX = 0.0f;
-    constexpr float panY = 9.0f;
+    constexpr float panY = 13.0f;
 
     // Posición individual
     constexpr float panLeftX  = -4.0f;
@@ -680,11 +680,11 @@ void NeonLookAndFeel::drawLabels(
     constexpr float widthLabelWidth  = 62.0f;
     constexpr float widthLabelHeight = 18.0f;
 
-    constexpr float widthFontSize = 14.0f;
+    constexpr float widthFontSize = 16.0f;
 
     // Posición general
     constexpr float widthX = 0.0f;
-    constexpr float widthY = 8.0f;
+    constexpr float widthY = 13.0f;
 
     // Posición individual
     constexpr float widthLeftX  = -4.0f;
