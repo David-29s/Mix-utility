@@ -74,7 +74,7 @@ void GainProcessor::setGain(float newGain)
 {
     newGain = juce::jlimit(
         0.0f,
-        10.0f,
+        63.0957344f, // +36 dB
         newGain);
 
     smoothedGain.setTargetValue(newGain);
@@ -394,6 +394,12 @@ void GainProcessor::processPhase(
 void GainProcessor::processGain(
     juce::AudioBuffer<float>& buffer)
 {
+    if (!smoothedGain.isSmoothing())
+    {
+        buffer.applyGain(smoothedGain.getCurrentValue());
+        return;
+    }
+
     const int numChannels =
         buffer.getNumChannels();
 
@@ -436,6 +442,22 @@ void GainProcessor::processPan(
 
     auto* right =
         buffer.getWritePointer(1);
+
+    if (!smoothedPan.isSmoothing())
+    {
+        const float currentPan = smoothedPan.getCurrentValue();
+        if (currentPan == 0.0f)
+            return;
+
+        const float panAmount = std::abs(currentPan);
+        const float curvedPan = std::pow(panAmount, 0.75f);
+        const float leftGain = currentPan > 0.0f ? 1.0f - curvedPan : 1.0f;
+        const float rightGain = currentPan < 0.0f ? 1.0f - curvedPan : 1.0f;
+
+        juce::FloatVectorOperations::multiply(left, leftGain, numSamples);
+        juce::FloatVectorOperations::multiply(right, rightGain, numSamples);
+        return;
+    }
 
     for (int sample = 0;
          sample < numSamples;
@@ -481,6 +503,10 @@ void GainProcessor::processWidth(
 {
     // WIDTH necesita como mínimo dos canales.
     if (buffer.getNumChannels() < 2)
+        return;
+
+    if (!smoothedWidth.isSmoothing()
+        && smoothedWidth.getCurrentValue() == 1.0f)
         return;
 
     const int numSamples =
@@ -558,75 +584,46 @@ void GainProcessor::processBassMono(
     auto* right =
         buffer.getWritePointer(1);
 
-    for (int sample = 0;
-         sample < numSamples;
-         ++sample)
+    constexpr int filterUpdateInterval = 16;
+    float currentCrossover =
+        smoothedBassMonoCrossover.getCurrentValue();
+
+    for (int chunkStart = 0;
+         chunkStart < numSamples;
+         chunkStart += filterUpdateInterval)
     {
-        //======================================================
-        // Crossover suavizado
-        //======================================================
-
-        const float currentCrossover =
-            smoothedBassMonoCrossover.getNextValue();
-
         bassMonoFilterL.setCutoffFrequency(
             currentCrossover);
 
         bassMonoFilterR.setCutoffFrequency(
             currentCrossover);
 
-        //======================================================
-        // Input
-        //======================================================
+        const int chunkEnd = juce::jmin(
+            chunkStart + filterUpdateInterval,
+            numSamples);
 
-        const float inputLeft =
-            left[sample];
+        for (int sample = chunkStart;
+             sample < chunkEnd;
+             ++sample)
+        {
+            const float inputLeft = left[sample];
+            const float inputRight = right[sample];
 
-        const float inputRight =
-            right[sample];
+            float lowLeft = 0.0f;
+            float highLeft = 0.0f;
+            bassMonoFilterL.processSample(0, inputLeft, lowLeft, highLeft);
 
-        //======================================================
-        // Left crossover
-        //======================================================
+            float lowRight = 0.0f;
+            float highRight = 0.0f;
+            bassMonoFilterR.processSample(0, inputRight, lowRight, highRight);
 
-        float lowLeft = 0.0f;
-        float highLeft = 0.0f;
+            const float monoLow = (lowLeft + lowRight) * 0.5f;
+            left[sample] = monoLow + highLeft;
+            right[sample] = monoLow + highRight;
+        }
 
-        bassMonoFilterL.processSample(
-            0,
-            inputLeft,
-            lowLeft,
-            highLeft);
-
-        //======================================================
-        // Right crossover
-        //======================================================
-
-        float lowRight = 0.0f;
-        float highRight = 0.0f;
-
-        bassMonoFilterR.processSample(
-            0,
-            inputRight,
-            lowRight,
-            highRight);
-
-        //======================================================
-        // Mono low frequencies
-        //======================================================
-
-        const float monoLow =
-            (lowLeft + lowRight) * 0.5f;
-
-        //======================================================
-        // Reconstruct L / R
-        //======================================================
-
-        left[sample] =
-            monoLow + highLeft;
-
-        right[sample] =
-            monoLow + highRight;
+        currentCrossover =
+            smoothedBassMonoCrossover.skip(chunkEnd - chunkStart);
     }
 }
 
@@ -645,92 +642,54 @@ void GainProcessor::processBassMonoListen(
     auto* right =
         buffer.getWritePointer(1);
 
-    for (int sample = 0;
-         sample < numSamples;
-         ++sample)
+    constexpr int filterUpdateInterval = 16;
+    float currentCrossover =
+        smoothedBassMonoCrossover.getCurrentValue();
+
+    for (int chunkStart = 0;
+         chunkStart < numSamples;
+         chunkStart += filterUpdateInterval)
     {
-        //======================================================
-        // Crossover suavizado
-        //======================================================
-
-        const float currentCrossover =
-            smoothedBassMonoCrossover.getNextValue();
-
         bassMonoFilterL.setCutoffFrequency(
             currentCrossover);
 
         bassMonoFilterR.setCutoffFrequency(
             currentCrossover);
 
-        //======================================================
-        // Input
-        //======================================================
+        const int chunkEnd = juce::jmin(
+            chunkStart + filterUpdateInterval,
+            numSamples);
 
-        const float inputLeft =
-            left[sample];
-
-        const float inputRight =
-            right[sample];
-
-        //======================================================
-        // Left crossover
-        //======================================================
-
-        float lowLeft = 0.0f;
-        float highLeft = 0.0f;
-
-        bassMonoFilterL.processSample(
-            0,
-            inputLeft,
-            lowLeft,
-            highLeft);
-
-        //======================================================
-        // Right crossover
-        //======================================================
-
-        float lowRight = 0.0f;
-        float highRight = 0.0f;
-
-        bassMonoFilterR.processSample(
-            0,
-            inputRight,
-            lowRight,
-            highRight);
-
-        //======================================================
-        // Output
-        //======================================================
-
-        if (bassMono)
+        for (int sample = chunkStart;
+             sample < chunkEnd;
+             ++sample)
         {
-            //==================================================
-            // Bass Mono ON
-            // LOW → MONO
-            //==================================================
+            const float inputLeft = left[sample];
+            const float inputRight = right[sample];
 
-            const float monoLow =
-                (lowLeft + lowRight) * 0.5f;
+            float lowLeft = 0.0f;
+            float highLeft = 0.0f;
+            bassMonoFilterL.processSample(0, inputLeft, lowLeft, highLeft);
 
-            left[sample] =
-                monoLow;
+            float lowRight = 0.0f;
+            float highRight = 0.0f;
+            bassMonoFilterR.processSample(0, inputRight, lowRight, highRight);
 
-            right[sample] =
-                monoLow;
+            if (bassMono)
+            {
+                const float monoLow = (lowLeft + lowRight) * 0.5f;
+                left[sample] = monoLow;
+                right[sample] = monoLow;
+            }
+            else
+            {
+                left[sample] = lowLeft;
+                right[sample] = lowRight;
+            }
         }
-        else
-        {
-            //==================================================
-            // Bass Mono OFF
-            // LOW → STEREO
-            //==================================================
 
-            left[sample] =
-                lowLeft;
-
-            right[sample] =
-                lowRight;
-        }
+        currentCrossover =
+            smoothedBassMonoCrossover.skip(chunkEnd - chunkStart);
     }
 }
 

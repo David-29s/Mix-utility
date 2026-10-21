@@ -367,11 +367,6 @@ void AudioPluginAudioProcessor::toggleCompareState()
 
     usingStateA = !usingStateA;
 
-    //==========================================================
-    // Actualizar DSP
-    //==========================================================
-
-    updateParameters();
 }
 
 //----------------------------------------------------------
@@ -732,11 +727,7 @@ void AudioPluginAudioProcessor::setStateInformation(
                 stateB.createCopy());
     }
 
-    //==========================================================
-    // Actualizar DSP
-    //==========================================================
-
-    updateParameters();
+    // The audio thread applies the restored APVTS values on its next block.
 }
 
 //==============================================================================
@@ -996,8 +987,7 @@ void AudioPluginAudioProcessor::setBassMonoListen(bool shouldListen)
             shouldListen ? 1.0f : 0.0f);
     }
 
-    gainProcessor.setBassMonoListen(
-        shouldListen);
+    // updateParameters() applies this change on the audio thread.
 }
 
 bool AudioPluginAudioProcessor::getBassMonoListenParameter()
