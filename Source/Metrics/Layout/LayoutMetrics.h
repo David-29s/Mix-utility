@@ -32,9 +32,11 @@ namespace LayoutMetrics
     // Buttons
     //==========================================================
 
-    inline constexpr int buttonSize = 88;
-    inline constexpr int buttonSpacing = -25;
-    inline constexpr int buttonY = 275;
+    inline constexpr int buttonWidth = 62;
+    inline constexpr int buttonHeight = 68;
+    inline constexpr int buttonSpacing = 1;
+    inline constexpr int buttonY = 303;
+    inline constexpr int controlModeButtonSize = 88;
 
 
     //==========================================================

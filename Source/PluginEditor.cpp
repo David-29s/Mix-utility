@@ -294,6 +294,25 @@ void AudioPluginAudioProcessorEditor::paint (juce::Graphics& g)
       getLocalBounds(),
       animator);
 
+    const int totalButtonWidth =
+        (LayoutMetrics::buttonWidth * 5)
+        + (LayoutMetrics::buttonSpacing * 4);
+    const int buttonStartX = (getWidth() - totalButtonWidth) / 2;
+    const float separatorTop = static_cast<float>(LayoutMetrics::buttonY + 8);
+    const float separatorBottom = static_cast<float>(
+        LayoutMetrics::buttonY + LayoutMetrics::buttonHeight - 8);
+
+    g.setColour(NeonColours::border.withAlpha(0.9f));
+    for (const int groupBoundary : { 0, 3 })
+    {
+        const float separatorX = static_cast<float>(
+            buttonStartX
+            + ((groupBoundary + 1) * LayoutMetrics::buttonWidth)
+            + (groupBoundary * LayoutMetrics::buttonSpacing)
+            + (LayoutMetrics::buttonSpacing * 0.5f));
+        g.drawLine(separatorX, separatorTop, separatorX, separatorBottom, 1.0f);
+    }
+
 }
 void AudioPluginAudioProcessorEditor::resized()
 {
@@ -384,8 +403,8 @@ void AudioPluginAudioProcessorEditor::resized()
     controlModeButton.setBounds(
         LayoutMetrics::controlModeButtonX,
         LayoutMetrics::controlModeButtonY,
-        LayoutMetrics::buttonSize,
-        LayoutMetrics::buttonSize);
+        LayoutMetrics::controlModeButtonSize,
+        LayoutMetrics::controlModeButtonSize);
 
 }
 
@@ -419,11 +438,11 @@ void AudioPluginAudioProcessorEditor::setButtonPosition(
    IconToggleButton& button,
     int index)
 {
-    const int buttonSize =
-        LayoutMetrics::buttonSize;
+    const int buttonWidth =
+        LayoutMetrics::buttonWidth;
 
     const int totalWidth =
-        (buttonSize * 5) +
+        (buttonWidth * 5) +
         (LayoutMetrics::buttonSpacing * 4);
 
     const int startX =
@@ -437,10 +456,10 @@ void AudioPluginAudioProcessorEditor::setButtonPosition(
 
     button.setBounds(
         startX +
-            (buttonSize + LayoutMetrics::buttonSpacing) * index,
+            (buttonWidth + LayoutMetrics::buttonSpacing) * index,
         buttonY,
-        buttonSize,
-        buttonSize);
+        buttonWidth,
+        LayoutMetrics::buttonHeight);
 }
 
 void AudioPluginAudioProcessorEditor::refreshButtons()

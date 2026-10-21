@@ -15,12 +15,18 @@ IconToggleButton::IconToggleButton()
 void IconToggleButton::paint(
     juce::Graphics& g)
 {
-    //==========================================================
-    // Fondo transparente
-    //==========================================================
+    const auto card = getLocalBounds().toFloat().reduced(2.0f);
+    const bool selected = active || iconType == IconType::ab;
+    const auto accent = getCurrentColour();
 
-    g.fillAll(
-        juce::Colours::transparentBlack);
+    g.setColour(juce::Colour(0xff151a22).withAlpha(
+        isHovered ? 0.98f : 0.92f));
+    g.fillRoundedRectangle(card, 8.0f);
+
+    g.setColour(selected
+        ? accent.withAlpha(0.58f)
+        : accent.withAlpha(isHovered ? 0.50f : 0.24f));
+    g.drawRoundedRectangle(card, 8.0f, selected ? 1.4f : 1.0f);
 
     //==========================================================
     // Icono

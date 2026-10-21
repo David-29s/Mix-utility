@@ -483,11 +483,41 @@ auto drawChannel =
         meterHeight);
 
     g.setColour(
-        juce::Colour(25, 30, 34));
+        juce::Colour(17, 22, 28));
 
         g.fillRoundedRectangle(
         channelBounds,
         2.0f);
+
+        const auto levelToY = [&](float db)
+        {
+            const float normalized = juce::jmap(
+                db,
+                MeterMetrics::minDb,
+                MeterMetrics::maxDb,
+                0.0f,
+                1.0f);
+            return meterBounds.getBottom() - normalized * meterHeight;
+        };
+
+        const auto drawRangeTint = [&](float lowDb, float highDb, juce::Colour colour)
+        {
+            const float top = levelToY(highDb);
+            const float bottom = levelToY(lowDb);
+            g.setColour(colour);
+            g.fillRect(x + 1.0f, top, meterWidth - 2.0f, bottom - top);
+        };
+
+        drawRangeTint(-60.0f, -12.0f, juce::Colour(0xff00e676).withAlpha(0.08f));
+        drawRangeTint(-12.0f, 0.0f, juce::Colour(0xffffc928).withAlpha(0.10f));
+        drawRangeTint(0.0f, 12.0f, juce::Colour(0xffff5364).withAlpha(0.12f));
+
+        g.setColour(juce::Colours::white.withAlpha(0.10f));
+        for (const float db : { -12.0f, 0.0f })
+        {
+            const float y = levelToY(db);
+            g.drawLine(x + 1.0f, y, x + meterWidth - 1.0f, y, 0.8f);
+        }
 
 
         //==================================================
@@ -511,10 +541,12 @@ auto drawChannel =
                 meterWidth,
                 rmsHeight);
 
-            // RMS = verde fuerte
-            g.setColour(
-                juce::Colour(0, 255, 70));
-
+            juce::ColourGradient levelGradient(
+                juce::Colour(0xff00e676), x, meterBounds.getBottom(),
+                juce::Colour(0xffff5364), x, meterBounds.getY(), false);
+            levelGradient.addColour(0.67, juce::Colour(0xffffd43b));
+            levelGradient.addColour(0.83, juce::Colour(0xffff8a3d));
+            g.setGradientFill(levelGradient);
             g.fillRoundedRectangle(
                 rmsBounds,
                 2.0f);
@@ -543,9 +575,19 @@ auto drawChannel =
             peakHeight);
 
         g.setColour(
-            juce::Colours::limegreen.withAlpha(0.6f));
+            juce::Colours::white.withAlpha(0.72f));
 
         g.fillRect(peakBounds);
+    }
+
+    // Fine separators make the meter read as a calibrated LED ladder.
+    g.setColour(juce::Colour(0x55151a22));
+    for (int segment = 1; segment < numSegments; ++segment)
+    {
+        const float y = meterBounds.getBottom()
+            - static_cast<float>(segment) * meterHeight
+                / static_cast<float>(numSegments);
+        g.drawLine(x + 1.0f, y, x + meterWidth - 1.0f, y, 0.8f);
     }
 };
 

@@ -13,14 +13,14 @@ namespace MeterMetrics
     // Meter dimensions
     //==========================================================
 
-    inline constexpr int meterWidth = 23;
+    inline constexpr int meterWidth = 26;
     inline constexpr int meterHeight = 270;
 
     //==========================================================
     // Stereo channels
     //==========================================================
 
-    inline constexpr int channelGap = 5;
+    inline constexpr int channelGap = 4;
 
 
     //==========================================================
@@ -58,14 +58,14 @@ namespace MeterMetrics
     // Output Meter Position
     //==========================================================
 
-    inline constexpr int outputMeterX = 445;
+    inline constexpr int outputMeterX = 441;
     inline constexpr int outputMeterY = 25;
 
     //==========================================================
     // Meter labels
     //==========================================================
 
-    inline constexpr int labelTopHeight = 42;
+    inline constexpr int labelTopHeight = 56;
     inline constexpr int labelBottomHeight = 20;
 
     inline constexpr int componentHeight =
@@ -73,11 +73,11 @@ namespace MeterMetrics
         meterHeight +
         labelBottomHeight;
 
-    inline constexpr int inputLabelWidth = 50;
+    inline constexpr int inputLabelWidth = 56;
 
 
-    inline constexpr int inputReadoutOffsetX = -2;
-    inline constexpr int outputReadoutOffsetX = 1;
+    inline constexpr int inputReadoutOffsetX = 0;
+    inline constexpr int outputReadoutOffsetX = 0;
 
     //Input / output Text
     inline constexpr int inputLabelOffsetX = 0;
