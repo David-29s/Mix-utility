@@ -88,115 +88,55 @@ void ControlModeButton::drawGain(
         area.getCentre();
 
     const float size =
-        IconMetrics::iconSize;
-
-    const float radius =
-        size * 0.42f;
+        IconMetrics::controlModeIconSize * 1.15f;
 
     const float thickness =
         IconMetrics::thickness;
 
-    //==========================================================
-    // Círculo principal
-    //==========================================================
+    g.setColour(
+        getCurrentColour());
 
-    juce::Path circle;
-
-    circle.addEllipse(
+    // Perilla de nivel con indicador y marcas alrededor.
+    const float radius = size * 0.35f;
+    juce::Path knob;
+    knob.addEllipse(
         centre.x - radius,
         centre.y - radius,
         radius * 2.0f,
         radius * 2.0f);
 
-    //==========================================================
-    // Indicador
-    //==========================================================
-
-    juce::Path indicator;
-
-    indicator.startNewSubPath(
-        centre.x,
-        centre.y - radius * 0.88f);
-
-    indicator.lineTo(
-        centre.x,
-        centre.y - radius * 0.15f);
-
-    //==========================================================
-    // Color
-    //==========================================================
-
-    g.setColour(
-        getCurrentColour());
-
-    //==========================================================
-    // Círculo
-    //==========================================================
-
     g.strokePath(
-        circle,
+        knob,
         juce::PathStrokeType(
             thickness,
             juce::PathStrokeType::curved,
             juce::PathStrokeType::rounded));
 
-    //==========================================================
-    // Indicador
-    //==========================================================
-
+    juce::Path pointer;
+    pointer.startNewSubPath(centre.x, centre.y - radius * 0.92f);
+    pointer.lineTo(centre.x, centre.y - radius * 0.18f);
     g.strokePath(
-        indicator,
+        pointer,
         juce::PathStrokeType(
-            thickness,
+            thickness * 1.15f,
             juce::PathStrokeType::curved,
             juce::PathStrokeType::rounded));
 
-    //==========================================================
-    // Marcas exteriores
-    //==========================================================
-
-    const int numberOfMarks = 15;
-
-    const float outerRadius =
-        radius * 1.42f;
-
-    const float innerRadius =
-        radius * 1.22f;
-
-    for (int i = 0; i < numberOfMarks; ++i)
+    constexpr int markCount = 7;
+    const float innerRadius = size * 0.43f;
+    const float outerRadius = size * 0.49f;
+    for (int i = 0; i < markCount; ++i)
     {
-        const float normalized =
-            static_cast<float>(i)
-            / static_cast<float>(numberOfMarks - 1);
-
-        const float angle =
-            juce::MathConstants<float>::pi * 0.75f
-            +
-            normalized *
-            juce::MathConstants<float>::pi * 1.5f;
-
-        const float x1 =
-            centre.x +
-            std::cos(angle) * innerRadius;
-
-        const float y1 =
-            centre.y +
-            std::sin(angle) * innerRadius;
-
-        const float x2 =
-            centre.x +
-            std::cos(angle) * outerRadius;
-
-        const float y2 =
-            centre.y +
-            std::sin(angle) * outerRadius;
-
+        const float t = static_cast<float>(i)
+            / static_cast<float>(markCount - 1);
+        const float angle = juce::MathConstants<float>::pi * 0.72f
+            + t * juce::MathConstants<float>::pi * 1.56f;
         g.drawLine(
-            x1,
-            y1,
-            x2,
-            y2,
-            thickness * 1.5f);
+            centre.x + std::cos(angle) * innerRadius,
+            centre.y + std::sin(angle) * innerRadius,
+            centre.x + std::cos(angle) * outerRadius,
+            centre.y + std::sin(angle) * outerRadius,
+            thickness * 0.9f);
     }
 }
 
@@ -215,10 +155,7 @@ void ControlModeButton::drawPan(
         area.getCentre();
 
     const float size =
-        IconMetrics::iconSize;
-
-    const float radius =
-        size * 0.48f;
+        IconMetrics::controlModeIconSize;
 
     const float thickness =
         IconMetrics::thickness;
@@ -226,131 +163,52 @@ void ControlModeButton::drawPan(
     g.setColour(
         getCurrentColour());
 
-    //==========================================================
-    // Círculo exterior
-    //==========================================================
+    // Perilla central con flechas en ambos sentidos para indicar panorama.
+    const float arrowTipX = size * 0.45f;
+    const float arrowBaseX = size * 0.27f;
+    const float arrowHalfHeight = size * 0.17f;
+    const float knobRadius = size * 0.18f;
 
-    juce::Path circle;
+    juce::Path arrows;
+    arrows.startNewSubPath(centre.x - arrowBaseX, centre.y);
+    arrows.lineTo(centre.x - arrowTipX, centre.y);
+    arrows.lineTo(
+        centre.x - arrowTipX + size * 0.13f,
+        centre.y - arrowHalfHeight);
+    arrows.startNewSubPath(centre.x - arrowTipX, centre.y);
+    arrows.lineTo(
+        centre.x - arrowTipX + size * 0.13f,
+        centre.y + arrowHalfHeight);
 
-    circle.addEllipse(
-        centre.x - radius,
-        centre.y - radius,
-        radius * 2.0f,
-        radius * 2.0f);
+    arrows.startNewSubPath(centre.x + arrowBaseX, centre.y);
+    arrows.lineTo(centre.x + arrowTipX, centre.y);
+    arrows.lineTo(
+        centre.x + arrowTipX - size * 0.13f,
+        centre.y - arrowHalfHeight);
+    arrows.startNewSubPath(centre.x + arrowTipX, centre.y);
+    arrows.lineTo(
+        centre.x + arrowTipX - size * 0.13f,
+        centre.y + arrowHalfHeight);
 
     g.strokePath(
-        circle,
+        arrows,
         juce::PathStrokeType(
             thickness,
             juce::PathStrokeType::curved,
             juce::PathStrokeType::rounded));
 
-    //==========================================================
-    // Línea vertical
-    //==========================================================
-
-    g.drawLine(
-        centre.x,
-        centre.y - radius * 0.82f,
-        centre.x,
-        centre.y + radius * 0.82f,
+    g.drawEllipse(
+        centre.x - knobRadius,
+        centre.y - knobRadius,
+        knobRadius * 2.0f,
+        knobRadius * 2.0f,
         thickness);
 
-    //==========================================================
-    // L / R
-    //==========================================================
-
-    g.setFont(
-        juce::Font(
-            size * 0.34f,
-            juce::Font::bold));
-
-    g.drawText(
-        "L",
-        static_cast<int>(
-            centre.x - radius * 0.78f),
-        static_cast<int>(
-            centre.y - size * 0.10f),
-        static_cast<int>(
-            size * 0.30f),
-        static_cast<int>(
-            size * 0.30f),
-        juce::Justification::centred);
-
-    g.drawText(
-        "R",
-        static_cast<int>(
-            centre.x + radius * 0.48f),
-        static_cast<int>(
-            centre.y - size * 0.10f),
-        static_cast<int>(
-            size * 0.30f),
-        static_cast<int>(
-            size * 0.30f),
-        juce::Justification::centred);
-
-    //==========================================================
-    // Línea horizontal
-    //==========================================================
-
-    const float lineY =
-        centre.y + radius * 0.38f;
-
-    const float lineLeft =
-        centre.x - radius * 0.72f;
-
-    const float lineRight =
-        centre.x + radius * 0.72f;
-
-    g.drawLine(
-        lineLeft,
-        lineY,
-        lineRight,
-        lineY,
-        thickness);
-
-    //==========================================================
-    // Puntos
-    //==========================================================
-
-    const int numberOfDots = 9;
-
-    const float spacing =
-        (lineRight - lineLeft)
-        / static_cast<float>(numberOfDots - 1);
-
-    const float dotRadius =
-        thickness * 0.75f;
-
-    for (int i = 0; i < numberOfDots; ++i)
-    {
-        const float x =
-            lineLeft + spacing * i;
-
-        g.fillEllipse(
-            x - dotRadius,
-            lineY - dotRadius,
-            dotRadius * 2.0f,
-            dotRadius * 2.0f);
-    }
-
-    //==========================================================
-    // Indicador central
-    //==========================================================
-
-    g.drawLine(
-        centre.x,
-        lineY - size * 0.16f,
-        centre.x,
-        lineY + size * 0.16f,
-        thickness * 1.5f);
-
-    // Punto central
     g.fillEllipse(
-        centre.x - size * 0.06f,
-        centre.y - size * 0.06f,
-        size * 0.12f,
-        size * 0.12f);
+        centre.x - size * 0.045f,
+        centre.y - size * 0.045f,
+        size * 0.09f,
+        size * 0.09f);
 }
 
 
@@ -368,7 +226,7 @@ void ControlModeButton::drawWidth(
         area.getCentre();
 
     const float size =
-        IconMetrics::iconSize;
+        IconMetrics::controlModeIconSize;
 
     const float thickness =
         IconMetrics::thickness;
@@ -376,194 +234,47 @@ void ControlModeButton::drawWidth(
     g.setColour(
         getCurrentColour());
 
-    //==========================================================
-    // Línea central
-    //==========================================================
+    // Dos canales se abren desde el centro: una lectura más directa
+    // de la anchura estéreo que el icono anterior de altavoces/ondas.
+    const float halfHeight = size * 0.34f;
+    const float innerX = size * 0.10f;
+    const float outerX = size * 0.39f;
+    const float arrowSize = size * 0.16f;
 
     g.drawLine(
-        centre.x,
-        centre.y - size * 0.42f,
-        centre.x,
-        centre.y + size * 0.42f,
+        centre.x - innerX,
+        centre.y - halfHeight,
+        centre.x - innerX,
+        centre.y + halfHeight,
+        thickness);
+    g.drawLine(
+        centre.x + innerX,
+        centre.y - halfHeight,
+        centre.x + innerX,
+        centre.y + halfHeight,
         thickness);
 
-    //==========================================================
-    // Altavoz izquierdo
-    //==========================================================
+    juce::Path outwardArrows;
+    outwardArrows.startNewSubPath(
+        centre.x - innerX - size * 0.04f, centre.y);
+    outwardArrows.lineTo(centre.x - outerX, centre.y);
+    outwardArrows.lineTo(
+        centre.x - outerX + arrowSize, centre.y - arrowSize * 0.72f);
+    outwardArrows.startNewSubPath(centre.x - outerX, centre.y);
+    outwardArrows.lineTo(
+        centre.x - outerX + arrowSize, centre.y + arrowSize * 0.72f);
 
-    juce::Path leftSpeaker;
-
-    const float leftX =
-        centre.x - size * 0.43f;
-
-    const float speakerHeight =
-        size * 0.27f;
-
-    const float bodyHeight =
-        size * 0.16f;
-
-    leftSpeaker.startNewSubPath(
-        leftX,
-        centre.y - bodyHeight);
-
-    leftSpeaker.lineTo(
-        leftX + size * 0.12f,
-        centre.y - bodyHeight);
-
-    leftSpeaker.lineTo(
-        leftX + size * 0.23f,
-        centre.y - speakerHeight);
-
-    leftSpeaker.lineTo(
-        leftX + size * 0.23f,
-        centre.y + speakerHeight);
-
-    leftSpeaker.lineTo(
-        leftX + size * 0.12f,
-        centre.y + bodyHeight);
-
-    leftSpeaker.lineTo(
-        leftX,
-        centre.y + bodyHeight);
-
-    leftSpeaker.closeSubPath();
+    outwardArrows.startNewSubPath(
+        centre.x + innerX + size * 0.04f, centre.y);
+    outwardArrows.lineTo(centre.x + outerX, centre.y);
+    outwardArrows.lineTo(
+        centre.x + outerX - arrowSize, centre.y - arrowSize * 0.72f);
+    outwardArrows.startNewSubPath(centre.x + outerX, centre.y);
+    outwardArrows.lineTo(
+        centre.x + outerX - arrowSize, centre.y + arrowSize * 0.72f);
 
     g.strokePath(
-        leftSpeaker,
-        juce::PathStrokeType(
-            thickness,
-            juce::PathStrokeType::curved,
-            juce::PathStrokeType::rounded));
-
-    //==========================================================
-    // Altavoz derecho
-    //==========================================================
-
-    juce::Path rightSpeaker;
-
-    const float rightX =
-        centre.x + size * 0.20f;
-
-    rightSpeaker.startNewSubPath(
-        rightX,
-        centre.y - bodyHeight);
-
-    rightSpeaker.lineTo(
-        rightX + size * 0.12f,
-        centre.y - bodyHeight);
-
-    rightSpeaker.lineTo(
-        rightX + size * 0.23f,
-        centre.y - speakerHeight);
-
-    rightSpeaker.lineTo(
-        rightX + size * 0.23f,
-        centre.y + speakerHeight);
-
-    rightSpeaker.lineTo(
-        rightX + size * 0.12f,
-        centre.y + bodyHeight);
-
-    rightSpeaker.lineTo(
-        rightX,
-        centre.y + bodyHeight);
-
-    rightSpeaker.closeSubPath();
-
-    g.strokePath(
-        rightSpeaker,
-        juce::PathStrokeType(
-            thickness,
-            juce::PathStrokeType::curved,
-            juce::PathStrokeType::rounded));
-
-    //==========================================================
-    // Onda izquierda 1
-    //==========================================================
-
-    juce::Path leftWave1;
-
-    leftWave1.addCentredArc(
-        centre.x - size * 0.08f,
-        centre.y,
-        size * 0.22f,
-        size * 0.30f,
-        0.0f,
-        -0.85f,
-        0.85f,
-        true);
-
-    g.strokePath(
-        leftWave1,
-        juce::PathStrokeType(
-            thickness,
-            juce::PathStrokeType::curved,
-            juce::PathStrokeType::rounded));
-
-    //==========================================================
-    // Onda izquierda 2
-    //==========================================================
-
-    juce::Path leftWave2;
-
-    leftWave2.addCentredArc(
-        centre.x - size * 0.08f,
-        centre.y,
-        size * 0.34f,
-        size * 0.44f,
-        0.0f,
-        -0.75f,
-        0.75f,
-        true);
-
-    g.strokePath(
-        leftWave2,
-        juce::PathStrokeType(
-            thickness,
-            juce::PathStrokeType::curved,
-            juce::PathStrokeType::rounded));
-
-    //==========================================================
-    // Onda derecha 1
-    //==========================================================
-
-    juce::Path rightWave1;
-
-    rightWave1.addCentredArc(
-        centre.x + size * 0.08f,
-        centre.y,
-        size * 0.22f,
-        size * 0.30f,
-        0.0f,
-        2.29f,
-        3.99f,
-        true);
-
-    g.strokePath(
-        rightWave1,
-        juce::PathStrokeType(
-            thickness,
-            juce::PathStrokeType::curved,
-            juce::PathStrokeType::rounded));
-
-    //==========================================================
-    // Onda derecha 2
-    //==========================================================
-
-    juce::Path rightWave2;
-
-    rightWave2.addCentredArc(
-        centre.x + size * 0.08f,
-        centre.y,
-        size * 0.34f,
-        size * 0.44f,
-        0.0f,
-        2.39f,
-        3.89f,
-        true);
-
-    g.strokePath(
-        rightWave2,
+        outwardArrows,
         juce::PathStrokeType(
             thickness,
             juce::PathStrokeType::curved,

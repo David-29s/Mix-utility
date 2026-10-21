@@ -25,6 +25,9 @@ namespace IconMetrics
     // manteniendo sus proporciones.
     inline constexpr float iconSize = 17.0f;
 
+    // Tamaño de los iconos del selector Gain / Pan / Width.
+    inline constexpr float controlModeIconSize = 23.0f;
+
     //Medida circulo de seleccion gris
     inline constexpr float glowRadius = 20.0f;
 }
