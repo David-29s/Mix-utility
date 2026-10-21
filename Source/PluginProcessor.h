@@ -31,6 +31,9 @@ public:
     void setMuteParameter(bool enabled);
     bool getMuteParameter();
 
+    void setStereoSwapParameter(bool enabled);
+    bool getStereoSwapParameter();
+
     void setBassMonoParameter(bool enabled);
     bool getBassMonoParameter();
 

@@ -92,6 +92,17 @@ AudioPluginAudioProcessor::createParameterLayout()
             100.0f
         ));
 
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        "OUTPUT_TRIM",
+        "Output Trim",
+        juce::NormalisableRange<float>(-36.0f, 12.0f, 0.01f),
+        0.0f));
+
+    layout.add(std::make_unique<juce::AudioParameterBool>(
+        "STEREO_SWAP",
+        "Stereo Swap",
+        false));
+
     //==========================================================
     // Bypass
     //==========================================================
@@ -766,6 +777,14 @@ void AudioPluginAudioProcessor::updateParameters()
     gainProcessor.setGain(
         linearGain);
 
+    const float outputTrimDb =
+        apvts.getRawParameterValue("OUTPUT_TRIM")->load();
+    gainProcessor.setOutputTrim(
+        juce::Decibels::decibelsToGain(outputTrimDb));
+
+    gainProcessor.setStereoSwap(
+        apvts.getRawParameterValue("STEREO_SWAP")->load() > 0.5f);
+
     //==========================================================
     // Pan
     //==========================================================
@@ -958,6 +977,20 @@ void AudioPluginAudioProcessor::setMuteParameter(bool enabled)
 bool AudioPluginAudioProcessor::getMuteParameter()
 {
     if (auto* value = apvts.getRawParameterValue("MUTE"))
+        return value->load() > 0.5f;
+
+    return false;
+}
+
+void AudioPluginAudioProcessor::setStereoSwapParameter(bool enabled)
+{
+    if (auto* parameter = apvts.getParameter("STEREO_SWAP"))
+        parameter->setValueNotifyingHost(enabled ? 1.0f : 0.0f);
+}
+
+bool AudioPluginAudioProcessor::getStereoSwapParameter()
+{
+    if (auto* value = apvts.getRawParameterValue("STEREO_SWAP"))
         return value->load() > 0.5f;
 
     return false;

@@ -25,6 +25,9 @@ public:
     // Devuelve la ganancia actual.
     float getGain() const;
 
+    void setOutputTrim(float newGain);
+    void setStereoSwap(bool shouldSwap);
+
     //==========================================================
     // Pan
     //==========================================================
@@ -141,6 +144,12 @@ private:
     void processGain(
         juce::AudioBuffer<float>& buffer);
 
+    void processOutputTrim(
+        juce::AudioBuffer<float>& buffer);
+
+    void processStereoSwap(
+        juce::AudioBuffer<float>& buffer);
+
     // Aplica el paneo estéreo.
     void processPan(
         juce::AudioBuffer<float>& buffer);
@@ -170,6 +179,8 @@ private:
 
     // Ganancia lineal suavizada aplicada al audio.
     juce::SmoothedValue<float> smoothedGain;
+    juce::SmoothedValue<float> smoothedOutputTrim;
+    juce::SmoothedValue<float> smoothedStereoSwap;
     juce::SmoothedValue<float> smoothedPan;
     juce::SmoothedValue<float> smoothedWidth;
 

@@ -14,7 +14,7 @@ namespace LayoutMetrics
 
     inline constexpr int pluginWidth = 540;
 
-    inline constexpr int pluginHeight = 500;
+    inline constexpr int pluginHeight = 550;
 
     //==========================================================
     // Gain Knob
@@ -26,7 +26,7 @@ namespace LayoutMetrics
 
     inline constexpr int knobOffsetX = 0;
 
-    inline constexpr int knobOffsetY = -80;
+    inline constexpr int knobOffsetY = -105;
 
     //==========================================================
     // Buttons
@@ -36,6 +36,10 @@ namespace LayoutMetrics
     inline constexpr int buttonHeight = 60;
     inline constexpr int buttonSpacing = 1;
     inline constexpr int buttonY = 303;
+    inline constexpr int outputTrimPanelX = 100;
+    inline constexpr int outputTrimPanelY = 369;
+    inline constexpr int outputTrimPanelWidth = 340;
+    inline constexpr int outputTrimPanelHeight = 34;
     inline constexpr int controlModeButtonSize = 88;
 
 

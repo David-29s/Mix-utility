@@ -50,6 +50,13 @@ private:
     std::unique_ptr<
         juce::AudioProcessorValueTreeState::SliderAttachment> widthAttachment;
 
+    juce::Slider outputTrimSlider;
+    juce::Label outputTrimTitle;
+    juce::Label outputTrimValue;
+
+    std::unique_ptr<
+        juce::AudioProcessorValueTreeState::SliderAttachment> outputTrimAttachment;
+
     //==========================================================
     // Buttons
     //==========================================================
@@ -63,6 +70,8 @@ private:
     IconToggleButton muteButton;
 
     IconToggleButton abButton;
+
+    juce::TextButton stereoSwapButton { "SWAP" };
 
     ControlModeButton controlModeButton;
 

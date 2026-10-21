@@ -1,4 +1,5 @@
 #include "GainProcessor.h"
+#include <utility>
 
 //==========================================================
 // Constructor / Destructor
@@ -37,6 +38,12 @@ void GainProcessor::prepare(
 
     smoothedGain.reset(sampleRate, 0.02);
     smoothedGain.setCurrentAndTargetValue(1.0f);
+
+    smoothedOutputTrim.reset(sampleRate, 0.02);
+    smoothedOutputTrim.setCurrentAndTargetValue(1.0f);
+
+    smoothedStereoSwap.reset(sampleRate, 0.01);
+    smoothedStereoSwap.setCurrentAndTargetValue(0.0f);
 
     smoothedPan.reset(sampleRate, 0.02);
     smoothedPan.setCurrentAndTargetValue(0.0f);
@@ -78,6 +85,17 @@ void GainProcessor::setGain(float newGain)
         newGain);
 
     smoothedGain.setTargetValue(newGain);
+}
+
+void GainProcessor::setOutputTrim(float newGain)
+{
+    smoothedOutputTrim.setTargetValue(
+        juce::jlimit(0.0f, 4.0f, newGain));
+}
+
+void GainProcessor::setStereoSwap(bool shouldSwap)
+{
+    smoothedStereoSwap.setTargetValue(shouldSwap ? 1.0f : 0.0f);
 }
 
 // Devuelve la ganancia actual.
@@ -270,6 +288,10 @@ void GainProcessor::process(
     processWidth(buffer);
 
     processGain(buffer);
+
+    processStereoSwap(buffer);
+
+    processOutputTrim(buffer);
 }
 
 //==========================================================
@@ -420,6 +442,57 @@ void GainProcessor::processGain(
             buffer.getWritePointer(channel)[sample]
                 *= currentGain;
         }
+    }
+}
+
+void GainProcessor::processOutputTrim(
+    juce::AudioBuffer<float>& buffer)
+{
+    if (!smoothedOutputTrim.isSmoothing())
+    {
+        buffer.applyGain(smoothedOutputTrim.getCurrentValue());
+        return;
+    }
+
+    const int numChannels = buffer.getNumChannels();
+    const int numSamples = buffer.getNumSamples();
+
+    for (int sample = 0; sample < numSamples; ++sample)
+    {
+        const float trim = smoothedOutputTrim.getNextValue();
+        for (int channel = 0; channel < numChannels; ++channel)
+            buffer.getWritePointer(channel)[sample] *= trim;
+    }
+}
+
+void GainProcessor::processStereoSwap(
+    juce::AudioBuffer<float>& buffer)
+{
+    if (buffer.getNumChannels() < 2)
+        return;
+
+    auto* left = buffer.getWritePointer(0);
+    auto* right = buffer.getWritePointer(1);
+    const int numSamples = buffer.getNumSamples();
+
+    if (!smoothedStereoSwap.isSmoothing())
+    {
+        if (smoothedStereoSwap.getCurrentValue() < 0.5f)
+            return;
+
+        for (int sample = 0; sample < numSamples; ++sample)
+            std::swap(left[sample], right[sample]);
+
+        return;
+    }
+
+    for (int sample = 0; sample < numSamples; ++sample)
+    {
+        const float mix = smoothedStereoSwap.getNextValue();
+        const float originalLeft = left[sample];
+        const float originalRight = right[sample];
+        left[sample] = originalLeft + (originalRight - originalLeft) * mix;
+        right[sample] = originalRight + (originalLeft - originalRight) * mix;
     }
 }
 

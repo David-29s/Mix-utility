@@ -41,6 +41,63 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
 
     gainKnob.setMode(NeonLookAndFeel::KnobMode::gain);
 
+    addAndMakeVisible(outputTrimTitle);
+    outputTrimTitle.setText("OUTPUT TRIM", juce::dontSendNotification);
+    outputTrimTitle.setJustificationType(juce::Justification::centredLeft);
+    outputTrimTitle.setFont(juce::Font(10.0f, juce::Font::bold));
+    outputTrimTitle.setColour(juce::Label::textColourId, NeonColours::cyan);
+    outputTrimTitle.setTooltip("Final level adjustment applied after all processing.");
+
+    addAndMakeVisible(outputTrimSlider);
+    outputTrimSlider.setSliderStyle(juce::Slider::LinearHorizontal);
+    outputTrimSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
+    outputTrimSlider.setColour(juce::Slider::trackColourId,
+                               NeonColours::cyan.withAlpha(0.85f));
+    outputTrimSlider.setColour(juce::Slider::backgroundColourId,
+                               juce::Colour(0xff48515d));
+    outputTrimSlider.setColour(juce::Slider::thumbColourId,
+                               juce::Colour(0xffe7f3fa));
+    outputTrimSlider.setTooltip("Adjust the final output level from -36 dB to +12 dB.");
+
+    addAndMakeVisible(outputTrimValue);
+    outputTrimValue.setJustificationType(juce::Justification::centred);
+    outputTrimValue.setFont(juce::Font(11.0f, juce::Font::bold));
+    outputTrimValue.setColour(juce::Label::textColourId, juce::Colours::white);
+
+    outputTrimSlider.onValueChange = [this]
+    {
+        const double value = outputTrimSlider.getValue();
+        const auto text = (value > 0.0 ? "+" : "")
+            + juce::String(value, 1) + " dB";
+        outputTrimValue.setText(text, juce::dontSendNotification);
+    };
+
+    outputTrimAttachment =
+        std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+            processorRef.getAPVTS(),
+            "OUTPUT_TRIM",
+            outputTrimSlider);
+    outputTrimSlider.onValueChange();
+
+    addAndMakeVisible(stereoSwapButton);
+    stereoSwapButton.setClickingTogglesState(true);
+    stereoSwapButton.setColour(juce::TextButton::buttonColourId,
+                               juce::Colour(0xff151a22));
+    stereoSwapButton.setColour(juce::TextButton::buttonOnColourId,
+                               NeonColours::cyan.withAlpha(0.25f));
+    stereoSwapButton.setColour(juce::TextButton::textColourOffId,
+                               juce::Colour(0xffb4c1cf));
+    stereoSwapButton.setColour(juce::TextButton::textColourOnId,
+                               NeonColours::cyan);
+    stereoSwapButton.setTooltip("Swap the left and right output channels.");
+    stereoSwapButton.onClick = [this]
+    {
+        processorRef.setStereoSwapParameter(stereoSwapButton.getToggleState());
+    };
+    stereoSwapButton.setToggleState(
+        processorRef.getStereoSwapParameter(),
+        juce::dontSendNotification);
+
     //==========================================================
     // Bypass Button
     //==========================================================
@@ -303,6 +360,16 @@ void AudioPluginAudioProcessorEditor::paint (juce::Graphics& g)
         g.drawLine(separatorX, separatorTop, separatorX, separatorBottom, 1.0f);
     }
 
+    const auto trimPanel = juce::Rectangle<float>(
+        static_cast<float>(LayoutMetrics::outputTrimPanelX),
+        static_cast<float>(LayoutMetrics::outputTrimPanelY),
+        static_cast<float>(LayoutMetrics::outputTrimPanelWidth),
+        static_cast<float>(LayoutMetrics::outputTrimPanelHeight));
+    g.setColour(juce::Colour(0xff151a22));
+    g.fillRoundedRectangle(trimPanel, 6.0f);
+    g.setColour(NeonColours::cyan.withAlpha(0.35f));
+    g.drawRoundedRectangle(trimPanel, 6.0f, 1.0f);
+
 }
 void AudioPluginAudioProcessorEditor::resized()
 {
@@ -360,6 +427,12 @@ void AudioPluginAudioProcessorEditor::resized()
 
     gainKnob.setBounds(
     knobBounds);
+
+    const int trimY = LayoutMetrics::outputTrimPanelY;
+    outputTrimTitle.setBounds(105, trimY + 1, 74, 32);
+    outputTrimSlider.setBounds(179, trimY + 8, 132, 18);
+    outputTrimValue.setBounds(311, trimY + 1, 60, 32);
+    stereoSwapButton.setBounds(377, trimY + 3, 57, 28);
 
 
     //==========================================================
@@ -454,6 +527,10 @@ void AudioPluginAudioProcessorEditor::refreshButtons()
 
     abButton.setStateA(
     processorRef.isUsingStateA());
+
+    stereoSwapButton.setToggleState(
+        processorRef.getStereoSwapParameter(),
+        juce::dontSendNotification);
 
     bypassButton.setActive(
         processorRef.getBypassParameter());
