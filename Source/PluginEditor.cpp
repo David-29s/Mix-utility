@@ -39,6 +39,8 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
                 "GAIN",
                 gainKnob.getSlider());
 
+    gainKnob.setMode(NeonLookAndFeel::KnobMode::gain);
+
     //==========================================================
     // Bypass Button
     //==========================================================
@@ -198,6 +200,7 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
              36.0,
             0.01);
         gainKnob.getSlider().setSkewFactorFromMidPoint(0.0);
+        gainKnob.setMode(NeonLookAndFeel::KnobMode::gain);
 
         break;
 
@@ -214,6 +217,7 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
             -100.0,
             100.0,
             0.01);
+        gainKnob.setMode(NeonLookAndFeel::KnobMode::pan);
 
         break;
 
@@ -230,26 +234,12 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
             0.0,
             400.0,
             0.01);
+        gainKnob.setMode(NeonLookAndFeel::KnobMode::width);
 
         break;
     }
 
     updateKnobAttachment(mode);
-
-    switch (mode)
-    {
-    case ControlMode::gain:
-        gainKnob.setUnit("dB");
-        break;
-
-    case ControlMode::pan:
-        gainKnob.setUnit("%");
-        break;
-
-    case ControlMode::width:
-        gainKnob.setUnit("%");
-        break;
-    }
 
     gainKnob.getSlider().repaint();
 };

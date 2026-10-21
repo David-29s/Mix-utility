@@ -27,13 +27,13 @@ public:
 
     void setTitle(const juce::String& newTitle);
 
-    void setUnit(const juce::String& newUnit);
+    void setMode(NeonLookAndFeel::KnobMode newMode);
 
 private:
 
-    juce::String knobTitle;
+    void updateReadout();
 
-    juce::String knobUnit = "dB";
+    juce::String knobTitle;
 
     juce::Slider slider;
 
@@ -42,7 +42,10 @@ private:
     NeonLookAndFeel lookAndFeel;
 
     juce::Label valueLabel;
+    juce::Label modeLabel;
     juce::TextEditor valueEditor;
+
+    NeonLookAndFeel::KnobMode readoutMode = NeonLookAndFeel::KnobMode::gain;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(NeonKnob)
 };

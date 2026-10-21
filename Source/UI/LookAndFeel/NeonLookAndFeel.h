@@ -99,11 +99,10 @@ private:
         juce::Colour colour);
 
     void drawLabels(
-    juce::Graphics& g,
-    const KnobGeometry& geo,
-    float startAngle,
-    float endAngle);
-
+        juce::Graphics& g,
+        const KnobGeometry& geo,
+        float startAngle,
+        float endAngle);
 
 };
 

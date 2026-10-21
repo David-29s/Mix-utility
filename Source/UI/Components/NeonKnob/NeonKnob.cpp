@@ -73,26 +73,16 @@ NeonKnob::NeonKnob(const juce::String& title)
     juce::Label::textColourId,
     juce::Colours::white.withAlpha(0.85f));
 
+    addAndMakeVisible(modeLabel);
+    modeLabel.setJustificationType(juce::Justification::centred);
+    modeLabel.setFont(juce::Font(12.0f, juce::Font::bold));
+    modeLabel.setColour(juce::Label::textColourId,
+                        juce::Colour(0xff91A1B3).withAlpha(0.9f));
+    modeLabel.setInterceptsMouseClicks(false, false);
+
     slider.onValueChange = [this]()
     {
-        if (knobUnit == "%")
-        {
-            valueLabel.setText(
-                juce::String(
-                    juce::roundToInt(slider.getValue()))
-                + " %",
-                juce::dontSendNotification);
-        }
-        else
-        {
-            const bool isMinimumGain = slider.getValue() <= -100.0;
-            const auto text = isMinimumGain
-                ? juce::String::fromUTF8("-\xE2\x88\x9E dB")
-                : juce::String(slider.getValue(), 1) + " dB";
-            valueLabel.setFont(juce::Font(isMinimumGain ? 30.0f : 23.0f,
-                                          juce::Font::plain));
-            valueLabel.setText(text, juce::dontSendNotification);
-        }
+        updateReadout();
     };
 
     addAndMakeVisible(valueEditor);
@@ -205,17 +195,21 @@ void NeonKnob::resized()
     // Colocar el valor en el centro del knob
     auto sliderBounds = slider.getBounds();
 
-    valueLabel.setBounds(
-        sliderBounds.getCentreX() - 50,
-        sliderBounds.getCentreY() - 15,
-        100,
-        30);
+    valueLabel.setBounds(sliderBounds.getCentreX() - 82,
+                         sliderBounds.getCentreY() - 25,
+                         164,
+                         28);
+
+    modeLabel.setBounds(sliderBounds.getCentreX() - 60,
+                        sliderBounds.getCentreY() + 5,
+                        120,
+                        18);
 
     valueEditor.setBounds(
-        sliderBounds.getCentreX() - 50,
-        sliderBounds.getCentreY() - 15,
-        100,
-        30);
+        sliderBounds.getCentreX() - 70,
+        sliderBounds.getCentreY() - 18,
+        140,
+        28);
 }
 
 juce::Slider& NeonKnob::getSlider()
@@ -236,25 +230,56 @@ void NeonKnob::setTitle(
     repaint();
 }
 
-void NeonKnob::setUnit(
-    const juce::String& newUnit)
+void NeonKnob::setMode(NeonLookAndFeel::KnobMode newMode)
 {
-    knobUnit = newUnit;
+    readoutMode = newMode;
+    updateReadout();
+}
 
-    if (newUnit == "%")
+void NeonKnob::updateReadout()
+{
+    const double value = slider.getValue();
+
+    if (readoutMode == NeonLookAndFeel::KnobMode::gain)
     {
-        valueLabel.setText(
-            juce::String(
-                juce::roundToInt(slider.getValue()))
-            + " %",
-            juce::dontSendNotification);
+        const bool isMinimumGain = value <= slider.getMinimum() + 0.005;
+        const auto valueText = isMinimumGain
+            ? juce::String::fromUTF8("-\xE2\x88\x9E dB")
+            : (value > 0.0 ? "+" : "") + juce::String(value, 1) + " dB";
+
+        valueLabel.setFont(juce::Font(isMinimumGain ? 29.0f : 23.0f,
+                                      juce::Font::plain));
+        valueLabel.setText(valueText, juce::dontSendNotification);
+        modeLabel.setText(isMinimumGain ? "MIN"
+                          : value < -0.05 ? "CUT"
+                          : value > 0.05 ? "BOOST"
+                                         : "UNITY",
+                          juce::dontSendNotification);
+    }
+    else if (readoutMode == NeonLookAndFeel::KnobMode::pan)
+    {
+        const auto magnitude = juce::roundToInt(std::abs(value));
+        const auto valueText = magnitude == 0
+            ? juce::String("0 %")
+            : juce::String(magnitude) + "% " + (value < 0.0 ? "L" : "R");
+
+        valueLabel.setFont(juce::Font(23.0f, juce::Font::plain));
+        valueLabel.setText(valueText, juce::dontSendNotification);
+        modeLabel.setText(value < -0.5 ? "LEFT"
+                          : value > 0.5 ? "RIGHT"
+                                        : "CENTER",
+                          juce::dontSendNotification);
     }
     else
     {
-        valueLabel.setText(
-            juce::String(slider.getValue(), 1)
-            + " dB",
-            juce::dontSendNotification);
+        valueLabel.setFont(juce::Font(23.0f, juce::Font::plain));
+        valueLabel.setText(juce::String(juce::roundToInt(value)) + " %",
+                           juce::dontSendNotification);
+        modeLabel.setText(value < 0.5 ? "MONO"
+                          : std::abs(value - 100.0) < 0.5 ? "STEREO"
+                          : value < 100.0 ? "NARROW"
+                                          : "WIDE",
+                          juce::dontSendNotification);
     }
 
     repaint();

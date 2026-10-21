@@ -68,12 +68,6 @@ void NeonLookAndFeel::drawRotarySlider(
     rotaryStartAngle,
     rotaryEndAngle);
 
-    drawLabels(
-    g,
-    geometry,
-    rotaryStartAngle,
-    rotaryEndAngle);
-
     drawIndicator(
     g,
     geometry,
