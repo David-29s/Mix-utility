@@ -72,6 +72,15 @@ private:
     IconToggleButton abButton;
 
     juce::TextButton stereoSwapButton { "SWAP" };
+    juce::TextButton autoGainButton { "AUTO GAIN" };
+
+    bool autoGainCapturing = false;
+    float autoGainStartDb = 0.0f;
+    float autoGainTargetDb = 0.0f;
+    int autoGainAnimationFrames = 0;
+    int autoGainFeedbackFrames = 0;
+    int autoGainWaitFrames = 0;
+    bool autoGainGestureActive = false;
 
     ControlModeButton controlModeButton;
 

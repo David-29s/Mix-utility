@@ -219,6 +219,38 @@ AudioPluginAudioProcessor::getAPVTS()
     return apvts;
 }
 
+void AudioPluginAudioProcessor::requestAutoGainCapture()
+{
+    gainProcessor.requestAutoGainCapture();
+}
+
+void AudioPluginAudioProcessor::cancelAutoGainCapture()
+{
+    gainProcessor.cancelAutoGainCapture();
+}
+
+int AudioPluginAudioProcessor::getAutoGainCaptureState() const
+{
+    return gainProcessor.getAutoGainCaptureState();
+}
+
+float AudioPluginAudioProcessor::getAutoGainResultDb() const
+{
+    return gainProcessor.getAutoGainResultDb();
+}
+
+void AudioPluginAudioProcessor::beginGainParameterGesture()
+{
+    if (auto* parameter = apvts.getParameter("GAIN"))
+        parameter->beginChangeGesture();
+}
+
+void AudioPluginAudioProcessor::endGainParameterGesture()
+{
+    if (auto* parameter = apvts.getParameter("GAIN"))
+        parameter->endChangeGesture();
+}
+
 //==========================================================
 // States
 //==========================================================

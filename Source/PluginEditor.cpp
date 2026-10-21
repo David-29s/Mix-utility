@@ -98,6 +98,42 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
         processorRef.getStereoSwapParameter(),
         juce::dontSendNotification);
 
+    addAndMakeVisible(autoGainButton);
+    autoGainButton.setTooltip(
+        "Analyze one second of input and set Gain to target -18 dBFS RMS. Click while listening to cancel.");
+    autoGainButton.setColour(
+        juce::TextButton::buttonColourId,
+        NeonColours::cyan.withAlpha(0.12f));
+    autoGainButton.setColour(
+        juce::TextButton::buttonOnColourId,
+        NeonColours::cyan.withAlpha(0.28f));
+    autoGainButton.setColour(
+        juce::TextButton::textColourOffId,
+        NeonColours::cyan);
+    autoGainButton.setColour(
+        juce::TextButton::textColourOnId,
+        juce::Colours::white);
+    autoGainButton.onClick = [this]
+    {
+        if (autoGainAnimationFrames > 0)
+            return;
+
+        if (autoGainCapturing)
+        {
+            autoGainCapturing = false;
+            processorRef.cancelAutoGainCapture();
+            autoGainButton.setButtonText("AUTO GAIN");
+            return;
+        }
+
+        autoGainCapturing = true;
+        autoGainAnimationFrames = 0;
+        autoGainFeedbackFrames = 0;
+        autoGainWaitFrames = 180;
+        processorRef.requestAutoGainCapture();
+        autoGainButton.setButtonText("LISTEN");
+    };
+
     //==========================================================
     // Bypass Button
     //==========================================================
@@ -246,6 +282,9 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
     {
     case ControlMode::gain:
 
+        autoGainButton.setVisible(true);
+        autoGainButton.setEnabled(true);
+
         gainKnob.setTitle("GAIN");
         gainKnob.setTooltip("Input gain: -100 dB (digital silence) to +36 dB. Double-click the readout to enter a value.");
 
@@ -264,6 +303,21 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
 
     case ControlMode::pan:
 
+        autoGainButton.setVisible(false);
+        processorRef.cancelAutoGainCapture();
+        autoGainCapturing = false;
+        autoGainWaitFrames = 0;
+        autoGainAnimationFrames = 0;
+        if (autoGainGestureActive)
+        {
+            gainKnob.getSlider().setValue(
+                autoGainTargetDb,
+                juce::sendNotificationSync);
+            processorRef.endGainParameterGesture();
+            autoGainGestureActive = false;
+        }
+        autoGainButton.setButtonText("AUTO GAIN");
+
         gainKnob.setTitle("PAN");
         gainKnob.setTooltip("Stereo pan: move the signal between left (L) and right (R). Double-click the readout to enter a value.");
 
@@ -280,6 +334,21 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
 
 
     case ControlMode::width:
+
+        autoGainButton.setVisible(false);
+        processorRef.cancelAutoGainCapture();
+        autoGainCapturing = false;
+        autoGainWaitFrames = 0;
+        autoGainAnimationFrames = 0;
+        if (autoGainGestureActive)
+        {
+            gainKnob.getSlider().setValue(
+                autoGainTargetDb,
+                juce::sendNotificationSync);
+            processorRef.endGainParameterGesture();
+            autoGainGestureActive = false;
+        }
+        autoGainButton.setButtonText("AUTO GAIN");
 
         gainKnob.setTitle("WIDTH");
         gainKnob.setTooltip("Stereo width: 0% is mono and 100% keeps the original width. Double-click the readout to enter a value.");
@@ -327,6 +396,14 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
 
 AudioPluginAudioProcessorEditor::~AudioPluginAudioProcessorEditor()
 {
+    processorRef.cancelAutoGainCapture();
+    if (autoGainGestureActive)
+    {
+        gainKnob.getSlider().setValue(
+            autoGainTargetDb,
+            juce::sendNotificationSync);
+        processorRef.endGainParameterGesture();
+    }
 }
 
 //==============================================================================
@@ -433,6 +510,7 @@ void AudioPluginAudioProcessorEditor::resized()
     outputTrimSlider.setBounds(179, trimY + 8, 132, 18);
     outputTrimValue.setBounds(311, trimY + 1, 60, 32);
     stereoSwapButton.setBounds(377, trimY + 3, 57, 28);
+    autoGainButton.setBounds(356, 43, 80, 28);
 
 
     //==========================================================
@@ -474,6 +552,71 @@ void AudioPluginAudioProcessorEditor::resized()
 void AudioPluginAudioProcessorEditor::timerCallback()
 {
     animator.update();
+
+    const int autoGainState = processorRef.getAutoGainCaptureState();
+    if (autoGainCapturing && autoGainState == 2)
+    {
+        autoGainCapturing = false;
+        autoGainWaitFrames = 0;
+        autoGainButton.setButtonText("APPLY");
+        autoGainButton.setEnabled(false);
+        autoGainStartDb = static_cast<float>(gainKnob.getSlider().getValue());
+        autoGainTargetDb = processorRef.getAutoGainResultDb();
+        autoGainAnimationFrames = 1;
+        autoGainGestureActive = true;
+        processorRef.beginGainParameterGesture();
+    }
+    else if (autoGainCapturing && autoGainState == 3)
+    {
+        autoGainCapturing = false;
+        autoGainWaitFrames = 0;
+        autoGainButton.setButtonText("NO SIG");
+        autoGainFeedbackFrames = 90;
+    }
+    else if (autoGainCapturing && --autoGainWaitFrames <= 0)
+    {
+        autoGainCapturing = false;
+        processorRef.cancelAutoGainCapture();
+        autoGainButton.setButtonText("NO SIG");
+        autoGainFeedbackFrames = 90;
+    }
+
+    if (autoGainAnimationFrames > 0)
+    {
+        constexpr int animationFrameCount = 36;
+        const float progress = juce::jmin(
+            1.0f,
+            static_cast<float>(autoGainAnimationFrames)
+                / static_cast<float>(animationFrameCount));
+        const float easedProgress = progress * progress * (3.0f - 2.0f * progress);
+        const float animatedDb = autoGainStartDb
+            + (autoGainTargetDb - autoGainStartDb) * easedProgress;
+
+        gainKnob.getSlider().setValue(
+            animatedDb,
+            juce::sendNotificationSync);
+
+        if (autoGainAnimationFrames >= animationFrameCount)
+        {
+            autoGainAnimationFrames = 0;
+            if (autoGainGestureActive)
+            {
+                processorRef.endGainParameterGesture();
+                autoGainGestureActive = false;
+            }
+            processorRef.cancelAutoGainCapture();
+            autoGainButton.setButtonText("AUTO GAIN");
+            autoGainButton.setEnabled(true);
+        }
+        else
+            ++autoGainAnimationFrames;
+    }
+
+    if (autoGainFeedbackFrames > 0 && --autoGainFeedbackFrames == 0)
+    {
+        processorRef.cancelAutoGainCapture();
+        autoGainButton.setButtonText("AUTO GAIN");
+    }
 
     refreshButtons();
 

@@ -2,6 +2,8 @@
 
 #include <juce_audio_basics/juce_audio_basics.h>
 #include <juce_dsp/juce_dsp.h>
+#include <atomic>
+#include <cstdint>
 
 class GainProcessor
 {
@@ -27,6 +29,11 @@ public:
 
     void setOutputTrim(float newGain);
     void setStereoSwap(bool shouldSwap);
+
+    void requestAutoGainCapture();
+    void cancelAutoGainCapture();
+    int getAutoGainCaptureState() const;
+    float getAutoGainResultDb() const;
 
     //==========================================================
     // Pan
@@ -144,6 +151,9 @@ private:
     void processGain(
         juce::AudioBuffer<float>& buffer);
 
+    void processAutoGainCapture(
+        const juce::AudioBuffer<float>& buffer);
+
     void processOutputTrim(
         juce::AudioBuffer<float>& buffer);
 
@@ -183,6 +193,16 @@ private:
     juce::SmoothedValue<float> smoothedStereoSwap;
     juce::SmoothedValue<float> smoothedPan;
     juce::SmoothedValue<float> smoothedWidth;
+
+    std::atomic<bool> autoGainRequested { false };
+    std::atomic<bool> autoGainCancelled { false };
+    std::atomic<int> autoGainCaptureState { 0 };
+    std::atomic<float> autoGainResultDb { 0.0f };
+
+    // Audio-thread-only capture accumulator.
+    bool autoGainIsCapturing = false;
+    double autoGainPowerSum = 0.0;
+    std::int64_t autoGainFramesCollected = 0;
 
     // Paneo.
     // -1.0 = izquierda

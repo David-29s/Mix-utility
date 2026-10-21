@@ -1,4 +1,5 @@
 #include "GainProcessor.h"
+#include <cmath>
 #include <utility>
 
 //==========================================================
@@ -96,6 +97,104 @@ void GainProcessor::setOutputTrim(float newGain)
 void GainProcessor::setStereoSwap(bool shouldSwap)
 {
     smoothedStereoSwap.setTargetValue(shouldSwap ? 1.0f : 0.0f);
+}
+
+void GainProcessor::requestAutoGainCapture()
+{
+    autoGainCancelled.store(false);
+    autoGainCaptureState.store(1);
+    autoGainRequested.store(true);
+}
+
+void GainProcessor::cancelAutoGainCapture()
+{
+    autoGainCancelled.store(true);
+    autoGainRequested.store(false);
+    autoGainCaptureState.store(0);
+}
+
+int GainProcessor::getAutoGainCaptureState() const
+{
+    return autoGainCaptureState.load();
+}
+
+float GainProcessor::getAutoGainResultDb() const
+{
+    return autoGainResultDb.load();
+}
+
+void GainProcessor::processAutoGainCapture(
+    const juce::AudioBuffer<float>& buffer)
+{
+    if (autoGainCancelled.exchange(false))
+    {
+        autoGainIsCapturing = false;
+        autoGainPowerSum = 0.0;
+        autoGainFramesCollected = 0;
+        return;
+    }
+
+    if (autoGainRequested.exchange(false))
+    {
+        autoGainIsCapturing = true;
+        autoGainPowerSum = 0.0;
+        autoGainFramesCollected = 0;
+        autoGainCaptureState.store(1);
+    }
+
+    if (!autoGainIsCapturing)
+        return;
+
+    const int numChannels = buffer.getNumChannels();
+    const int numSamples = buffer.getNumSamples();
+    if (numChannels <= 0 || numSamples <= 0)
+        return;
+
+    const auto requiredFrames = static_cast<std::int64_t>(juce::roundToInt(sampleRate));
+    const auto framesToCapture = static_cast<int>(juce::jmin(
+        static_cast<std::int64_t>(numSamples),
+        requiredFrames - autoGainFramesCollected));
+
+    // Average channel energy per frame, so mono and stereo use the same
+    // exact one-second analysis window, independent of block size.
+    for (int sample = 0; sample < framesToCapture; ++sample)
+    {
+        double frameEnergy = 0.0;
+        for (int channel = 0; channel < numChannels; ++channel)
+        {
+            const double value = buffer.getReadPointer(channel)[sample];
+            frameEnergy += value * value;
+        }
+        autoGainPowerSum += frameEnergy / static_cast<double>(numChannels);
+    }
+
+    autoGainFramesCollected += framesToCapture;
+    if (autoGainFramesCollected < requiredFrames)
+        return;
+
+    autoGainIsCapturing = false;
+    const double meanPower = autoGainPowerSum
+        / static_cast<double>(autoGainFramesCollected);
+    const float measuredRms = static_cast<float>(std::sqrt(meanPower));
+    const float minimumRms = juce::Decibels::decibelsToGain(-55.0f);
+
+    if (measuredRms <= minimumRms)
+    {
+        autoGainCaptureState.store(3);
+        return;
+    }
+
+    constexpr float targetRmsDb = -18.0f;
+    const float measuredRmsDb = juce::Decibels::gainToDecibels(measuredRms);
+    const float outputTrimDb = juce::Decibels::gainToDecibels(
+        smoothedOutputTrim.getTargetValue(), -36.0f);
+    const float requiredGainDb = juce::jlimit(
+        -100.0f,
+        36.0f,
+        targetRmsDb - measuredRmsDb - outputTrimDb);
+
+    autoGainResultDb.store(requiredGainDb);
+    autoGainCaptureState.store(2);
 }
 
 // Devuelve la ganancia actual.
@@ -252,6 +351,8 @@ bool GainProcessor::isMuted() const
 void GainProcessor::process(
     juce::AudioBuffer<float>& buffer)
 {
+    processAutoGainCapture(buffer);
+
     //==========================================================
     // Processing Stages
     //==========================================================

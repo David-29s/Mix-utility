@@ -15,6 +15,13 @@ public:
     //==========================================================
     juce::AudioProcessorValueTreeState& getAPVTS();
 
+    void requestAutoGainCapture();
+    void cancelAutoGainCapture();
+    int getAutoGainCaptureState() const;
+    float getAutoGainResultDb() const;
+    void beginGainParameterGesture();
+    void endGainParameterGesture();
+
     // Actualiza el parámetro Bypass del APVTS.
     void setBypassParameter(
         bool enabled);
