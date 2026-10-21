@@ -49,6 +49,7 @@ NeonKnob::NeonKnob(const juce::String& title)
         0);
 
     slider.setLookAndFeel(&lookAndFeel);
+    slider.setTooltip("Adjust the current mode value. Double-click the readout to enter a value.");
 
     //Etiqueta del centro del knob
 
@@ -60,6 +61,7 @@ NeonKnob::NeonKnob(const juce::String& title)
     juce::MouseCursor::PointingHandCursor);
 
     valueLabel.setText("0.0 dB", juce::dontSendNotification);
+    valueLabel.setTooltip("Current value. Double-click to edit it numerically.");
 
     valueLabel.setJustificationType(
         juce::Justification::centred);
@@ -83,9 +85,12 @@ NeonKnob::NeonKnob(const juce::String& title)
         }
         else
         {
-            const auto text = slider.getValue() <= -100.0
+            const bool isMinimumGain = slider.getValue() <= -100.0;
+            const auto text = isMinimumGain
                 ? juce::String::fromUTF8("-\xE2\x88\x9E dB")
                 : juce::String(slider.getValue(), 1) + " dB";
+            valueLabel.setFont(juce::Font(isMinimumGain ? 30.0f : 23.0f,
+                                          juce::Font::plain));
             valueLabel.setText(text, juce::dontSendNotification);
         }
     };
@@ -98,6 +103,7 @@ NeonKnob::NeonKnob(const juce::String& title)
     valueEditor.setVisible(false);
 
     valueEditor.setPopupMenuEnabled(false);
+    valueEditor.setTooltip("Enter a control value and press Enter to apply it.");
 
     valueEditor.setJustification(
         juce::Justification::centred);

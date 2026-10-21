@@ -17,7 +17,7 @@ enum class IconType
     width
 };
 
-class IconToggleButton : public juce::Component
+class IconToggleButton : public juce::Component, public juce::SettableTooltipClient
 {
 public:
 

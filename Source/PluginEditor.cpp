@@ -17,15 +17,19 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
 
     inputMeter.setLabel("INPUT");
     outputMeter.setLabel("OUTPUT");
+    inputMeter.setTooltip("Real-time input level. Click the top readout to reset the peak hold.");
+    outputMeter.setTooltip("Real-time output level. Click the top readout to reset the peak hold.");
 
     inputMeter.setScaleOnRight(false);
     outputMeter.setScaleOnRight(true);
 
     addAndMakeVisible(correlationMeter);
+    correlationMeter.setTooltip("Stereo output correlation: +1 is in phase, while -1 is out of phase.");
 
     addAndMakeVisible(bassMono);
 
     addAndMakeVisible(gainKnob);
+    gainKnob.setTooltip("Input gain: -100 dB (digital silence) to +36 dB. Double-click the readout to enter a value.");
 
 
     gainAttachment =
@@ -54,6 +58,7 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
 
     bypassButton.setColour(
         NeonColours::neonGreen);
+    bypassButton.setTooltip("Enable or disable plugin processing bypass.");
 
 
 
@@ -82,6 +87,7 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
 
     monoButton.setColour(
         NeonColours::magenta);
+    monoButton.setTooltip("Sum the stereo signal to mono.");
 
 
 
@@ -107,6 +113,7 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
 
     phaseButton.setColour(
         NeonColours::orange);
+    phaseButton.setTooltip("Invert the signal phase.");
 
 
 
@@ -133,6 +140,7 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
 
     muteButton.setColour(
         NeonColours::azul);
+    muteButton.setTooltip("Mute the plugin output.");
 
 
 
@@ -159,6 +167,7 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
 
     abButton.setColour(
         NeonColours::violet);
+    abButton.setTooltip("Switch between states A and B to compare settings.");
 
     //==========================================================
     // Control Mode Button
@@ -166,6 +175,7 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
 
     addAndMakeVisible(
         controlModeButton);
+    controlModeButton.setTooltip("Switch the main control between Gain, Pan, and Width.");
 
     controlModeButton.setMode(
         ControlMode::gain);
@@ -178,6 +188,7 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
     case ControlMode::gain:
 
         gainKnob.setTitle("GAIN");
+        gainKnob.setTooltip("Input gain: -100 dB (digital silence) to +36 dB. Double-click the readout to enter a value.");
 
         gainKnob.getLookAndFeel().setKnobMode(
             NeonLookAndFeel::KnobMode::gain);
@@ -194,6 +205,7 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
     case ControlMode::pan:
 
         gainKnob.setTitle("PAN");
+        gainKnob.setTooltip("Stereo pan: move the signal between left (L) and right (R). Double-click the readout to enter a value.");
 
         gainKnob.getLookAndFeel().setKnobMode(
             NeonLookAndFeel::KnobMode::pan);
@@ -209,6 +221,7 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
     case ControlMode::width:
 
         gainKnob.setTitle("WIDTH");
+        gainKnob.setTooltip("Stereo width: 0% is mono and 100% keeps the original width. Double-click the readout to enter a value.");
 
         gainKnob.getLookAndFeel().setKnobMode(
             NeonLookAndFeel::KnobMode::width);

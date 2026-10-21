@@ -2,7 +2,7 @@
 
 #include <juce_gui_basics/juce_gui_basics.h>
 
-class CorrelationMeter : public juce::Component
+class CorrelationMeter : public juce::Component, public juce::SettableTooltipClient
 {
 public:
 

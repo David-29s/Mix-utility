@@ -25,7 +25,7 @@ enum class ControlMode
     width
 };
 
-class ControlModeButton : public juce::Component
+class ControlModeButton : public juce::Component, public juce::SettableTooltipClient
 {
 public:
 

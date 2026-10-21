@@ -2,7 +2,7 @@
 
 #include <juce_gui_basics/juce_gui_basics.h>
 
-class LevelMeter : public juce::Component
+class LevelMeter : public juce::Component, public juce::SettableTooltipClient
 {
 public:
 

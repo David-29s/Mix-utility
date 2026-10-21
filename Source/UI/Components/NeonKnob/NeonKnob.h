@@ -5,7 +5,7 @@
 
 
 
-class NeonKnob : public juce::Component
+class NeonKnob : public juce::Component, public juce::SettableTooltipClient
 {
 public:
 

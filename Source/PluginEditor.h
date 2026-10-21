@@ -66,6 +66,8 @@ private:
 
     ControlModeButton controlModeButton;
 
+    juce::TooltipWindow tooltipWindow { this, 650 };
+
     void setButtonPosition(
     IconToggleButton& button,
     int index);

@@ -4,7 +4,7 @@
 
 
 class AudioPluginAudioProcessor;
-class BassMono : public juce::Component
+class BassMono : public juce::Component, public juce::SettableTooltipClient
 {
 public:
 
