@@ -83,10 +83,10 @@ NeonKnob::NeonKnob(const juce::String& title)
         }
         else
         {
-            valueLabel.setText(
-                juce::String(slider.getValue(), 1)
-                + " dB",
-                juce::dontSendNotification);
+            const auto text = slider.getValue() <= -100.0
+                ? juce::String::fromUTF8("-\xE2\x88\x9E dB")
+                : juce::String(slider.getValue(), 1) + " dB";
+            valueLabel.setText(text, juce::dontSendNotification);
         }
     };
 

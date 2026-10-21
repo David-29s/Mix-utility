@@ -25,6 +25,12 @@ AudioPluginAudioProcessor::createParameterLayout()
     //==========================================================
 
     // Agrega el parámetro de ganancia.
+    juce::NormalisableRange<float> gainRange(
+        -100.0f,
+         36.0f,
+          0.01f);
+    gainRange.setSkewForCentre(0.0f);
+
     layout.add(
         std::make_unique<juce::AudioParameterFloat>(
 
@@ -34,10 +40,7 @@ AudioPluginAudioProcessor::createParameterLayout()
 
             // Rango permitido:
             // Mínimo, máximo y resolución.
-            juce::NormalisableRange<float>(
-                -24.0f,
-                 24.0f,
-                  0.01f),
+            gainRange,
 
             // Valor inicial.
             0.0f
@@ -764,9 +767,9 @@ void AudioPluginAudioProcessor::updateParameters()
         gainValue->load();
 
     // Convierte decibeles a ganancia lineal.
-    const float linearGain =
-        juce::Decibels::decibelsToGain(
-            gainDB);
+    const float linearGain = gainDB <= -100.0f
+        ? 0.0f
+        : juce::Decibels::decibelsToGain(gainDB);
 
     // Envía la ganancia al procesador DSP.
     gainProcessor.setGain(

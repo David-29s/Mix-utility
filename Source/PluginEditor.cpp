@@ -183,9 +183,10 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
             NeonLookAndFeel::KnobMode::gain);
 
         gainKnob.getSlider().setRange(
-            -24.0,
-            24.0,
+           -100.0,
+             36.0,
             0.01);
+        gainKnob.getSlider().setSkewFactorFromMidPoint(0.0);
 
         break;
 

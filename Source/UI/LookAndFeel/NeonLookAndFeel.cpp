@@ -484,8 +484,8 @@ void NeonLookAndFeel::drawLabels(
     {
     case KnobMode::gain:
 
-        leftLabel = "-24";
-        rightLabel = "+24";
+        leftLabel = juce::String::fromUTF8("-\xE2\x88\x9E");
+        rightLabel = "+36";
 
         break;
 
@@ -705,6 +705,10 @@ void NeonLookAndFeel::drawLabels(
      //============================================================
      // Fuente
      //============================================================
+
+     if (knobMode == KnobMode::gain
+         && text == juce::String::fromUTF8("-\xE2\x88\x9E"))
+         fontSize = 20.0f;
 
      g.setFont(fontSize);
 
