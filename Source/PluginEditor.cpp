@@ -438,9 +438,6 @@ void AudioPluginAudioProcessorEditor::setButtonPosition(
     const int startX =
         (getWidth() - totalWidth) / 2;
 
-    const int knobTop =
-        (getHeight() - LayoutMetrics::knobHeight) / 2;
-
     const int buttonY =
      LayoutMetrics::buttonY;
 
