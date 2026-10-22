@@ -52,6 +52,23 @@ void GainProcessor::prepare(
     smoothedWidth.reset(sampleRate, 0.02);
     smoothedWidth.setCurrentAndTargetValue(1.0f);
 
+    smoothedBypassMix.reset(sampleRate, 0.015);
+    smoothedBypassMix.setCurrentAndTargetValue(0.0f);
+    smoothedMonoMix.reset(sampleRate, 0.015);
+    smoothedMonoMix.setCurrentAndTargetValue(0.0f);
+    smoothedPhaseMix.reset(sampleRate, 0.015);
+    smoothedPhaseMix.setCurrentAndTargetValue(0.0f);
+    smoothedMuteGain.reset(sampleRate, 0.015);
+    smoothedMuteGain.setCurrentAndTargetValue(1.0f);
+
+    smoothedBassMonoMix.reset(sampleRate, 0.025);
+    smoothedBassMonoMix.setCurrentAndTargetValue(0.0f);
+    smoothedBassMonoListenMix.reset(sampleRate, 0.015);
+    smoothedBassMonoListenMix.setCurrentAndTargetValue(0.0f);
+
+    // Preallocate dry audio for click-free bypass crossfades on the audio thread.
+    bypassBuffer.setSize(2, juce::jmax(samplesPerBlock, 8192), false, true, true);
+
     smoothedBassMonoCrossover.reset(
         sampleRate,
         0.02);
@@ -256,6 +273,7 @@ void GainProcessor::setBassMono(
     bool shouldBeBassMono)
 {
     bassMono = shouldBeBassMono;
+    smoothedBassMonoMix.setTargetValue(shouldBeBassMono ? 1.0f : 0.0f);
 }
 
 bool GainProcessor::isBassMonoEnabled() const
@@ -291,6 +309,7 @@ void GainProcessor::setBypass(
     bool shouldBypass)
 {
     bypass = shouldBypass;
+    smoothedBypassMix.setTargetValue(shouldBypass ? 1.0f : 0.0f);
 }
 
 // Devuelve el estado actual del bypass.
@@ -306,6 +325,7 @@ void GainProcessor::setMono(
     bool shouldBeMono)
 {
     mono = shouldBeMono;
+    smoothedMonoMix.setTargetValue(shouldBeMono ? 1.0f : 0.0f);
 }
 
 // Devuelve el estado actual del modo Mono.
@@ -321,6 +341,7 @@ void GainProcessor::setPhase(
     bool shouldBePhase)
 {
     phase = shouldBePhase;
+    smoothedPhaseMix.setTargetValue(shouldBePhase ? 1.0f : 0.0f);
 }
 
 // Devuelve el estado actual de la fase.
@@ -336,6 +357,7 @@ void GainProcessor::setMute(
     bool shouldBeMute)
 {
     mute = shouldBeMute;
+    smoothedMuteGain.setTargetValue(shouldBeMute ? 0.0f : 1.0f);
 }
 
 // Devuelve el estado actual del mute.
@@ -353,28 +375,22 @@ void GainProcessor::process(
 {
     processAutoGainCapture(buffer);
 
+    const int numChannels = juce::jmin(buffer.getNumChannels(), 2);
+    const int numSamples = buffer.getNumSamples();
+    const int drySamples = juce::jmin(numSamples, bypassBuffer.getNumSamples());
+
+    for (int channel = 0; channel < numChannels; ++channel)
+        bypassBuffer.copyFrom(channel, 0, buffer, channel, 0, drySamples);
+
     //==========================================================
     // Processing Stages
     //==========================================================
-
-    if (processBypass())
-        return;
-
-    if (processMute(buffer))
-        return;
 
     //==========================================================
     // Bass Mono / Listen
     //==========================================================
 
-    if (bassMonoListen)
-    {
-        processBassMonoListen(buffer);
-    }
-    else
-    {
-        processBassMono(buffer);
-    }
+    processBassMono(buffer);
 
     //==========================================================
     // Other Processing
@@ -393,30 +409,41 @@ void GainProcessor::process(
     processStereoSwap(buffer);
 
     processOutputTrim(buffer);
+
+    processMute(buffer);
+
+    // Blend processed audio with the dry input when bypassing. The dry buffer
+    // is prepared in prepare(), so this path never allocates on the audio thread.
+    for (int sample = 0; sample < numSamples; ++sample)
+    {
+        const float bypassMix = smoothedBypassMix.getNextValue();
+        if (sample >= drySamples)
+            continue;
+
+        const float wetMix = 1.0f - bypassMix;
+        for (int channel = 0; channel < numChannels; ++channel)
+        {
+            const float dry = bypassBuffer.getSample(channel, sample);
+            float& wet = buffer.getWritePointer(channel)[sample];
+            wet = wet * wetMix + dry * bypassMix;
+        }
+    }
 }
 
 //==========================================================
 // Processing Stages
 //==========================================================
 
-// Procesa el estado de bypass.
-bool GainProcessor::processBypass() const
+// Procesa el estado de mute con una transición de ganancia suavizada.
+void GainProcessor::processMute(juce::AudioBuffer<float>& buffer)
 {
-    return bypass;
-}
-
-//----------------------------------------------------------
-
-// Procesa el estado de mute.
-bool GainProcessor::processMute(
-    juce::AudioBuffer<float>& buffer) const
-{
-    if (!mute)
-        return false;
-
-    buffer.clear();
-
-    return true;
+    const int numChannels = juce::jmin(buffer.getNumChannels(), 2);
+    for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
+    {
+        const float gain = smoothedMuteGain.getNextValue();
+        for (int channel = 0; channel < numChannels; ++channel)
+            buffer.getWritePointer(channel)[sample] *= gain;
+    }
 }
 
 //----------------------------------------------------------
@@ -424,47 +451,20 @@ bool GainProcessor::processMute(
 void GainProcessor::processMono(
     juce::AudioBuffer<float>& buffer)
 {
-    //==========================================================
-    // State
-    //==========================================================
-
-    // El botón Mono está desactivado.
-    if (!mono)
-        return;
-
-    //==========================================================
-    // Audio
-    //==========================================================
-
-    // El procesamiento Mono requiere al menos dos canales.
     if (buffer.getNumChannels() < 2)
         return;
 
-    const int numSamples =
-        buffer.getNumSamples();
+    auto* left = buffer.getWritePointer(0);
+    auto* right = buffer.getWritePointer(1);
 
-    auto* left =
-        buffer.getWritePointer(0);
-
-    auto* right =
-        buffer.getWritePointer(1);
-
-    //==========================================================
-    // Processing
-    //==========================================================
-
-    for (int sample = 0;
-         sample < numSamples;
-         ++sample)
+    for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
     {
-        const float monoSample =
-            (left[sample] + right[sample]) * 0.5f;
-
-        left[sample] =
-            monoSample;
-
-        right[sample] =
-            monoSample;
+        const float inputLeft = left[sample];
+        const float inputRight = right[sample];
+        const float monoSample = (inputLeft + inputRight) * 0.5f;
+        const float monoMix = smoothedMonoMix.getNextValue();
+        left[sample] = inputLeft + (monoSample - inputLeft) * monoMix;
+        right[sample] = inputRight + (monoSample - inputRight) * monoMix;
     }
 }
 
@@ -473,41 +473,13 @@ void GainProcessor::processMono(
 void GainProcessor::processPhase(
     juce::AudioBuffer<float>& buffer)
 {
-    //==========================================================
-    // State
-    //==========================================================
-
-    // El botón Phase está desactivado.
-    if (!phase)
-        return;
-
-    //==========================================================
-    // Audio
-    //==========================================================
-
-    const int numChannels =
-        buffer.getNumChannels();
-
-    const int numSamples =
-        buffer.getNumSamples();
-
-    //==========================================================
-    // Processing
-    //==========================================================
-
-    for (int channel = 0;
-         channel < numChannels;
-         ++channel)
+    const int numChannels = juce::jmin(buffer.getNumChannels(), 2);
+    for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
     {
-        auto* channelData =
-            buffer.getWritePointer(channel);
-
-        for (int sample = 0;
-             sample < numSamples;
-             ++sample)
-        {
-            channelData[sample] *= -1.0f;
-        }
+        const float phaseMix = smoothedPhaseMix.getNextValue();
+        const float polarity = 1.0f - 2.0f * phaseMix;
+        for (int channel = 0; channel < numChannels; ++channel)
+            buffer.getWritePointer(channel)[sample] *= polarity;
     }
 }
 
@@ -743,9 +715,6 @@ void GainProcessor::processWidth(
 void GainProcessor::processBassMono(
     juce::AudioBuffer<float>& buffer)
 {
-    if (!bassMono)
-        return;
-
     if (buffer.getNumChannels() < 2)
         return;
 
@@ -792,74 +761,19 @@ void GainProcessor::processBassMono(
             bassMonoFilterR.processSample(0, inputRight, lowRight, highRight);
 
             const float monoLow = (lowLeft + lowRight) * 0.5f;
-            left[sample] = monoLow + highLeft;
-            right[sample] = monoLow + highRight;
-        }
+            const float bassMix = smoothedBassMonoMix.getNextValue();
+            const float listenMix = smoothedBassMonoListenMix.getNextValue();
 
-        currentCrossover =
-            smoothedBassMonoCrossover.skip(chunkEnd - chunkStart);
-    }
-}
+            const float enabledLeft = monoLow + highLeft;
+            const float enabledRight = monoLow + highRight;
+            const float normalLeft = inputLeft + (enabledLeft - inputLeft) * bassMix;
+            const float normalRight = inputRight + (enabledRight - inputRight) * bassMix;
 
-void GainProcessor::processBassMonoListen(
-    juce::AudioBuffer<float>& buffer)
-{
-    if (buffer.getNumChannels() < 2)
-        return;
+            const float previewLeft = lowLeft + (monoLow - lowLeft) * bassMix;
+            const float previewRight = lowRight + (monoLow - lowRight) * bassMix;
 
-    const int numSamples =
-        buffer.getNumSamples();
-
-    auto* left =
-        buffer.getWritePointer(0);
-
-    auto* right =
-        buffer.getWritePointer(1);
-
-    constexpr int filterUpdateInterval = 16;
-    float currentCrossover =
-        smoothedBassMonoCrossover.getCurrentValue();
-
-    for (int chunkStart = 0;
-         chunkStart < numSamples;
-         chunkStart += filterUpdateInterval)
-    {
-        bassMonoFilterL.setCutoffFrequency(
-            currentCrossover);
-
-        bassMonoFilterR.setCutoffFrequency(
-            currentCrossover);
-
-        const int chunkEnd = juce::jmin(
-            chunkStart + filterUpdateInterval,
-            numSamples);
-
-        for (int sample = chunkStart;
-             sample < chunkEnd;
-             ++sample)
-        {
-            const float inputLeft = left[sample];
-            const float inputRight = right[sample];
-
-            float lowLeft = 0.0f;
-            float highLeft = 0.0f;
-            bassMonoFilterL.processSample(0, inputLeft, lowLeft, highLeft);
-
-            float lowRight = 0.0f;
-            float highRight = 0.0f;
-            bassMonoFilterR.processSample(0, inputRight, lowRight, highRight);
-
-            if (bassMono)
-            {
-                const float monoLow = (lowLeft + lowRight) * 0.5f;
-                left[sample] = monoLow;
-                right[sample] = monoLow;
-            }
-            else
-            {
-                left[sample] = lowLeft;
-                right[sample] = lowRight;
-            }
+            left[sample] = normalLeft + (previewLeft - normalLeft) * listenMix;
+            right[sample] = normalRight + (previewRight - normalRight) * listenMix;
         }
 
         currentCrossover =
@@ -870,6 +784,7 @@ void GainProcessor::processBassMonoListen(
 void GainProcessor::setBassMonoListen(bool shouldListen)
 {
     bassMonoListen = shouldListen;
+    smoothedBassMonoListenMix.setTargetValue(shouldListen ? 1.0f : 0.0f);
 }
 
 bool GainProcessor::isBassMonoListen() const

@@ -132,12 +132,8 @@ private:
     // Processing Stages
     //==========================================================
 
-    // Procesa el estado de bypass.
-    bool processBypass() const;
-
     // Procesa el estado de mute.
-    bool processMute(
-        juce::AudioBuffer<float>& buffer) const;
+    void processMute(juce::AudioBuffer<float>& buffer);
 
     // Aplica el procesamiento Mono.
     void processMono(
@@ -173,9 +169,6 @@ private:
     void processBassMono(
         juce::AudioBuffer<float>& buffer);
 
-    void processBassMonoListen(
-    juce::AudioBuffer<float>& buffer);
-
     //==========================================================
     // Bass Mono Filters
     //==========================================================
@@ -193,6 +186,10 @@ private:
     juce::SmoothedValue<float> smoothedStereoSwap;
     juce::SmoothedValue<float> smoothedPan;
     juce::SmoothedValue<float> smoothedWidth;
+    juce::SmoothedValue<float> smoothedBypassMix;
+    juce::SmoothedValue<float> smoothedMonoMix;
+    juce::SmoothedValue<float> smoothedPhaseMix;
+    juce::SmoothedValue<float> smoothedMuteGain;
 
     std::atomic<bool> autoGainRequested { false };
     std::atomic<bool> autoGainCancelled { false };
@@ -227,6 +224,9 @@ private:
     float bassMonoCrossover = 150.0f;
 
     juce::SmoothedValue<float> smoothedBassMonoCrossover;
+    juce::SmoothedValue<float> smoothedBassMonoMix;
+    juce::SmoothedValue<float> smoothedBassMonoListenMix;
+    juce::AudioBuffer<float> bypassBuffer;
 
     // Sample rate actual del procesador.
     double sampleRate = 44100.0;
