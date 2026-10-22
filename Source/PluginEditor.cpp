@@ -6,6 +6,61 @@
 #include "Metrics/BassMono/BassMonoMetrics.h"
 #include "Metrics/CorrelationMetrics/CorrelationMetrics.h"
 
+AutoGainButton::AutoGainButton()
+    : juce::Button("Auto Gain")
+{
+    setMouseCursor(juce::MouseCursor::PointingHandCursor);
+}
+
+void AutoGainButton::setDisplayState(DisplayState newState)
+{
+    if (displayState == newState)
+        return;
+
+    displayState = newState;
+    repaint();
+}
+
+void AutoGainButton::paintButton(
+    juce::Graphics& g,
+    bool isMouseOverButton,
+    bool isButtonDown)
+{
+    const auto bounds = getLocalBounds().toFloat();
+    const float diameter = juce::jmin(bounds.getWidth(), bounds.getHeight());
+    const float radius = diameter * 0.36f;
+    const juce::Point<float> centre = bounds.getCentre();
+
+    juce::Colour accent = NeonColours::cyan;
+    if (displayState == DisplayState::listening)
+        accent = juce::Colour(0xffffbd3f);
+    else if (displayState == DisplayState::applying)
+        accent = juce::Colours::white;
+    else if (displayState == DisplayState::noSignal)
+        accent = juce::Colour(0xffff5b68);
+
+    if (isMouseOverButton || isButtonDown)
+        g.setColour(accent.withAlpha(isButtonDown ? 0.18f : 0.09f));
+    else
+        g.setColour(juce::Colours::transparentBlack);
+
+    g.fillEllipse(centre.x - radius, centre.y - radius,
+                  radius * 2.0f, radius * 2.0f);
+
+    g.setColour(accent.withAlpha(isEnabled() ? 1.0f : 0.45f));
+    g.drawEllipse(centre.x - radius, centre.y - radius,
+                  radius * 2.0f, radius * 2.0f, 1.7f);
+
+    const float sideY = centre.y;
+    const float sideStart = radius + diameter * 0.09f;
+    const float sideEnd = sideStart + diameter * 0.13f;
+    g.drawLine(centre.x - sideEnd, sideY, centre.x - sideStart, sideY, 1.4f);
+    g.drawLine(centre.x + sideStart, sideY, centre.x + sideEnd, sideY, 1.4f);
+
+    g.setFont(juce::Font(diameter * 0.42f, juce::Font::bold));
+    g.drawText("A", getLocalBounds(), juce::Justification::centred, false);
+}
+
 AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
 (AudioPluginAudioProcessor& p)
     : AudioProcessorEditor(&p),
@@ -101,18 +156,6 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
     addAndMakeVisible(autoGainButton);
     autoGainButton.setTooltip(
         "Analyze one second of input and set Gain to target -18 dBFS RMS. Click while listening to cancel.");
-    autoGainButton.setColour(
-        juce::TextButton::buttonColourId,
-        NeonColours::cyan.withAlpha(0.12f));
-    autoGainButton.setColour(
-        juce::TextButton::buttonOnColourId,
-        NeonColours::cyan.withAlpha(0.28f));
-    autoGainButton.setColour(
-        juce::TextButton::textColourOffId,
-        NeonColours::cyan);
-    autoGainButton.setColour(
-        juce::TextButton::textColourOnId,
-        juce::Colours::white);
     autoGainButton.onClick = [this]
     {
         if (autoGainAnimationFrames > 0)
@@ -122,7 +165,7 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
         {
             autoGainCapturing = false;
             processorRef.cancelAutoGainCapture();
-            autoGainButton.setButtonText("AUTO GAIN");
+            autoGainButton.setDisplayState(AutoGainButton::DisplayState::idle);
             return;
         }
 
@@ -131,7 +174,7 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
         autoGainFeedbackFrames = 0;
         autoGainWaitFrames = 180;
         processorRef.requestAutoGainCapture();
-        autoGainButton.setButtonText("LISTEN");
+        autoGainButton.setDisplayState(AutoGainButton::DisplayState::listening);
     };
 
     //==========================================================
@@ -316,7 +359,7 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
             processorRef.endGainParameterGesture();
             autoGainGestureActive = false;
         }
-        autoGainButton.setButtonText("AUTO GAIN");
+        autoGainButton.setDisplayState(AutoGainButton::DisplayState::idle);
 
         gainKnob.setTitle("PAN");
         gainKnob.setTooltip("Stereo pan: move the signal between left (L) and right (R). Double-click the readout to enter a value.");
@@ -348,7 +391,7 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
             processorRef.endGainParameterGesture();
             autoGainGestureActive = false;
         }
-        autoGainButton.setButtonText("AUTO GAIN");
+        autoGainButton.setDisplayState(AutoGainButton::DisplayState::idle);
 
         gainKnob.setTitle("WIDTH");
         gainKnob.setTooltip("Stereo width: 0% is mono and 100% keeps the original width. Double-click the readout to enter a value.");
@@ -510,7 +553,9 @@ void AudioPluginAudioProcessorEditor::resized()
     outputTrimSlider.setBounds(179, trimY + 8, 132, 18);
     outputTrimValue.setBounds(311, trimY + 1, 60, 32);
     stereoSwapButton.setBounds(377, trimY + 3, 57, 28);
-    autoGainButton.setBounds(356, 43, 80, 28);
+    // Mirror the Gain mode control across the knob's centerline.
+    // Its 40 px bounds end before the output meter begins at x=441.
+    autoGainButton.setBounds(396, 50, 40, 40);
 
 
     //==========================================================
@@ -558,7 +603,7 @@ void AudioPluginAudioProcessorEditor::timerCallback()
     {
         autoGainCapturing = false;
         autoGainWaitFrames = 0;
-        autoGainButton.setButtonText("APPLY");
+        autoGainButton.setDisplayState(AutoGainButton::DisplayState::applying);
         autoGainButton.setEnabled(false);
         autoGainStartDb = static_cast<float>(gainKnob.getSlider().getValue());
         autoGainTargetDb = processorRef.getAutoGainResultDb();
@@ -570,14 +615,14 @@ void AudioPluginAudioProcessorEditor::timerCallback()
     {
         autoGainCapturing = false;
         autoGainWaitFrames = 0;
-        autoGainButton.setButtonText("NO SIG");
+        autoGainButton.setDisplayState(AutoGainButton::DisplayState::noSignal);
         autoGainFeedbackFrames = 90;
     }
     else if (autoGainCapturing && --autoGainWaitFrames <= 0)
     {
         autoGainCapturing = false;
         processorRef.cancelAutoGainCapture();
-        autoGainButton.setButtonText("NO SIG");
+        autoGainButton.setDisplayState(AutoGainButton::DisplayState::noSignal);
         autoGainFeedbackFrames = 90;
     }
 
@@ -605,7 +650,7 @@ void AudioPluginAudioProcessorEditor::timerCallback()
                 autoGainGestureActive = false;
             }
             processorRef.cancelAutoGainCapture();
-            autoGainButton.setButtonText("AUTO GAIN");
+            autoGainButton.setDisplayState(AutoGainButton::DisplayState::idle);
             autoGainButton.setEnabled(true);
         }
         else
@@ -615,7 +660,7 @@ void AudioPluginAudioProcessorEditor::timerCallback()
     if (autoGainFeedbackFrames > 0 && --autoGainFeedbackFrames == 0)
     {
         processorRef.cancelAutoGainCapture();
-        autoGainButton.setButtonText("AUTO GAIN");
+        autoGainButton.setDisplayState(AutoGainButton::DisplayState::idle);
     }
 
     refreshButtons();

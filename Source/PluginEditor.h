@@ -9,6 +9,27 @@
 #include "UI/Components/Meters/CorrelationMeter.h"
 #include "UI/Components/BassMono/BassMono.h"
 
+class AutoGainButton final : public juce::Button
+{
+public:
+    enum class DisplayState
+    {
+        idle,
+        listening,
+        applying,
+        noSignal
+    };
+
+    AutoGainButton();
+    void setDisplayState(DisplayState newState);
+    void paintButton(
+        juce::Graphics& g,
+        bool isMouseOverButton,
+        bool isButtonDown) override;
+
+private:
+    DisplayState displayState = DisplayState::idle;
+};
 
 //==============================================================================
 class AudioPluginAudioProcessorEditor final : public juce::AudioProcessorEditor,private juce::Timer
@@ -72,7 +93,7 @@ private:
     IconToggleButton abButton;
 
     juce::TextButton stereoSwapButton { "SWAP" };
-    juce::TextButton autoGainButton { "AUTO GAIN" };
+    AutoGainButton autoGainButton;
 
     bool autoGainCapturing = false;
     float autoGainStartDb = 0.0f;
