@@ -255,6 +255,8 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
     {
         processorRef.setMonoParameter(
             monoButton.isActive());
+
+        refreshButtons();
     };
     //----------------------------------------------------------
 
@@ -744,6 +746,13 @@ void AudioPluginAudioProcessorEditor::refreshButtons()
     monoButton.setActive(
         processorRef.getMonoParameter());
 
+    if (controlModeButton.getMode() == ControlMode::width
+        && gainKnob.getSlider().isEnabled()
+            == processorRef.getMonoParameter())
+    {
+        updateKnobAttachment(ControlMode::width);
+    }
+
     phaseButton.setActive(
         processorRef.getPhaseParameter());
 
@@ -762,6 +771,7 @@ void AudioPluginAudioProcessorEditor::updateKnobAttachment(
     gainAttachment.reset();
     panAttachment.reset();
     widthAttachment.reset();
+    gainKnob.getSlider().setEnabled(true);
 
 
     //==========================================================
@@ -800,11 +810,26 @@ void AudioPluginAudioProcessorEditor::updateKnobAttachment(
 
     else if (mode == ControlMode::width)
     {
-        widthAttachment =
-            std::make_unique<
-                juce::AudioProcessorValueTreeState::SliderAttachment>(
-                    processorRef.getAPVTS(),
-                    "WIDTH",
-                    gainKnob.getSlider());
+        if (processorRef.getMonoParameter())
+        {
+            // Keep the saved WIDTH parameter untouched while Mono makes its
+            // value inaudible; reattaching restores the previous width later.
+            gainKnob.getSlider().setValue(0.0, juce::dontSendNotification);
+            gainKnob.setMode(NeonLookAndFeel::KnobMode::width);
+            gainKnob.getSlider().setEnabled(false);
+            gainKnob.setTooltip(
+                "Width is locked at 0% while Mono is active. Your previous Width value returns when Mono is disabled.");
+        }
+        else
+        {
+            widthAttachment =
+                std::make_unique<
+                    juce::AudioProcessorValueTreeState::SliderAttachment>(
+                        processorRef.getAPVTS(),
+                        "WIDTH",
+                        gainKnob.getSlider());
+            gainKnob.setTooltip(
+                "Stereo width: 0% is mono and 100% keeps the original width. Double-click the readout to enter a value.");
+        }
     }
 }
