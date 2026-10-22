@@ -61,6 +61,32 @@ void AutoGainButton::paintButton(
     g.drawText("A", getLocalBounds(), juce::Justification::centred, false);
 }
 
+StereoSwapButton::StereoSwapButton()
+    : juce::TextButton("SWAP")
+{
+    setMouseCursor(juce::MouseCursor::PointingHandCursor);
+}
+
+void StereoSwapButton::paintButton(
+    juce::Graphics& g,
+    bool isMouseOverButton,
+    bool isButtonDown)
+{
+    const auto bounds = getLocalBounds().toFloat().reduced(1.0f);
+    const bool active = getToggleState();
+    const auto accent = active ? NeonColours::orange : NeonColours::grey;
+
+    g.setColour(juce::Colour(0xff151a22));
+    g.fillRoundedRectangle(bounds, 5.0f);
+
+    g.setColour(accent.withAlpha(isButtonDown ? 1.0f : (isMouseOverButton ? 0.9f : 0.7f)));
+    g.drawRoundedRectangle(bounds, 5.0f, 1.2f);
+
+    g.setColour(active ? NeonColours::orange : NeonColours::grey);
+    g.setFont(juce::Font(11.0f, juce::Font::bold));
+    g.drawText(getButtonText(), getLocalBounds(), juce::Justification::centred, false);
+}
+
 AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
 (AudioPluginAudioProcessor& p)
     : AudioProcessorEditor(&p),
@@ -136,14 +162,6 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
 
     addAndMakeVisible(stereoSwapButton);
     stereoSwapButton.setClickingTogglesState(true);
-    stereoSwapButton.setColour(juce::TextButton::buttonColourId,
-                               juce::Colour(0xff151a22));
-    stereoSwapButton.setColour(juce::TextButton::buttonOnColourId,
-                               juce::Colour(0xff151a22));
-    stereoSwapButton.setColour(juce::TextButton::textColourOnId,
-                               NeonColours::orange);
-    stereoSwapButton.setColour(juce::TextButton::textColourOffId,
-                               NeonColours::grey);
     stereoSwapButton.setTooltip("Swap the left and right output channels.");
     stereoSwapButton.onClick = [this]
     {

@@ -31,6 +31,18 @@ private:
     DisplayState displayState = DisplayState::idle;
 };
 
+class StereoSwapButton final : public juce::TextButton
+{
+public:
+    StereoSwapButton();
+
+private:
+    void paintButton(
+        juce::Graphics& g,
+        bool isMouseOverButton,
+        bool isButtonDown) override;
+};
+
 //==============================================================================
 class AudioPluginAudioProcessorEditor final : public juce::AudioProcessorEditor,private juce::Timer
 {
@@ -92,7 +104,7 @@ private:
 
     IconToggleButton abButton;
 
-    juce::TextButton stereoSwapButton { "SWAP" };
+    StereoSwapButton stereoSwapButton;
     AutoGainButton autoGainButton;
 
     bool autoGainCapturing = false;
