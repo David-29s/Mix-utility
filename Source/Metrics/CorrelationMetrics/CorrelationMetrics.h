@@ -16,7 +16,7 @@ namespace CorrelationMetrics
     //==========================================================
 
     inline constexpr int x = 260;
-    inline constexpr int y = 420;
+    inline constexpr int y = 415;
     inline constexpr int width = 263;
     inline constexpr int height = 105;
 

@@ -100,18 +100,18 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
     outputTrimTitle.setText("OUTPUT TRIM", juce::dontSendNotification);
     outputTrimTitle.setJustificationType(juce::Justification::centredLeft);
     outputTrimTitle.setFont(juce::Font(10.0f, juce::Font::bold));
-    outputTrimTitle.setColour(juce::Label::textColourId, NeonColours::cyan);
+    outputTrimTitle.setColour(juce::Label::textColourId, NeonColours::orange);
     outputTrimTitle.setTooltip("Final level adjustment applied after all processing.");
 
     addAndMakeVisible(outputTrimSlider);
     outputTrimSlider.setSliderStyle(juce::Slider::LinearHorizontal);
     outputTrimSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
     outputTrimSlider.setColour(juce::Slider::trackColourId,
-                               NeonColours::cyan.withAlpha(0.85f));
+                               NeonColours::orange.withAlpha(0.95f));
     outputTrimSlider.setColour(juce::Slider::backgroundColourId,
                                juce::Colour(0xff48515d));
     outputTrimSlider.setColour(juce::Slider::thumbColourId,
-                               juce::Colour(0xffe7f3fa));
+                               NeonColours::orange);
     outputTrimSlider.setTooltip("Adjust the final output level from -36 dB to +12 dB.");
 
     addAndMakeVisible(outputTrimValue);
@@ -139,11 +139,11 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
     stereoSwapButton.setColour(juce::TextButton::buttonColourId,
                                juce::Colour(0xff151a22));
     stereoSwapButton.setColour(juce::TextButton::buttonOnColourId,
-                               NeonColours::cyan.withAlpha(0.25f));
-    stereoSwapButton.setColour(juce::TextButton::textColourOffId,
-                               juce::Colour(0xffb4c1cf));
+                               NeonColours::orange.withAlpha(0.25f));
     stereoSwapButton.setColour(juce::TextButton::textColourOnId,
-                               NeonColours::cyan);
+                               NeonColours::orange);
+    stereoSwapButton.setColour(juce::TextButton::textColourOffId,
+                               NeonColours::orange);
     stereoSwapButton.setTooltip("Swap the left and right output channels.");
     stereoSwapButton.onClick = [this]
     {
@@ -487,7 +487,7 @@ void AudioPluginAudioProcessorEditor::paint (juce::Graphics& g)
         static_cast<float>(LayoutMetrics::outputTrimPanelHeight));
     g.setColour(juce::Colour(0xff151a22));
     g.fillRoundedRectangle(trimPanel, 6.0f);
-    g.setColour(NeonColours::cyan.withAlpha(0.35f));
+    g.setColour(NeonColours::orange.withAlpha(0.5f));
     g.drawRoundedRectangle(trimPanel, 6.0f, 1.0f);
 
 }

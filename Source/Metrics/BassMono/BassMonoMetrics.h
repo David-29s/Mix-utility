@@ -7,7 +7,7 @@ namespace BassMonoMetrics
     //==========================================================
 
     inline constexpr int panelX = 15;
-    inline constexpr int panelY = 420;
+    inline constexpr int panelY = 415;
 
     inline constexpr int panelWidth = 240;
     inline constexpr int panelHeight = 105;
