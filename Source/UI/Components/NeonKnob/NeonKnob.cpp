@@ -247,8 +247,7 @@ void NeonKnob::updateReadout()
             ? juce::String::fromUTF8("-\xE2\x88\x9E dB")
             : (value > 0.0 ? "+" : "") + juce::String(value, 1) + " dB";
 
-        valueLabel.setFont(juce::Font(isMinimumGain ? 29.0f : 23.0f,
-                                      juce::Font::plain));
+        valueLabel.setFont(juce::Font(23.0f, juce::Font::plain));
         valueLabel.setText(valueText, juce::dontSendNotification);
         modeLabel.setText(isMinimumGain ? "MIN"
                           : value < -0.05 ? "CUT"

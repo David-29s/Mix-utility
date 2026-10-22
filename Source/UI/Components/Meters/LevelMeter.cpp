@@ -355,9 +355,11 @@ void LevelMeter::paint(
             ? meterOffset + meterTotalWidth + 6.0f
             : MeterMetrics::scaleWidth + 3.0f;
         const float textX = scaleOnRight ? tickEndX + 2.0f : scaleX;
-        const float textWidth = scaleOnRight
-            ? MeterMetrics::scaleWidth - 8.0f
-            : MeterMetrics::scaleWidth - 8.0f;
+        // Keep the same font size for every mark and give the longest labels
+        // enough room so the minimum value never looks enlarged or squeezed.
+        constexpr float scaleTextWidth =
+            static_cast<float>(MeterMetrics::scaleWidth) - 4.0f;
+        const float textWidth = scaleTextWidth;
         const auto scaleJustification = scaleOnRight
             ? juce::Justification::centredLeft
             : juce::Justification::centredRight;
