@@ -5,6 +5,7 @@
 #include "Metrics/Meter/MeterMetrics.h"
 #include "Metrics/BassMono/BassMonoMetrics.h"
 #include "Metrics/CorrelationMetrics/CorrelationMetrics.h"
+#include "Theme/NeonColours.h"
 
 AutoGainButton::AutoGainButton()
     : juce::Button("Auto Gain")
@@ -480,6 +481,28 @@ void AudioPluginAudioProcessorEditor::paint (juce::Graphics& g)
       g,
       getLocalBounds(),
       animator);
+
+    // Small brand signature in the clear top-right corner, above the output meter.
+    const auto brandBounds = juce::Rectangle<int>(
+        getWidth() - 100,
+        4,
+        88,
+        18);
+    juce::ColourGradient brandGradient(
+        NeonColours::cyan,
+        static_cast<float>(brandBounds.getX()),
+        static_cast<float>(brandBounds.getCentreY()),
+        NeonColours::magenta,
+        static_cast<float>(brandBounds.getRight()),
+        static_cast<float>(brandBounds.getCentreY()),
+        false);
+    g.setGradientFill(brandGradient);
+    g.setFont(juce::Font(10.0f, juce::Font::bold));
+    g.drawFittedText(
+        "SoundbyPad",
+        brandBounds,
+        juce::Justification::centredRight,
+        1);
 
     const int totalButtonWidth =
         (LayoutMetrics::buttonWidth * 5)
