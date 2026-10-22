@@ -324,11 +324,7 @@ void LevelMeter::paint(
         -60.0f
     };
 
-    g.setFont(
-        juce::FontOptions(12.0f));
-
-    g.setColour(
-        juce::Colours::white.withAlpha(0.75f));
+    g.setFont(juce::FontOptions(11.0f));
 
     for (const float db : dbMarks)
     {
@@ -344,26 +340,37 @@ void LevelMeter::paint(
      static_cast<float>(MeterMetrics::labelTopHeight)
      + normalized * meterHeight;
 
-        const juce::String text =
-            juce::String(
-                static_cast<int>(db));
+        const int roundedDb = static_cast<int>(db);
+        const juce::String text = roundedDb > 0
+            ? "+" + juce::String(roundedDb)
+            : juce::String(roundedDb);
 
         const float scaleX = scaleOnRight
-    ? meterOffset + meterTotalWidth + MeterMetrics::labelGap
-    : 0.0f;
-
+            ? meterOffset + meterTotalWidth + MeterMetrics::labelGap
+            : 0.0f;
+        const float tickStartX = scaleOnRight
+            ? meterOffset + meterTotalWidth + 1.0f
+            : MeterMetrics::scaleWidth - 2.0f;
+        const float tickEndX = scaleOnRight
+            ? meterOffset + meterTotalWidth + 6.0f
+            : MeterMetrics::scaleWidth + 3.0f;
+        const float textX = scaleOnRight ? tickEndX + 2.0f : scaleX;
+        const float textWidth = scaleOnRight
+            ? MeterMetrics::scaleWidth - 8.0f
+            : MeterMetrics::scaleWidth - 8.0f;
         const auto scaleJustification = scaleOnRight
             ? juce::Justification::centredLeft
             : juce::Justification::centredRight;
+        const bool isZero = roundedDb == 0;
+
+        g.setColour(juce::Colours::white.withAlpha(isZero ? 0.95f : 0.72f));
+        g.drawLine(tickStartX, y, tickEndX, y, isZero ? 1.2f : 0.9f);
 
         g.drawText(
             text,
-            scaleX,
-            juce::jlimit(
-                0.0f,
-                meterHeight + 36.0f, // cambiar la altura del numero -60
-                y - 6.0f),
-            MeterMetrics::scaleWidth,
+            textX,
+            juce::jlimit(0.0f, bounds.getHeight() - 12.0f, y - 6.0f),
+            textWidth,
             12.0f,
             scaleJustification);
     }
