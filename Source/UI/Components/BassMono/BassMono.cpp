@@ -8,7 +8,7 @@ BassMono::BassMono(
     AudioPluginAudioProcessor& processor)
     : processorRef(processor)
 {
-    setTooltip("Bass Mono centers frequencies below the crossover. Use the headphone icon to audition that band.");
+    setTooltip("Center bass below the crossover. Click the headphones to audition it.");
 
     listenEnabled =
     processorRef.getBassMonoListenParameter();
@@ -17,7 +17,7 @@ BassMono::BassMono(
     //==========================================================
 
     enabledButton.setButtonText("");
-    enabledButton.setTooltip("Enable or disable Bass Mono.");
+    enabledButton.setTooltip("Center bass below the crossover.");
 
     enabledButton.setColour(
         juce::ToggleButton::textColourId,
@@ -54,7 +54,7 @@ BassMono::BassMono(
 
     crossoverSlider.setSliderStyle(
         juce::Slider::LinearHorizontal);
-    crossoverSlider.setTooltip("Bass Mono crossover frequency. Frequencies below this value are centered.");
+    crossoverSlider.setTooltip("Set the frequency below which bass is centered.");
 
     crossoverSlider.setTextBoxStyle(
         juce::Slider::NoTextBox,
@@ -110,7 +110,7 @@ BassMono::BassMono(
         crossoverSlider.getValue(),
         0) + " Hz",
     juce::dontSendNotification);
-    crossoverLabel.setTooltip("Current crossover frequency in Hz.");
+    crossoverLabel.setTooltip("Crossover frequency in Hz.");
 
     crossoverLabel.setJustificationType(
         juce::Justification::centred);

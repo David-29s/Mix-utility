@@ -49,7 +49,7 @@ NeonKnob::NeonKnob(const juce::String& title)
         0);
 
     slider.setLookAndFeel(&lookAndFeel);
-    slider.setTooltip("Adjust the current mode value. Double-click the readout to enter a value.");
+    slider.setTooltip("Drag to adjust. Double-click the value to type.");
 
     //Etiqueta del centro del knob
 
@@ -61,7 +61,7 @@ NeonKnob::NeonKnob(const juce::String& title)
     juce::MouseCursor::PointingHandCursor);
 
     valueLabel.setText("0.0 dB", juce::dontSendNotification);
-    valueLabel.setTooltip("Current value. Double-click to edit it numerically.");
+    valueLabel.setTooltip("Double-click to type a value.");
 
     valueLabel.setJustificationType(
         juce::Justification::centred);
@@ -93,7 +93,7 @@ NeonKnob::NeonKnob(const juce::String& title)
     valueEditor.setVisible(false);
 
     valueEditor.setPopupMenuEnabled(false);
-    valueEditor.setTooltip("Enter a control value and press Enter to apply it.");
+    valueEditor.setTooltip("Type a value and press Enter.");
 
     valueEditor.setJustification(
         juce::Justification::centred);
