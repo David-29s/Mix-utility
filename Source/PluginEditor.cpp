@@ -139,11 +139,11 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor
     stereoSwapButton.setColour(juce::TextButton::buttonColourId,
                                juce::Colour(0xff151a22));
     stereoSwapButton.setColour(juce::TextButton::buttonOnColourId,
-                               NeonColours::orange.withAlpha(0.25f));
+                               juce::Colour(0xff151a22));
     stereoSwapButton.setColour(juce::TextButton::textColourOnId,
                                NeonColours::orange);
     stereoSwapButton.setColour(juce::TextButton::textColourOffId,
-                               NeonColours::orange);
+                               NeonColours::grey);
     stereoSwapButton.setTooltip("Swap the left and right output channels.");
     stereoSwapButton.onClick = [this]
     {
